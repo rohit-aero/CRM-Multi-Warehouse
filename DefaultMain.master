@@ -1,0 +1,438 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeFile="DefaultMain.master.cs" Inherits="_DefaultMain" %>
+
+<%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="asp" %>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" class="h-100">
+<head id="NewHead" runat="server">
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="icon" type="image/png" href="images/favicon.png" />
+    <link href="~/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/css/toastr.css" rel="stylesheet" />
+    <link href="~/css/all.min.css" rel="stylesheet" />
+    <%--<link href="~/css/Style.css" rel="stylesheet" />--%>
+    <link href="~/css/aspcontrols.css" rel="stylesheet" />
+    <link href="~/css/chosen.min.css" rel="stylesheet" />
+    <link href="https://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" rel="stylesheet" />
+
+    <!-- ✅ Scripts (correct order) -->
+    <!-- Only ONE jQuery version (FULL, not slim) -->
+    <script type="text/javascript" src="../../js/jquery.min.js"></script>
+
+    <!-- Optional: jQuery UI (if you use datepickers, dialogs, etc.) -->
+    <script src="https://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+
+    <!-- Required for Bootstrap 4.5 -->
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+
+    <!-- Bootstrap 4.5 JS -->
+    <script src="../../js/bootstrap.min.js"></script>
+
+    <!-- Other JS libraries -->
+    <script src="../../js/toastr.js"></script>
+    <script src="../../js/chosen.jquery.min.js"></script>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <title>Aerowerks</title>
+    <script language="javascript" type="text/javascript">
+        // To Show Currunnt date time
+        var itimer;
+        function NowTime() {
+            var str = "";
+
+            var days = new Array("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday");
+            var months = new Array("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
+
+            var now = new Date();
+            //"Today is : " +
+            str += days[now.getDay()] + ", " + now.getDate() + " " + months[now.getMonth()] + " " + now.getFullYear() + " " + now.getHours() + ":" + now.getMinutes() + ":" + now.getSeconds();
+            document.getElementById("clock").innerHTML = str;
+        }
+
+        function limitToTwoDecimalPlaces(elem) {
+            let val = elem.value.trim().replace(/,/g, ''); // Remove commas
+
+            if (val === '') return;
+
+            let num = parseFloat(val);
+            if (!isNaN(num)) {
+                elem.value = num.toFixed(2);
+            } else {
+                elem.value = ''; // Optional: show error or keep original value
+            }
+        }
+
+        function set_interval() {
+            var timeoutMins = 900000; // 15 minutes
+            localStorage.setItem('logoutTimer', Date.now() + timeoutMins);
+            itimer = setInterval(auto_logout, timeoutMins);
+        }
+
+        function reset_interval() {
+            var timeoutMins = 900000; // 15 minutes
+            clearInterval(itimer);
+            localStorage.setItem('logoutTimer', Date.now() + timeoutMins);
+            itimer = setInterval(auto_logout, timeoutMins);
+        }
+
+        function auto_logout() {
+            var logoutTimer = localStorage.getItem('logoutTimer');
+            if (Date.now() > logoutTimer) {
+                window.top.location = "../logout.aspx";
+            }
+        }
+
+        function Log_Out() {
+            alert('logout');
+            Session.Clear();
+            Session.Abandon();
+        }
+
+        function validateDate(input) {
+            var datePattern = /^(0[1-9]|1[0-2])\/(0[1-9]|[12][0-9]|3[01])\/\d{4}$/; // MM/dd/yyyy format
+            if (!datePattern.test(input.value) && input.value.trim() != "") {
+                toastr.error("Please enter a valid date in MM/dd/yyyy format.");
+                input.value = "";
+                input.focus();
+            }
+        }
+
+        function onlyDotsAndNumbers(txt, event) {
+            var charCode = (event.which) ? event.which : event.keyCode
+            if (charCode == 46) {
+                if (txt.value.indexOf(".") < 0)
+                    return true;
+                else
+                    return false;
+            }
+
+            //if (txt.value.indexOf(".") > 0) {
+            //var txtlen = txt.value.length;
+            //var dotpos = txt.value.indexOf(".");
+            ////Change the number here to allow more decimal points than 2
+            //if ((txtlen - dotpos) > 2)
+            //return false;
+            //}
+
+            if (charCode > 31 && (charCode < 48 || charCode > 57))
+                return false;
+            return true;
+        }
+
+        function onlyNumbers(evt) {
+            var charCode = (event.which) ? event.which : event.keyCode
+            if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+                return false;
+            }
+            return true;
+        }
+
+        function ClearRadioButtonList(rdbID) {
+            var elementRef = document.getElementById(rdbID);
+            var inputElementArray = elementRef.getElementsByTagName('input');
+            for (var i = 0; i < inputElementArray.length; i++) {
+                var inputElement = inputElementArray[i];
+                inputElement.checked = false;
+            }
+            return false;
+        }
+
+        function previousPage() {
+            window.history.back();
+        }
+        function NewWindow() {
+            window.document.forms[0].target = '_blank';
+        }
+        function openInNewTab() {
+            window.document.forms[0].target = '_blank';
+            setTimeout(function () { window.document.forms[0].target = ''; }, 0);
+        }
+        function Comma(Num) {
+            Num += '';
+            Num = Num.replace(',', ''); Num = Num.replace(',', ''); Num = Num.replace(',', '');
+            Num = Num.replace(',', ''); Num = Num.replace(',', ''); Num = Num.replace(',', '');
+            x = Num.split('.');
+            x1 = x[0];
+            x2 = x.length > 1 ? '.' + x[1] : '';
+            var rgx = /(\d+)(\d{3})/;
+            while (rgx.test(x1))
+                x1 = x1.replace(rgx, '$1' + ',' + '$2');
+            return x1 + x2;
+        }
+
+        function limitMultiLineInputLength(inputElement, maxLength) {
+            if (inputElement.value.length >= maxLength) {
+                inputElement.value = inputElement.value.slice(0, maxLength);
+            }
+        }
+
+        function stopRKey(evt) {
+            var evt = (evt) ? evt : ((event) ? event : null);
+            var node = (evt.target) ? evt.target : ((evt.srcElement) ? evt.srcElement : null);
+            if ((evt.keyCode == 13) && (node.type == "text")) { return false; }
+        }
+
+        function emailMask(inputElement) {
+            if (inputElement.value.length > 0) {
+                inputElement.value = inputElement.value.toLowerCase();
+            }
+        }
+
+        function phoneMask(inputElement) {
+            var value = inputElement.value.replace(/\D/g, '');
+            var matchedGroups;
+            if (value.length === 10) {
+                matchedGroups = value.match(/(\d{3})(\d{3})(\d{4})/);
+                inputElement.value = '(' + matchedGroups[1] + ') ' + matchedGroups[2] + '-' + matchedGroups[3];
+            }
+            else if (value.length === 14) {
+                matchedGroups = value.match(/(\d{3})(\d{3})(\d{4})(\d{4})/);
+                inputElement.value = '(' + matchedGroups[1] + ') ' + matchedGroups[2] + '-' + matchedGroups[3] + ' X ' + matchedGroups[4];
+            }
+        }
+        document.onkeypress = stopRKey;
+    </script>
+    <style type="text/css">
+        .align-right {
+            text-align: right !important;
+        }
+
+        .align-center {
+            text-align: center !important;
+        }
+
+        .align-left {
+            text-align: left !important;
+        }
+
+        .auto-style1 {
+            width: 100%;
+            height: 8%;
+            margin: 0px;
+            padding: 0px;
+            background-color: black;
+            position: fixed; /* Set the navbar to fixed position */
+            ;
+            top: 0;
+            padding: 10px 16px;
+            overflow: visible;
+            left: -10px;
+        }
+
+        .auto-style2 {
+            position: relative;
+            text-align: left;
+            /*set: bold 16px 'Bitter', sans-serif;
+            use: left;*/
+            list-style-type: none;
+            -webkit-perspective: 1000px;
+            perspective: 1000px;
+            -webkit-perspective-origin: 50% 0%;
+            perspective-origin: 50% 0%;
+            width: 955px;
+            height: 95px;
+            right: 91px;
+            bottom: 20px;
+            margin: auto;
+            padding: 0;
+            background: #BADBF2;
+        }
+
+        .center-div {
+            width: 300px;
+            height: 300px;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            border: 1px solid #121111;
+            margin-left: -150px;
+            margin-top: -150px;
+        }
+
+        .spinner {
+            position: fixed;
+            z-index: 999;
+            height: 100%;
+            width: 100%;
+            top: 0;
+            left: 0;
+            background-color: Black;
+            filter: alpha(opacity=60);
+            opacity: 0.6;
+            -moz-opacity: 0.8;
+        }
+
+        .loader {
+            margin: auto;
+            border: 16px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 16px solid #0856A1;
+            border-bottom: 16px solid #0856A1;
+            width: 120px;
+            height: 120px;
+            -webkit-animation: spin 2s linear infinite;
+            animation: spin 2s linear infinite;
+        }
+
+        .inner-div {
+            background-color: white;
+            border-radius: 15px;
+            margin: auto;
+            padding: 2%;
+            width: 150px;
+        }
+
+        .ReportsModalPopup {
+            background-color: #ffffff;
+            border-width: 3px;
+            border-style: solid;
+            border-color: Gray;
+            padding: 3px;
+        }
+
+        .confirm-box {
+            background: rgba(0, 0, 0, 0.5);
+            width: 100%;
+            height: 100%;
+            position: fixed;
+            top: 0;
+            Left: 0;
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .message-box {
+            background: #fff;
+            text-align: center;
+            font-family: Arial;
+            font-size: 16px;
+            line-height: 1.5;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .button-box {
+            margin-top: 30px;
+        }
+
+        .yes-button, .no-button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin: 0 20px;
+            border: none;
+            border-radius: 5px;
+        }
+
+        .yes-button {
+            background: green;
+            color: #fff;
+        }
+
+        .no-button {
+            background: red;
+            color: #fff;
+        }
+
+        @-webkit-keyframes spin {
+            0% {
+                -webkit-transform: rotate(0deg);
+            }
+
+            100% {
+                -webkit-transform: rotate(360deg);
+            }
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        #toast-container > div {
+            opacity: 1;
+        }
+
+        .checkbox .btn, .checkbox-inline .btn {
+            padding-left: 4em;
+            min-width: 10em;
+        }
+
+        .checkbox label, .checkbox-inline label {
+            text-align: left;
+            padding-left: 0.3em;
+        }
+
+        .checkbox input[type="checkbox"] {
+            float: none;
+        }
+
+        .scrollable-container {
+            position: relative;
+            height: 170px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            border: 1px solid #999;
+        }
+
+        .mainGridTable th {
+            position: sticky;
+            top: 0;
+            background-color: #f0f0f0; /* adjust the background color as needed */
+            z-index: 1;
+        }
+    </style>
+</head>
+<body onload="set_interval();" onmousemove="reset_interval();" onclick="reset_interval();" class="bg-light d-flex flex-column h-100">
+    <form id="aspnetform_settings" runat="server" class="d-flex flex-column h-100">
+        <asp:ToolkitScriptManager ID="ToolkitScriptManager1" AsyncPostBackTimeout="36000" runat="server" LoadScriptsBeforeUI="false" ScriptMode="Release" EnablePartialRendering="True">
+        </asp:ToolkitScriptManager>
+        <div class="container-fluid">
+            <div class="row bg-white shadow-sm py-3 d-flex align-items-center position-sticky topHeader">
+                <%--<div class="col-sm-12 px-0">
+                    <div class="alert alert-danger py-1 h5 text-center rounded-0 mb-0" role="alert">
+                     <i class="fas fa-exclamation-triangle"></i> Application will automatically Logged Out if there is no user activity for 30 minutes.
+                    </div>
+                </div>--%>
+                <div class="col-sm-2" style="max-width: 12.666667%;">
+                    <a>
+                        <img src="/images/aerowerksLogo.png" class="img-fluid" /></a>
+                </div>
+                <div class="col-sm-auto ml-auto">
+                    <div class="d-flex menutabs align-items-center">
+                        <div>
+                            <asp:Menu ID="menu" SkipLinkText="" Orientation="Horizontal" runat="server" RenderingMode="List" CssClass="menutabs" StaticEnableDefaultPopOutImage="false"></asp:Menu>
+                        </div>
+                        <div>
+                            <div class="dropdown">
+                                <div class="btn btn-outline-secondary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <asp:Label ID="lblwelcomemsg" runat="server"></asp:Label>
+                                </div>
+                                <%--  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+    <a class="dropdown-item" href="../../index.aspx"><i class="fas fa-sign-out-alt"></i> Logout</a>
+
+  </div>--%>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row pb-3 mainContentDiv">
+                <asp:ContentPlaceHolder ID="ContentPlaceHolder1" runat="server"></asp:ContentPlaceHolder>
+            </div>
+        </div>
+        <div class="container-fluid mt-auto">
+            <div class="row bg-white text-dark h6 mb-0 p-2 text-center">
+                <div class="col">Copyrights &copy; Aerowerks. All Rights Reserved. <a id="lnkPolicy" visible="false" runat="server" href="Administration/Policy.aspx" target="_blank">Our Policy</a></div>
+            </div>
+        </div>
+    </form>
+</body>
+</html>

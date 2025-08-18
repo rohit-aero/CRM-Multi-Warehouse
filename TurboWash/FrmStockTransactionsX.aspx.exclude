@@ -1,0 +1,137 @@
+﻿<%@ Page Language="C#" AutoEventWireup="true" MasterPageFile="~/Main.master" CodeFile="FrmStockTransactionsX.aspx.cs" Inherits="TurboWash_FrmStockTransactions" %>
+
+<%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="asp" %>
+<%@ Register Assembly="CrystalDecisions.Web, Version=13.0.2000.0, Culture=neutral, PublicKeyToken=692fbea5521e1304" Namespace="CrystalDecisions.Web" TagPrefix="CR" %>
+<asp:Content ID="Content1" ContentPlaceHolderID="ContentPlaceHolder1" runat="Server">
+    <asp:UpdatePanel ID="UpdatePanel11" runat="server">
+        <ContentTemplate>
+            <div class="col-12 pt-2 piDiv position-sticky">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="d-flex align-items-center mb-2">
+                            <button type="button" class="btn btn-info btn-sm mr-3" onclick="previousPage()"><i class="fas fa-chevron-left fa-sm"></i>Back</button>
+                            <h4 class="title-hyphen position-relative">TurboWash Stock Transaction</h4>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row pb-2">
+                    <div class="col-8 row mb-2">
+                        <label class="col-3">By Category</label>
+                        <asp:DropDownList ID="ddlCategoryLookupList" runat="server" AutoPostBack="true" DataTextField="name" DataValueField="id" OnSelectedIndexChanged="ddlCategoryLookupList_SelectedIndexChanged" CssClass="col-9 form-control form-control-sm"></asp:DropDownList>
+                    </div>
+
+                    <div class="col-8 row mb-2">
+                        <label class="col-3">By Part Number</label>
+                        <asp:DropDownList ID="ddlPartLookupList" runat="server" AutoPostBack="true" DataTextField="PartNo" DataValueField="id" OnSelectedIndexChanged="ddlPartLookupList_SelectedIndexChanged" CssClass="col-9 form-control form-control-sm"></asp:DropDownList>
+                    </div>
+
+                    <div class="col-8 row mb-2">
+                        <label class="col-3">Adjustment type</label>
+                        <asp:DropDownList ID="ddlTransactionType" runat="server" DataTextField="TransactType" DataValueField="id" CssClass="col-9 form-control form-control-sm">
+                        </asp:DropDownList>
+                    </div>
+
+                    <div class="col-8 row mb-2">
+                        <label class="col-3">Adjustment Reason</label>
+                        <asp:DropDownList ID="ddlAdjustmentReason" runat="server" DataTextField="Reason" DataValueField="id" CssClass="col-9 form-control form-control-sm">
+                        </asp:DropDownList>
+                    </div>
+
+                    <div class="col-8 row mb-2">
+                        <label class="col-3">Quantity</label>
+                        <asp:TextBox ID="txtTransactQty" runat="server" onkeypress="return onlyNumbers(event);" CssClass="col-9 form-control form-control-sm">
+                        </asp:TextBox>
+                    </div>
+
+                    <div class="col-8 row mb-2">
+                        <label class="col-3">Stock In Hand</label>
+                        <asp:TextBox ID="txtStockInHand" runat="server" Enabled="false" CssClass="col-9 form-control form-control-sm">
+                        </asp:TextBox>
+                    </div>
+
+                    <div class="col-8 row mb-2">
+                        <label class="col-3">Summary</label>
+                        <asp:TextBox ID="txtRemarks" runat="server" onkeypress="return onlyNumbers(event);" CssClass="col-9 form-control form-control-sm">
+                        </asp:TextBox>
+                    </div>
+
+                    <div class="col-8 row">
+                        <label class="col-3">&nbsp;</label>
+                        <div class="col-9 pl-0">
+                            <asp:Button ID="btnSave" runat="server" OnClick="btnSave_Click" Text="Save" CssClass="btn btn-success btn-sm" CausesValidation="false" />
+                            <asp:Button ID="btnCancel" runat="server" OnClick="btnCancel_Click" Text="Cancel" CssClass="btn btn-danger btn-sm" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 border-3">
+                <div class="row pt-3">
+                    <%--<div class="col-12">
+                        <h5 class="text-uppercase">TurboWash Stock Transaction</h5>
+                    </div>--%>
+
+                    <%--                    <div class="col-2">
+                        <div class="form-group">
+                            <label>Stock In Hand</label>
+                            <asp:TextBox ID="txtStockInHand" runat="server" Enabled="false" CssClass="form-control form-control-sm">
+                            </asp:TextBox>
+                        </div>
+                    </div>--%>
+
+                    <%--                    <div class="col-2">
+                        <div class="form-group">
+                            <label>Transaction Type*</label>
+                            <asp:DropDownList ID="ddlTransactionType" runat="server" DataTextField="TransactType" DataValueField="id" CssClass="form-control form-control-sm">
+                            </asp:DropDownList>
+                        </div>
+                    </div>--%>
+
+                    <%--<div class="col-2">
+                        <div class="form-group">
+                            <label>Transaction Qty*</label>
+
+                        </div>
+                    </div>--%>
+
+                    <%--<div class="col-2">
+                        <div class="form-group">
+                            <label>Job No. / Remarks*</label>
+                            <asp:TextBox ID="txtRemarks" runat="server" MaxLength="250" CssClass="form-control form-control-sm">
+                            </asp:TextBox>
+                        </div>
+                    </div>--%>
+                </div>
+            </div>
+            <div class="col-12">
+            </div>
+            <div class="col-12 pt-3">
+                <div class="table-responsive">
+                    <asp:GridView CssClass="table mainGridTable table-sm" ID="gvTransactions" runat="server" AutoGenerateColumns="true"
+                        EnableModelValidation="True" EmptyDataText="No Transaction Found">
+                    </asp:GridView>
+                </div>
+        </ContentTemplate>
+    </asp:UpdatePanel>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            Sys.WebForms.PageRequestManager.getInstance().add_pageLoaded(PageLoaded)
+        });
+
+        function PageLoaded(sender, args) {
+            BindDrp();
+        }
+
+        $.when.apply($, PageLoaded).then(function () {
+            BindDrp();
+        });
+
+        function BindDrp() {
+            $('#<%=ddlCategoryLookupList.ClientID%>').chosen();
+            $('#<%=ddlPartLookupList.ClientID%>').chosen();
+            $('#<%=ddlTransactionType.ClientID%>').chosen();
+            $('#<%=ddlAdjustmentReason.ClientID%>').chosen();
+        }
+    </script>
+</asp:Content>

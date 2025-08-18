@@ -1,0 +1,151 @@
+﻿.menutabs {
+    position: relative;
+    text-align: center;  /*settoleft, center, or right*/ 
+    font: bold 16px 'Bitter', sans-serif;  /*use google font*/ 
+   text-align:left;
+}
+
+.menutabs *{
+  -webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+    text-align:left;
+}
+
+.menutabs a{
+    text-decoration: none;
+    color: black;
+    display: inline-block;
+    font-weight: bold;
+    padding:0 15px;
+    position: relative;
+    text-align:left;
+}
+.ctl00_menu_0 a{padding:12px 15px}
+.menutabs, .menutabs ul{
+    list-style: none;
+    margin: auto;
+    padding: 0;
+	-webkit-perspective: 1000px;
+	perspective: 1000px;
+    -webkit-perspective-origin: 50% 0%;
+	perspective-origin: 50% 0%;
+    text-align:left;
+}
+
+ /*Top Level LI style*/ 
+.menutabs > li{
+    text-align:left;
+}
+
+ /*Top Level link style*/ 
+.menutabs > li > a{
+    border-radius: 10px 10px 0 0;
+    background: #BADBF2;
+    text-transform: uppercase;
+    text-align:left;
+}
+
+ /*Top Level link style on hover and when active*/ 
+.menutabs li:hover > a {
+    background: #dae9f4;
+   text-align:left;
+}
+
+    .menutabs li {
+        display: inline;
+        text-align:left;
+    }
+
+ /*drop line ULs style*/ 
+.menutabs ul{
+    background: #f8ecc9;
+    position: center;
+    left: -3000px;
+    width: 100%;
+    opacity: 1;
+    padding: 10px 0;
+    top: auto;
+    border: 1px solid #ddd;
+    box-shadow: 0 3px 5px #eee;
+    -webkit-transform: rotateX(-70deg);
+    transform: rotateX(-70deg);
+    backface-visibility: hidden;
+    -webkit-transform-origin: 50% 0;
+    transform-origin: 50% 0;
+    -webkit-transition: opacity .3s, -webkit-transform .5s, visibility 0s .3s, left 0s .3s;
+    transition: opacity .3s, transform .5s, visibility 0s .3s, left 0s .3s;
+    text-align:left;
+}
+
+ /*Reveal sub menu on hover*/
+    .menutabs li:hover > ul {
+        opacity: 0;
+        left: 0;
+        top: auto;
+        z-index: 1000;
+        -webkit-transform: rotateX(0deg);
+        transform: rotateX(0deg);
+        -webkit-transition: opacity .5s, -webkit-transform .5s;
+        transition: opacity .5s, transform .5s;
+        text-align:left;
+    }
+
+.menutabs ul li{
+    display: inline;
+    text-align:left;
+}
+
+ /*Sub Levels link style on hover and when active*/ 
+
+.menutabs ul li:hover > a {
+    background: #f9d423;
+    border-radius: 10px;
+    position:initial;
+    text-align:left;
+}
+
+ /*LIs with a sub UL style*/ 
+.menutabs li > a {
+     /*add padding to accomodate arrow inside LIs*/ 
+    padding-right: 40px;
+    text-align:left;
+}
+
+ /*LIs with NO sub UL style*/ 
+.menutabs li > a:only-child {
+     /*undo padding for non submenu LIs*/ 
+    padding-right: 20px;
+    text-align:left;
+}
+
+ /*Arrow for LIs with sub ULs*/ 
+.menutabs li > a:after {
+     /*add arrow inside LIs*/ 
+    content: "";
+    position: absolute;
+    height: 0;
+    width: 0;
+    border: 5px solid transparent;
+    border-top-color: black;
+    top: 45%;
+    right: 8px;
+    text-align:left;
+}
+
+ /*LIs with NO sub UL pseudo class*/ 
+.menutabs li > a:only-child:after {
+     /*undo arrow for non submenu LIs*/ 
+    display: none;
+     text-align:left;
+}
+
+ /*####### responsive layout CSS #######*/
+@media (max-width: 720px) {
+ /*Top Level link style*/ 
+    .droplinetabs > li > a{
+       border-radius: 0;
+       margin-top: 5px;
+       text-align:left;
+    }    
+}

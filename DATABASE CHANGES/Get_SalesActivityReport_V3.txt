@@ -1,0 +1,233 @@
+ALTER PROCEDURE [dbo].[Get_SalesActivityReport_V3]
+	@Operation INT = NULL,
+	@FromDate DATETIME = NULL,
+	@ToDate DATETIME = NULL,
+	@ProjectManager INT = NULL,
+	@StakeHolderId INT = NULL
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	IF(@Operation = 1)
+	BEGIN
+		SELECT EmployeeID AS id, CONCAT(FirstName, ' ' + LastName) AS [text]
+		FROM tblEmployees
+		WHERE Department = 'SD'
+		ORDER BY CONCAT(FirstName, ' ' + LastName)
+
+		DECLARE @StakeHolders TABLE (
+			ID INT,
+			[text] VARCHAR(50)
+		);
+
+		INSERT INTO @StakeHolders (ID, [text])
+		VALUES 
+			(1, 'Consultant'),
+			(2, 'Customer'),
+			(3, 'Dealer'),
+			(4, 'Rep');  	
+
+		SELECT id, [text]
+		FROM @StakeHolders;	
+	END
+
+	ELSE IF(@Operation = 2)
+	BEGIN
+		IF (ISNULL(@StakeHolderId, 0) = 0)
+		BEGIN
+			SELECT 'Consultant' AS [StakeHolder], CONCAT(CompanyName, ', ' + tblStates.[State], ', ' + Country) AS [StakeHolderName],
+			CAST(Sales_ActivityFollowups.[Date] AS DATETIME) AS GroupOne, CONCAT(tblConsultantMembers.FirstName, ' ' + tblConsultantMembers.LastName) AS ContactName,
+			tblConsultantMembers.JobTitle AS [Role], Sales_ActivityFollowups.Task AS [ReasonOfContact],
+			CASE 
+				WHEN Sales_ActivityFollowups.TypeOfContact = 'T' THEN 'Teams Meeting'
+				WHEN Sales_ActivityFollowups.TypeOfContact = 'P' THEN 'Phone Call'
+			END AS [TypeOfContact], Sales_ActivityFollowups.ProjectName, Sales_ActivityFollowups.Deadline AS ActionRequired,
+			Sales_ActivityFollowups.NextFollowupDate, CONCAT(tblEmployees.FirstName, ' ' + tblEmployees.LastName) AS SalesManager,
+			CAST(Sales_ActivityFollowups.[Date] AS DATETIME) AS FollowupDate, Sales_ActivityFollowups.PNumber
+			FROM tblConsultants
+			LEFT JOIN tblStates ON tblStates.StateID = tblConsultants.StateID
+			INNER JOIN Sales_Activity ON Sales_Activity.Companyid = tblConsultants.ConsultantID AND StakeHolderid = 1
+			LEFT JOIN Sales_ActivityDetails ON Sales_ActivityDetails.ActivityId = Sales_Activity.Id
+			LEFT JOIN Sales_ActivityFollowups ON Sales_ActivityFollowups.ActivityDetailId = Sales_ActivityDetails.Id
+			LEFT JOIN tblConsultantMembers ON tblConsultantMembers.ConsultantMemberID = Sales_ActivityFollowups.ResponsiblePerson
+			LEFT JOIN tblEmployees ON tblEmployees.EmployeeID = Sales_ActivityDetails.UserID
+			WHERE ISNULL(CompanyName, '') <> '' AND Sales_ActivityFollowups.[Date] BETWEEN @FromDate AND @ToDate
+				AND (ISNULL(@ProjectManager, 0) = 0 OR Sales_ActivityDetails.UserID = @ProjectManager)
+
+			UNION ALL
+
+			SELECT 'Consultant', '', NULL, '', '', '', '', '', NULL, NULL, '', NULL, NULL
+
+			UNION ALL
+
+			SELECT 'Customer' AS [StakeHolder], CONCAT(CompanyName, ', ' + tblStates.[State], ', ' + tblCountries.Country) AS [StakeHolderName],
+			CAST(Sales_ActivityFollowups.[Date] AS DATETIME) AS GroupOne, CONCAT(tblCustMember.FName, ' ' + tblCustMember.LName) AS ContactName,
+			tblCustMember.Title AS [Role], Sales_ActivityFollowups.Task AS [ReasonOfContact],
+			CASE 
+				WHEN Sales_ActivityFollowups.TypeOfContact = 'T' THEN 'Teams Meeting'
+				WHEN Sales_ActivityFollowups.TypeOfContact = 'P' THEN 'Phone Call'
+			END AS [TypeOfContact], Sales_ActivityFollowups.ProjectName, Sales_ActivityFollowups.Deadline AS ActionRequired,
+			Sales_ActivityFollowups.NextFollowupDate, CONCAT(tblEmployees.FirstName, ' ' + tblEmployees.LastName) AS SalesManager,
+			CAST(Sales_ActivityFollowups.[Date] AS DATETIME) AS FollowupDate, Sales_ActivityFollowups.PNumber
+			FROM tblCustomers
+			LEFT JOIN tblStates ON tblStates.StateID = tblCustomers.StateID
+			LEFT JOIN tblCountries ON tblCountries.CountryID = tblCustomers.CountryID
+			INNER JOIN Sales_Activity ON Sales_Activity.Companyid = tblCustomers.CustomerID AND StakeHolderid = 2
+			LEFT JOIN Sales_ActivityDetails ON Sales_ActivityDetails.ActivityId = Sales_Activity.Id
+			LEFT JOIN Sales_ActivityFollowups ON Sales_ActivityFollowups.ActivityDetailId = Sales_ActivityDetails.Id
+			LEFT JOIN tblCustMember ON tblCustMember.ContactID = Sales_ActivityFollowups.ResponsiblePerson
+			LEFT JOIN tblEmployees ON tblEmployees.EmployeeID = Sales_ActivityDetails.UserID
+			WHERE ISNULL(CompanyName, '') <> '' AND Sales_ActivityFollowups.[Date] BETWEEN @FromDate AND @ToDate
+				AND (ISNULL(@ProjectManager, 0) = 0 OR Sales_ActivityDetails.UserID = @ProjectManager)
+
+			UNION ALL
+
+			SELECT 'Customer', '', NULL, '', '', '', '', '', NULL, NULL, '', NULL, NULL
+
+			UNION ALL
+
+			SELECT 'Dealer' AS [StakeHolder], CONCAT(CompanyName, ', ' + tblStates.[State], ', ' + tblDealers.Country) AS [StakeHolderName],
+			CAST(Sales_ActivityFollowups.[Date] AS DATETIME) AS GroupOne, CONCAT(tblDealerMember.FName, ' ' + tblDealerMember.LName) AS ContactName,
+			tblDealerMember.Title AS [Role], Sales_ActivityFollowups.Task AS [ReasonOfContact],
+			CASE 
+				WHEN Sales_ActivityFollowups.TypeOfContact = 'T' THEN 'Teams Meeting'
+				WHEN Sales_ActivityFollowups.TypeOfContact = 'P' THEN 'Phone Call'
+			END AS [TypeOfContact], Sales_ActivityFollowups.ProjectName, Sales_ActivityFollowups.Deadline AS ActionRequired,
+			Sales_ActivityFollowups.NextFollowupDate, CONCAT(tblEmployees.FirstName, ' ' + tblEmployees.LastName) AS SalesManager,
+			CAST(Sales_ActivityFollowups.[Date] AS DATETIME) AS FollowupDate, Sales_ActivityFollowups.PNumber
+			FROM tblDealers
+			LEFT JOIN tblStates ON tblStates.StateID = tblDealers.StateID
+			INNER JOIN Sales_Activity ON Sales_Activity.Companyid = tblDealers.DealerID AND StakeHolderid = 3
+			LEFT JOIN Sales_ActivityDetails ON Sales_ActivityDetails.ActivityId = Sales_Activity.Id
+			LEFT JOIN Sales_ActivityFollowups ON Sales_ActivityFollowups.ActivityDetailId = Sales_ActivityDetails.Id
+			LEFT JOIN tblDealerMember ON tblDealerMember.ContactID = Sales_ActivityFollowups.ResponsiblePerson
+			LEFT JOIN tblEmployees ON tblEmployees.EmployeeID = Sales_ActivityDetails.UserID
+			WHERE ISNULL(CompanyName, '') <> '' AND Sales_ActivityFollowups.[Date] BETWEEN @FromDate AND @ToDate
+				AND (ISNULL(@ProjectManager, 0) = 0 OR Sales_ActivityDetails.UserID = @ProjectManager)
+
+			UNION ALL
+
+			SELECT 'Dealer', '', NULL, '', '', '', '', '', NULL, NULL, '', NULL, NULL
+
+			UNION ALL
+
+			SELECT 'Rep', '', NULL, '', '', '', '', '', NULL, NULL, '', NULL, NULL
+
+			UNION ALL
+
+			SELECT 'Rep' AS [StakeHolder], CONCAT(dbo.ProperCase(CompanyName), ', ' + BranchLocation, ', ' + BranchName) AS [StakeHolderName],
+			CAST(Sales_ActivityFollowups.[Date] AS DATETIME) AS GroupOne, CONCAT(tblHobartListing.FirstName, ' ' + tblHobartListing.LastName) AS ContactName,
+			'Rep' AS [Role], Sales_ActivityFollowups.Task AS [ReasonOfContact],
+			CASE 
+				WHEN Sales_ActivityFollowups.TypeOfContact = 'T' THEN 'Teams Meeting'
+				WHEN Sales_ActivityFollowups.TypeOfContact = 'P' THEN 'Phone Call'
+			END AS [TypeOfContact], Sales_ActivityFollowups.ProjectName, Sales_ActivityFollowups.Deadline AS ActionRequired,
+			Sales_ActivityFollowups.NextFollowupDate, CONCAT(tblEmployees.FirstName, ' ' + tblEmployees.LastName) AS SalesManager,
+			CAST(Sales_ActivityFollowups.[Date] AS DATETIME) AS FollowupDate, Sales_ActivityFollowups.PNumber
+			FROM tblHobartBranchListing
+			INNER JOIN tblHobartRegions ON tblHobartRegions.RegionID = tblHobartBranchListing.RegionID
+			INNER JOIN Sales_Activity ON Sales_Activity.Companyid = tblHobartBranchListing.BranchID AND StakeHolderid = 4
+			LEFT JOIN Sales_ActivityDetails ON Sales_ActivityDetails.ActivityId = Sales_Activity.Id
+			LEFT JOIN Sales_ActivityFollowups ON Sales_ActivityFollowups.ActivityDetailId = Sales_ActivityDetails.Id
+			LEFT JOIN tblHobartListing ON tblHobartListing.RepID = Sales_ActivityFollowups.ResponsiblePerson
+			LEFT JOIN tblEmployees ON tblEmployees.EmployeeID = Sales_ActivityDetails.UserID
+			WHERE ISNULL(RepGroupID, 0) <> 0 AND ISNULL(CompanyName, '') <> '' 
+				AND Sales_ActivityFollowups.[Date] BETWEEN @FromDate AND @ToDate
+				AND (ISNULL(@ProjectManager, 0) = 0 OR Sales_ActivityDetails.UserID = @ProjectManager)
+			ORDER BY SalesManager, [StakeHolder], [StakeHolderName]
+		END
+
+		ELSE IF(@StakeHolderId = 1)
+		BEGIN
+			SELECT 'Consultant' AS [StakeHolder], CONCAT(CompanyName, ', ' + tblStates.[State], ', ' + Country) AS [StakeHolderName],
+			CAST(Sales_ActivityFollowups.[Date] AS DATETIME) AS GroupOne, CONCAT(tblConsultantMembers.FirstName, ' ' + tblConsultantMembers.LastName) AS ContactName,
+			tblConsultantMembers.JobTitle AS [Role], Sales_ActivityFollowups.Task AS [ReasonOfContact],
+			CASE 
+				WHEN Sales_ActivityFollowups.TypeOfContact = 'T' THEN 'Teams Meeting'
+				WHEN Sales_ActivityFollowups.TypeOfContact = 'P' THEN 'Phone Call'
+			END AS [TypeOfContact], Sales_ActivityFollowups.ProjectName, Sales_ActivityFollowups.Deadline AS ActionRequired,
+			Sales_ActivityFollowups.NextFollowupDate, CONCAT(tblEmployees.FirstName, ' ' + tblEmployees.LastName) AS SalesManager,
+			CAST(Sales_ActivityFollowups.[Date] AS DATETIME) AS FollowupDate, Sales_ActivityFollowups.PNumber
+			FROM tblConsultants
+			LEFT JOIN tblStates ON tblStates.StateID = tblConsultants.StateID
+			INNER JOIN Sales_Activity ON Sales_Activity.Companyid = tblConsultants.ConsultantID AND StakeHolderid = 1
+			LEFT JOIN Sales_ActivityDetails ON Sales_ActivityDetails.ActivityId = Sales_Activity.Id
+			LEFT JOIN Sales_ActivityFollowups ON Sales_ActivityFollowups.ActivityDetailId = Sales_ActivityDetails.Id
+			LEFT JOIN tblConsultantMembers ON tblConsultantMembers.ConsultantMemberID = Sales_ActivityFollowups.ResponsiblePerson
+			LEFT JOIN tblEmployees ON tblEmployees.EmployeeID = Sales_ActivityDetails.UserID
+			WHERE ISNULL(CompanyName, '') <> '' AND Sales_ActivityFollowups.[Date] BETWEEN @FromDate AND @ToDate
+				AND (ISNULL(@ProjectManager, 0) = 0 OR Sales_ActivityDetails.UserID = @ProjectManager)
+			ORDER BY SalesManager, [StakeHolder], [StakeHolderName]
+		END
+
+		ELSE IF(@StakeHolderId = 2)
+		BEGIN
+			SELECT 'Customer' AS [StakeHolder], CONCAT(CompanyName, ', ' + tblStates.[State], ', ' + tblCountries.Country) AS [StakeHolderName],
+			CAST(Sales_ActivityFollowups.[Date] AS DATETIME) AS GroupOne, CONCAT(tblCustMember.FName, ' ' + tblCustMember.LName) AS ContactName,
+			tblCustMember.Title AS [Role], Sales_ActivityFollowups.Task AS [ReasonOfContact],
+			CASE 
+				WHEN Sales_ActivityFollowups.TypeOfContact = 'T' THEN 'Teams Meeting'
+				WHEN Sales_ActivityFollowups.TypeOfContact = 'P' THEN 'Phone Call'
+			END AS [TypeOfContact], Sales_ActivityFollowups.ProjectName, Sales_ActivityFollowups.Deadline AS ActionRequired,
+			Sales_ActivityFollowups.NextFollowupDate, CONCAT(tblEmployees.FirstName, ' ' + tblEmployees.LastName) AS SalesManager,
+			CAST(Sales_ActivityFollowups.[Date] AS DATETIME) AS FollowupDate, Sales_ActivityFollowups.PNumber
+			FROM tblCustomers
+			LEFT JOIN tblStates ON tblStates.StateID = tblCustomers.StateID
+			LEFT JOIN tblCountries ON tblCountries.CountryID = tblCustomers.CountryID
+			INNER JOIN Sales_Activity ON Sales_Activity.Companyid = tblCustomers.CustomerID AND StakeHolderid = 2
+			LEFT JOIN Sales_ActivityDetails ON Sales_ActivityDetails.ActivityId = Sales_Activity.Id
+			LEFT JOIN Sales_ActivityFollowups ON Sales_ActivityFollowups.ActivityDetailId = Sales_ActivityDetails.Id
+			LEFT JOIN tblCustMember ON tblCustMember.ContactID = Sales_ActivityFollowups.ResponsiblePerson
+			LEFT JOIN tblEmployees ON tblEmployees.EmployeeID = Sales_ActivityDetails.UserID
+			WHERE ISNULL(CompanyName, '') <> '' AND Sales_ActivityFollowups.[Date] BETWEEN @FromDate AND @ToDate
+				AND (ISNULL(@ProjectManager, 0) = 0 OR Sales_ActivityDetails.UserID = @ProjectManager)
+			ORDER BY SalesManager, [StakeHolder], [StakeHolderName]
+		END
+
+		ELSE IF(@StakeHolderId = 3)
+		BEGIN
+			SELECT 'Dealer' AS [StakeHolder], CONCAT(CompanyName, ', ' + tblStates.[State], ', ' + tblDealers.Country) AS [StakeHolderName],
+			CAST(Sales_ActivityFollowups.[Date] AS DATETIME) AS GroupOne, CONCAT(tblDealerMember.FName, ' ' + tblDealerMember.LName) AS ContactName,
+			tblDealerMember.Title AS [Role], Sales_ActivityFollowups.Task AS [ReasonOfContact],
+			CASE 
+				WHEN Sales_ActivityFollowups.TypeOfContact = 'T' THEN 'Teams Meeting'
+				WHEN Sales_ActivityFollowups.TypeOfContact = 'P' THEN 'Phone Call'
+			END AS [TypeOfContact], Sales_ActivityFollowups.ProjectName, Sales_ActivityFollowups.Deadline AS ActionRequired,
+			Sales_ActivityFollowups.NextFollowupDate, CONCAT(tblEmployees.FirstName, ' ' + tblEmployees.LastName) AS SalesManager,
+			CAST(Sales_ActivityFollowups.[Date] AS DATETIME) AS FollowupDate, Sales_ActivityFollowups.PNumber
+			FROM tblDealers
+			LEFT JOIN tblStates ON tblStates.StateID = tblDealers.StateID
+			INNER JOIN Sales_Activity ON Sales_Activity.Companyid = tblDealers.DealerID AND StakeHolderid = 3
+			LEFT JOIN Sales_ActivityDetails ON Sales_ActivityDetails.ActivityId = Sales_Activity.Id
+			LEFT JOIN Sales_ActivityFollowups ON Sales_ActivityFollowups.ActivityDetailId = Sales_ActivityDetails.Id
+			LEFT JOIN tblDealerMember ON tblDealerMember.ContactID = Sales_ActivityFollowups.ResponsiblePerson
+			LEFT JOIN tblEmployees ON tblEmployees.EmployeeID = Sales_ActivityDetails.UserID
+			WHERE ISNULL(CompanyName, '') <> '' AND Sales_ActivityFollowups.[Date] BETWEEN @FromDate AND @ToDate
+				AND (ISNULL(@ProjectManager, 0) = 0 OR Sales_ActivityDetails.UserID = @ProjectManager)
+			ORDER BY SalesManager, [StakeHolder], [StakeHolderName]
+		END
+
+		ELSE IF(@StakeHolderId = 4)
+		BEGIN
+			SELECT 'Rep' AS [StakeHolder], CONCAT(dbo.ProperCase(CompanyName), ', ' + BranchLocation, ', ' + BranchName) AS [StakeHolderName],
+			CAST(Sales_ActivityFollowups.[Date] AS DATETIME) AS GroupOne, CONCAT(tblHobartListing.FirstName, ' ' + tblHobartListing.LastName) AS ContactName,
+			'Rep' AS [Role], Sales_ActivityFollowups.Task AS [ReasonOfContact],
+			CASE 
+				WHEN Sales_ActivityFollowups.TypeOfContact = 'T' THEN 'Teams Meeting'
+				WHEN Sales_ActivityFollowups.TypeOfContact = 'P' THEN 'Phone Call'
+			END AS [TypeOfContact], Sales_ActivityFollowups.ProjectName, Sales_ActivityFollowups.Deadline AS ActionRequired,
+			Sales_ActivityFollowups.NextFollowupDate, CONCAT(tblEmployees.FirstName, ' ' + tblEmployees.LastName) AS SalesManager,
+			CAST(Sales_ActivityFollowups.[Date] AS DATETIME) AS FollowupDate, Sales_ActivityFollowups.PNumber
+			FROM tblHobartBranchListing
+			INNER JOIN tblHobartRegions ON tblHobartRegions.RegionID = tblHobartBranchListing.RegionID
+			INNER JOIN Sales_Activity ON Sales_Activity.Companyid = tblHobartBranchListing.BranchID AND StakeHolderid = 4
+			LEFT JOIN Sales_ActivityDetails ON Sales_ActivityDetails.ActivityId = Sales_Activity.Id
+			LEFT JOIN Sales_ActivityFollowups ON Sales_ActivityFollowups.ActivityDetailId = Sales_ActivityDetails.Id
+			LEFT JOIN tblHobartListing ON tblHobartListing.RepID = Sales_ActivityFollowups.ResponsiblePerson
+			LEFT JOIN tblEmployees ON tblEmployees.EmployeeID = Sales_ActivityDetails.UserID
+			WHERE ISNULL(RepGroupID, 0) <> 0 AND ISNULL(CompanyName, '') <> '' AND Sales_ActivityFollowups.[Date] BETWEEN @FromDate AND @ToDate
+				AND (ISNULL(@ProjectManager, 0) = 0 OR Sales_ActivityDetails.UserID = @ProjectManager)
+			ORDER BY SalesManager, [StakeHolder], [StakeHolderName]
+		END
+	END
+END

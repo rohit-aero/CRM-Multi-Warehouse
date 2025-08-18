@@ -1,0 +1,10 @@
+body{margin:0px; padding:0px; font-family:Arial, Helvetica, sans-serif; font-weight:normal; font-size:12px; color:#000000; }
+.clear{ clear:both;}
+.form-tb{ float:left; width:80%; height:auto; margin:0px; padding:0px;}
+.form-tb td{ text-align:left; padding:5px; vertical-align:top;}
+#ivyform{width:900px; height:auto; margin:0px auto; padding:0px; overflow:hidden;}
+#ivyform .cont-btm{width:900px; height:auto; margin:0px auto; padding:0px; overflow:hidden;}
+#ivyform h3{font-weight:bold; font-family:Arial, Helvetica, sans-serif; font-size:13px; color:#000000; text-align:left; margin:10px 0px 5px 0px; padding:0px;}
+#ivyform p{font-weight:normal; font-family:Arial, Helvetica, sans-serif; font-size:12px; color:#000000; text-align:left; margin:0px 0px 5px 0px; padding:0px 0px 0px 10px; line-height:22px;}
+.bold{ font-weight:bold;}
+.rgt{text-align:right !important;}

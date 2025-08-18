@@ -1,0 +1,202 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeFile="MainSomat.master.cs" Inherits="MainSomat" %>
+
+<%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="asp" %>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" class="h-100">
+<head id="NewHead" runat="server">
+     <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  
+    <link rel="icon" type="image/png" href="images/favicon.png" /> 
+    
+    <link type="text/css" rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.js"></script>
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.8.2.js"></script>
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.8.2.js"></script>
+    <script type="text/javascript" src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.5.1.slim.min.js" ></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>    
+    <script type="text/javascript" src="../../js/bootstrap.min.js"></script>   
+    <link type="text/css" rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />  
+    <script type="text/javascript" src="../../js/jquery.min.js"></script>
+    <script type="text/javascript" src="../../js/chosen.jquery.min.js"></script>
+    <script type="text/javascript" src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+    <link rel="stylesheet" type="text/css" href="~/css/Style.css" />
+    <link rel="stylesheet" type="text/css" href="~/css/aspcontrols.css" /> 
+    <link href="~/css/bootstrap.min.css" rel="stylesheet" /> 
+    <link href="~/css/all.min.css" rel="stylesheet" />    
+    <link type="text/css" href="~/css/chosen.min.css" rel="stylesheet" />  
+    <title>Aerowerks</title>
+    <script language="javascript" type="text/javascript">
+       // To Show Currunnt date time
+var itimer;
+function NowTime() {
+var str = "";
+
+var days = new Array("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday");
+var months = new Array("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
+
+var now = new Date();
+//"Today is : " +
+str += days[now.getDay()] + ", " + now.getDate() + " " + months[now.getMonth()] + " " + now.getFullYear() + " " + now.getHours() + ":" + now.getMinutes() + ":" + now.getSeconds();
+document.getElementById("clock").innerHTML = str;
+}
+      
+function set_interval() {
+//the interval 'timer' is set as soon as the page loads
+var timeoutMins = 900000 * 4; // 15 milliseconds
+itimer = setInterval("auto_logout()", timeoutMins);
+}
+
+function reset_interval() {
+var timeoutMins = 900000 * 4; // 15 milliseconds
+clearInterval(itimer);         
+//second step: implement the timer again
+itimer = setInterval("auto_logout()", timeoutMins);          
+}
+       
+function auto_logout() {
+//this function will redirect the user to the logout script
+window.top.location = "../index.aspx";
+}
+
+function Log_Out() {
+alert('logout');
+Session.Clear();
+Session.Abandon();
+}
+
+function onlyDotsAndNumbers(txt, event) {  
+var charCode = (event.which) ? event.which : event.keyCode
+        if (charCode == 46) {
+        if (txt.value.indexOf(".") < 0)
+        return true;
+        else
+        return false;
+        }
+
+//if (txt.value.indexOf(".") > 0) {
+//var txtlen = txt.value.length;
+//var dotpos = txt.value.indexOf(".");
+////Change the number here to allow more decimal points than 2
+//if ((txtlen - dotpos) > 2)
+//return false;
+//}
+
+if (charCode > 31 && (charCode < 48 || charCode > 57))
+return false;
+
+return true;
+}
+
+function ClearRadioButtonList(rdbID) {
+    var elementRef = document.getElementById(rdbID);
+    var inputElementArray = elementRef.getElementsByTagName('input');
+    for (var i = 0; i < inputElementArray.length; i++) {
+        var inputElement = inputElementArray[i];
+        inputElement.checked = false;
+    }
+    return false;
+}
+
+function previousPage() {
+    window.history.back();
+}
+function NewWindow() {   
+    window.document.forms[0].target = '_blank';
+}
+</script>
+
+    <style type="text/css">
+        .auto-style1 {
+            width: 100%;
+            height: 8%;
+            margin: 0px;
+            padding: 0px;
+            background-color: black;
+            position: fixed; /* Set the navbar to fixed position */;
+            top: 0;
+            padding: 10px 16px;
+            overflow: visible;
+            left: -10px;
+        }
+        .auto-style2 {
+            position: relative;
+            text-align: left;
+            /*set: bold 16px 'Bitter', sans-serif;
+            use: left;*/
+            list-style-type: none;
+            -webkit-perspective: 1000px;
+            perspective: 1000px;
+            -webkit-perspective-origin: 50% 0%;
+            perspective-origin: 50% 0%;
+            width: 955px;
+            height: 95px;
+            right: 91px;
+            bottom: 20px;
+            margin: auto;
+            padding: 0;
+            background: #BADBF2;
+        }
+       </style>
+</head>
+<body onLoad="set_interval();" onmousemove="reset_interval();" onclick="reset_interval();" class="bg-light d-flex flex-column h-100">
+    <form id="aspnetform_settings" runat="server" class="d-flex flex-column h-100">
+    <asp:ToolkitScriptManager ID="ToolkitScriptManager1" AsyncPostBackTimeOut="36000" runat="server" LoadScriptsBeforeUI="false" ScriptMode="Release" EnablePartialRendering="True">
+    </asp:ToolkitScriptManager>
+        <div class="container-fluid">
+            <div class="row bg-white shadow-sm py-3 d-flex align-items-center position-sticky topHeader">
+                <%--<div class="col-sm-12 px-0">
+                    <div class="alert alert-danger py-1 h5 text-center rounded-0 mb-0" role="alert">
+                     <i class="fas fa-exclamation-triangle"></i> Application will automatically Logged Out if there is no user activity for 30 minutes.
+                    </div>
+                </div>--%>
+                <div class="col-sm-2"><a><img src="/images/ITW-logo.png" height="30"  /></a></div>
+                 <div class="col-sm-auto ml-auto">                   
+                     <div class="d-flex menutabs align-items-center">
+                     <div><asp:Menu ID="menu" SkipLinkText="" Orientation="Horizontal" runat="server" RenderingMode="List" CssClass="menutabs" StaticEnableDefaultPopOutImage="false">
+                         <Items>
+                             <asp:MenuItem NavigateUrl="~/DefaultSomat.aspx" Text="Home" Value="Home"></asp:MenuItem>
+                               <asp:MenuItem Text="Contact Management" Value="Contact Management">
+                                 <asp:MenuItem NavigateUrl="~/Somat/frmSomatCustomer.aspx" Text="Customer Maintenance" Value="Customer Maintenance"></asp:MenuItem>
+                             </asp:MenuItem>
+                             <asp:MenuItem Text="Inventory" Value="Inventory">
+                                 <asp:MenuItem NavigateUrl="~/Somat/frmPartMaintainance.aspx" Text="Part Maintenance" Value="Part Maintenance"></asp:MenuItem>
+                             </asp:MenuItem>
+                            
+                               <asp:MenuItem Text="Quotes" Value="Quotes">
+                                 <asp:MenuItem NavigateUrl="~/Somat/frmSomatQuote.aspx" Text="Quote Request" Value="Quote Request"></asp:MenuItem>
+                             </asp:MenuItem>
+                              <asp:MenuItem Text="Reports" Value="Reports">
+                                 <asp:MenuItem NavigateUrl="~/Somat/FrmSearchParts.aspx" Text="Parts Report" Value="Parts Report"></asp:MenuItem>
+                             </asp:MenuItem>
+
+                             <asp:MenuItem NavigateUrl="~/index.aspx" Text="Logout" Value="Logout"></asp:MenuItem>
+                         </Items>
+                         </asp:Menu></div>
+                     <div>
+                         <div class="dropdown">
+  <div class="btn btn-outline-secondary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    <asp:Label ID="lblwelcomemsg" runat="server"></asp:Label>
+  </div>
+<%--  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+    <a class="dropdown-item" href="../../index.aspx"><i class="fas fa-sign-out-alt"></i> Logout</a>
+  </div>--%>
+</div>
+                     </div>
+                         </div>
+                 </div>
+            </div>
+            <div class="row pb-3 mainContentDiv">
+                 <asp:ContentPlaceHolder ID="ContentPlaceHolder1"  runat="server"></asp:ContentPlaceHolder>
+            </div>           
+        </div>
+        <div class="container-fluid mt-auto">
+             <div class="row bg-white text-dark h6 mb-0 p-2 text-center">
+                <div class="col">Copyrights &copy; Aerowerks. All Rights Reserved.</div>
+            </div>
+        </div>
+    </form>
+</body>
+</html>

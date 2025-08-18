@@ -1,0 +1,27 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+.font-montserrat{font-family:"Montserrat", sans-serif;font-optical-sizing:auto;font-weight:400;font-style:normal}
+h1,h2,h3,h4,h5,h6{font-family:"Montserrat", sans-serif}
+.bg-login{background:url(../../images/bg-login.jpg) no-repeat;background-size:cover}
+.bg-login-dark{background:url(../../images/img-food-waste.jpg) no-repeat;background-size:cover;position:relative}
+.bg-dark-tranp{background:rgba(0,0,0,0.7)}
+.login-bg-white{background:rgba(255,255,255,0.9)}
+.login-page, .login-page body{height:100%}
+.login-logo{margin-bottom:1.5rem}
+.login-logo img{width:100%;max-width:280px;margin:0 auto}
+.card-login h1{font-size:1.5rem;font-weight:700;color:#000}
+.card-login p{font-size:.9rem;font-weight:500;color:#333;margin-bottom:1rem}
+.login-ul{list-style:none;margin:0;padding:0;}
+.login-ul li{margin-bottom:1rem}
+.login-icons-size svg{display:inline-block;width:24px;height:24px;fill:#ccc}
+.login-icons-pos{right:.75rem}
+.btn-login{background:#1274d9;border-color:#1274d9}
+.btn-login:hover{background:#003568;border-color:#003568}
+.login-toggle-icon:hover svg{color:#000;fill:#000;cursor:pointer}
+.login-left-div{background:url(../../images/img-blue-bg-login.jpg) no-repeat center left;background-size:cover;width:100%;height:100%;border-radius:1.75rem;padding:1rem;display:flex;align-items:center}
+.login-about-panel{}
+.login-about-panel h1{font-weight:700;color:#fff;font-size:1.85rem}
+.login-about-panel h2{font-weight:600;color:#fff;font-size:1.45rem}
+.login-about-panel p{font-weight:500;color:#fff;font-size:1rem}
+.login-ol{list-style:disc;color:#fff;padding-left:1rem}
+.login-ol li{margin-bottom:.75rem;font-size:1.5rem;font-weight:600}
+.login-ol li:last-child{margin-bottom:0}

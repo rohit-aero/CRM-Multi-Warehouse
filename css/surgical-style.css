@@ -1,0 +1,11 @@
+*{margin:0px; padding:0px;}
+.clear{clear:both}
+.surgiacl-wrap{width:800px; height:auto; margin:0px auto; padding:0px; overflow:hidden;}
+#head{width:100%; height:auto; margin:0px auto; padding:0px; overflow:hidden;}
+#head .logo{float:left; width:156px; height:153px; margin:0px 0px 0px 43px; padding:0px; background:url(../images/logo.png) no-repeat;}
+#head .rt-block{float:left; width:auto; height:auto; margin:26px 0px 0px 135px; padding:0px;}
+#head .rt-block h2{margin:5px 0px; padding:0px; font-family:Arial, Helvetica, sans-serif; font-size:12px; font-weight:bold; text-align:center; color:#000000;}
+#head .rt-block h3{margin:0px; padding:0px 0px 3px 0px; font-family:Arial, Helvetica, sans-serif; font-size:12px; font-weight:bold; text-align:center; color:#000000; border-bottom:2px solid #000000;}
+.container{width:100%; min-height:500px; padding:0px; margin:0px; background:#FFFFFF; overflow:hidden;}
+#surfooter{width:100%; height:auto; margin:0px auto; padding:0px; border-top:2px solid #000000}
+#surfooter h3{margin:5px 0px; padding:0px; text-align:center; font-family:Arial, Helvetica, sans-serif; font-weight:normal; font-size:12px; color:#000000;}

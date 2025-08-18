@@ -1,0 +1,298 @@
+ALTER PROCEDURE [dbo].[aero_ForecastingAndNestingTasks]
+	@Operation INT NULL,
+	@Id INT NULL,
+	@JobId VARCHAR(20) = NULL,
+	@TaskNumber VARCHAR(50) = NULL,
+	@NatureOfTask VARCHAR(2) = NULL,
+	@ReleaseType VARCHAR(1) = NULL,
+	@ProjectDesigner INT = NULL,
+	@StartDate DATETIME = NULL,
+	@EndDate DATETIME = NULL,
+	@ReviewedBy INT = NULL,
+	@AssignedFrom VARCHAR(1) = NULL,
+	@TaskType INT = NULL,
+	@ProjectEngineer INT = NULL,
+	@SentDate DATETIME = NULL,
+	@Status INT = NULL,
+	@msg VARCHAR(50) = ''  OUTPUT
+AS
+BEGIN	
+	SET NOCOUNT ON;
+
+    IF(@Operation = 1)--INSERT [FABRICATION CANADA]
+	BEGIN
+		SET @TaskNumber = CONCAT(@JobId, '-' + @NatureOfTask, '-' + (SELECT COUNT(*) FROM tblProjects_FabricationCanada WHERE JobId = @JobId AND NatureOfTask = @NatureOfTask) + 1)
+
+		INSERT INTO tblProjects_FabricationCanada(TaskNumber, JobId, NatureOfTask, ReleaseType, ProjectDesigner, StartDate, EndDate, ReviewedBy)
+		VALUES(@TaskNumber, @JobId, @NatureOfTask, @ReleaseType, @ProjectDesigner, @StartDate, @EndDate, @ReviewedBy)
+
+		SET @msg = SCOPE_IDENTITY()
+	END
+
+	ELSE IF(@Operation = 2)--UPDATE [FABRICATION CANADA]
+	BEGIN
+		IF((SELECT ISNULL(SentToNesting, 0) FROM tblProjects_FabricationCanada WHERE TaskNumber = @TaskNumber) = 0)
+		BEGIN
+			DECLARE @TaskNumber1 VARCHAR(20) = @TaskNumber
+			IF EXISTS(SELECT 1 FROM tblProjects_FabricationCanada WHERE NatureOfTask <> @NatureOfTask AND TaskNumber = @TaskNumber)
+			BEGIN
+				SET @TaskNumber1 = CONCAT(@JobId, '-' + @NatureOfTask, '-' + (SELECT COUNT(*) FROM tblProjects_FabricationCanada WHERE JobId = @JobId AND NatureOfTask = @NatureOfTask) + 1)
+			END
+
+			UPDATE tblProjects_FabricationCanada SET TaskNumber = @TaskNumber1, NatureOfTask = @NatureOfTask, ReleaseType = @ReleaseType, ProjectDesigner = @ProjectDesigner, 
+			StartDate = @StartDate, EndDate = @EndDate, ReviewedBy = @ReviewedBy
+			WHERE Id = @Id
+
+			SET @msg = @Id
+		END
+		ELSE 
+		BEGIN
+			SET @msg = 'ER01'
+		END		
+	END
+
+	ELSE IF(@Operation = 3)--TASK GRID [FABRICATION CANADA]
+	BEGIN
+		SELECT tblProjects_FabricationCanada.id, TaskNumber, 
+		CASE 
+			WHEN NatureOfTask = 'NR' THEN 'New Release'
+			WHEN NatureOfTask = 'SP' THEN 'Service Parts'
+			WHEN NatureOfTask = 'RW' THEN 'Rework'
+			WHEN NatureOfTask = 'U' THEN 'Urgent'
+			WHEN NatureOfTask = 'E' THEN 'Expedited'
+		END AS NatureOfTask,
+		CASE 
+			WHEN ReleaseType = 'R' THEN 'Regular'
+			WHEN ReleaseType = 'S' THEN 'Special'
+		END AS ReleaseType, CONCAT(PD.FirstName, ' ' + PD.LastName) AS ProjectDesigner,
+		CONVERT(VARCHAR, StartDate, 101) AS StartDate, CONVERT(VARCHAR, EndDate, 101) AS EndDate,
+		CONCAT(RB.FirstName, ' ' + RB.LastName) AS ReviewedBy,
+		CASE 
+			WHEN ISNULL(SentToNesting, 0) = 0 THEN 'NO'
+			WHEN SentToNesting = 1 THEN 'YES'
+		END AS SentToNesting
+		FROM tblProjects_FabricationCanada
+		LEFT JOIN tblEmployees PD ON PD.EmployeeID = tblProjects_FabricationCanada.ProjectDesigner
+		LEFT JOIN tblEmployees RB ON RB.EmployeeID = tblProjects_FabricationCanada.ReviewedBy
+		WHERE JobId = @JobId AND ISNULL(IsDeleted, 0) = 0
+		ORDER BY TaskNumber
+	END
+
+	ELSE IF(@Operation = 4)--SINGLE TASK INFO [FABRICATION CANADA]
+	BEGIN
+		SELECT Id, TaskNumber, NatureOfTask, ReleaseType, ProjectDesigner,
+		CONVERT(VARCHAR, StartDate, 101) AS StartDate, CONVERT(VARCHAR, EndDate, 101) AS EndDate,
+		ReviewedBy, ISNULL(SentToNesting, 0) AS SentToNesting
+		FROM tblProjects_FabricationCanada		
+		WHERE id = @Id
+	END
+
+	ELSE IF(@Operation = 5)--DELETE TASK [FABRICATION CANADA]
+	BEGIN
+		IF((SELECT ISNULL(SentToNesting, 0) FROM tblProjects_FabricationCanada WHERE Id = @Id) = 0)
+		BEGIN
+			SET @TaskNumber = (SELECT TaskNumber FROM tblProjects_FabricationCanada WHERE Id = @Id)
+
+			UPDATE tblProjects_FabricationCanada SET IsDeleted = 1
+			WHERE Id = @Id
+
+			SET @msg = @TaskNumber
+		END
+		ELSE 
+		BEGIN
+			SET @msg = 'ER01'
+		END
+	END
+
+	ELSE IF(@Operation = 6)--SEND TO NESTING [FABRICATION CANADA]
+	BEGIN
+		BEGIN TRY
+		BEGIN TRANSACTION
+
+		IF((SELECT ISNULL(SentToNesting, 0) FROM tblProjects_FabricationCanada WHERE Id = @Id) = 0)
+		BEGIN
+			UPDATE tblProjects_FabricationCanada SET SentToNesting = 1 
+			WHERE Id = @Id
+
+			INSERT INTO tblProjects_Nesting(TaskNumber, JobId, NatureOfTask, AssignedFrom)
+			SELECT TaskNumber, JobId, NatureOfTask, 'F'
+			FROM tblProjects_FabricationCanada
+			WHERE Id = @Id		
+
+			SET @msg = @Id			
+		END
+		ELSE 
+		BEGIN
+			SET @msg = 'ER01'			
+		END
+
+		IF @@TRANCOUNT > 0
+			 COMMIT
+		END TRY
+
+		BEGIN CATCH 
+		IF @@TRANCOUNT > 0
+			 ROLLBACK
+		END CATCH		
+	END
+
+	ELSE IF(@Operation = 7)--TASK GRID [NESTING]
+	BEGIN
+		SELECT tblProjects_Nesting.id, TaskNumber, 
+		CASE 
+			WHEN NatureOfTask = 'NR' THEN 'New Release'
+			WHEN NatureOfTask = 'SP' THEN 'Service Parts'
+			WHEN NatureOfTask = 'RW' THEN 'Rework'
+			WHEN NatureOfTask = 'U' THEN 'Urgent'
+			WHEN NatureOfTask = 'E' THEN 'Expedited'
+		END AS NatureOfTask,
+		CASE 
+			WHEN AssignedFrom = 'F' THEN 'Fabrication'
+			WHEN AssignedFrom = 'S' THEN 'Shop'
+		END AS AssignedFrom, TaskType.TaskType AS TaskType, 
+		CONCAT(PE.FirstName, ' ' + PE.LastName) AS ProjectEngineer,
+		CONVERT(VARCHAR, StartDate, 101) AS StartDate, CONVERT(VARCHAR, EndDate, 101) AS EndDate,
+		CONVERT(VARCHAR, SentDate, 101) AS SentDate, 
+		CASE 
+			WHEN ISNULL([Status], 0) = 0 THEN 'Not Started'
+			WHEN [Status] = 1 THEN 'In Progress'
+			WHEN [Status] = 2 THEN 'Completed'
+			WHEN [Status] = 3 THEN 'Shipment within 4 weeks'
+			WHEN [Status] = 4 THEN '(P.O / Drawings) Not Received'
+			WHEN [Status] = 5 THEN 'On Hold'
+			WHEN [Status] = 6 THEN 'Used from Stock'
+		END AS [Status], 
+		CASE 
+			WHEN ISNULL(SentToProduction, 0) = 0 THEN 'NO'
+			WHEN SentToProduction = 1 THEN 'YES'
+		END AS SentToProduction
+		FROM tblProjects_Nesting
+		LEFT JOIN tblEmployees PE ON PE.EmployeeID = tblProjects_Nesting.ProjectEngineer
+		LEFT JOIN tblProjects_Nesting_TaskType TaskType ON TaskType.id = tblProjects_Nesting.TaskType
+		WHERE JobId = @JobId AND ISNULL(tblProjects_Nesting.IsDeleted, 0) = 0
+		ORDER BY id
+	END
+
+	ELSE IF(@Operation = 8)--BIND NESTING GRID CONTROLS [NESTING]
+	BEGIN
+		SELECT id, TaskType AS [text]
+		FROM tblProjects_Nesting_TaskType
+		ORDER BY TaskType
+
+		SELECT EmployeeID AS [id], FirstName AS [text]
+		FROM dbo.tblEmployees
+		WHERE EngDepID = 3 AND (Active = 1)
+		ORDER BY FirstName;
+	END
+
+	ELSE IF(@Operation = 9)--SINGLE TASK INFO [NESTING]
+	BEGIN
+		SELECT TaskNumber, NatureOfTask, AssignedFrom, TaskType, ProjectEngineer,
+		CONVERT(VARCHAR, StartDate, 101) AS StartDate, CONVERT(VARCHAR, EndDate, 101) AS EndDate, CONVERT(VARCHAR, SentDate, 101) AS SentDate,
+		ISNULL([Status], 0) AS [Status], ISNULL(SentToProduction, 0) AS SentToProduction
+		FROM tblProjects_Nesting		
+		WHERE id = @Id
+	END
+
+	ELSE IF(@Operation = 10)--UPDATE [NESTING]
+	BEGIN
+		IF((SELECT ISNULL(SentToProduction, 0) FROM tblProjects_Nesting WHERE id = @Id) = 0)
+		BEGIN
+			--IF EXISTS(SELECT 1 FROM tblProjects_Nesting WHERE (NatureOfTask <> @NatureOfTask OR AssignedFrom <> @AssignedFrom) AND TaskNumber = @TaskNumber)
+			--BEGIN
+			--	SET @TaskNumber1 = '1'
+			--END
+			
+			UPDATE tblProjects_Nesting SET TaskType = @TaskType, ProjectEngineer = @ProjectEngineer,
+			StartDate = @StartDate, EndDate = @EndDate, SentDate = @SentDate, [Status] = @Status
+			WHERE id = @Id
+
+			--IF(@TaskNumber1 = '1')
+			--BEGIN
+			--	UPDATE tblProjects_Nesting SET 
+			--	TaskNumber = CONCAT(JobId, '-' + NatureOfTask, '-' + (
+			--															SELECT COUNT(*) 
+			--															FROM tblProjects_Nesting N 
+			--															WHERE n.JobId = tblProjects_Nesting.JobId AND 
+			--															n.NatureOfTask = tblProjects_Nesting.NatureOfTask AND
+			--															n.id < tblProjects_Nesting.id) + 1,
+			--														'-' + AssignedFrom)
+			--	WHERE JobId = @JobId
+			--END
+			
+			SET @msg = @Id
+		END
+		ELSE 
+		BEGIN
+			SET @msg = 'ER01'
+		END		
+	END
+
+	ELSE IF(@Operation = 11)--INSERT [NESTING]
+	BEGIN
+		SET @TaskNumber = CONCAT(@JobId, '-' + @NatureOfTask, '-' + (SELECT COUNT(*) FROM tblProjects_Nesting WHERE JobId = @JobId AND NatureOfTask = @NatureOfTask) + 1, '-' + @AssignedFrom)
+	
+		INSERT INTO tblProjects_Nesting (TaskNumber, JobId, NatureOfTask, AssignedFrom, TaskType, ProjectEngineer, StartDate, EndDate, SentDate, [Status])
+		VALUES(@TaskNumber, @JobId, @NatureOfTask, @AssignedFrom, @TaskType, @ProjectEngineer, @StartDate, @EndDate, @SentDate, @Status)
+
+		SET @msg = SCOPE_IDENTITY()		
+	END
+	
+	ELSE IF(@Operation = 12)--SEND TO PRODUCTION [NESTING]
+	BEGIN
+		BEGIN TRY
+		BEGIN TRANSACTION
+
+		IF((SELECT ISNULL(SentToProduction, 0) FROM tblProjects_Nesting WHERE id = @Id) = 0)
+		BEGIN
+			IF((SELECT ISNULL(SentDate, '') FROM tblProjects_Nesting WHERE id = @Id) <> '')
+			BEGIN
+				UPDATE tblProjects_Nesting SET SentToProduction = 1 
+				WHERE id = @Id
+
+				SET @msg = 'S'
+			END	
+			ELSE 
+			BEGIN
+				SET @msg = 'ER02'
+			END
+		END
+		ELSE 
+		BEGIN
+			SET @msg = 'ER01'			
+		END
+
+		IF @@TRANCOUNT > 0
+			 COMMIT
+		END TRY
+
+		BEGIN CATCH 
+		IF @@TRANCOUNT > 0
+			 ROLLBACK
+		END CATCH		
+	END
+
+	ELSE IF(@Operation = 13)--DELETE TASK [NESTING]
+	BEGIN
+		IF((SELECT ISNULL(SentToProduction, 0) FROM tblProjects_Nesting WHERE Id = @Id) = 0)
+		BEGIN
+			SET @TaskNumber = (SELECT TaskNumber FROM tblProjects_Nesting WHERE Id = @Id)
+
+			IF NOT EXISTS(SELECT 1 FROM tblProjects_FabricationCanada WHERE TaskNumber = @TaskNumber)
+			BEGIN
+				UPDATE tblProjects_Nesting SET IsDeleted = 1 
+				WHERE id = @Id
+
+				SET @msg = @TaskNumber
+			END
+			ELSE
+			BEGIN
+				SET @msg = 'ER02'
+			END
+		END
+		ELSE 
+		BEGIN
+			SET @msg = 'ER01'
+		END
+	END
+END

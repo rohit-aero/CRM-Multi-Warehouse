@@ -1,0 +1,127 @@
+--EXEC Get_SalesActivityReport_V2 2, 
+ALTER PROCEDURE [dbo].[Get_SalesActivityReport_V2]
+	@Operation INT = NULL,
+	@DateType INT = NULL,
+	@FromDate DATETIME = NULL,
+	@ToDate DATETIME = NULL,
+	@ProjectManager INT = NULL,
+	@OtherFilters VARCHAR(20) = NULL
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	IF(@Operation = 1)
+	BEGIN
+		SELECT EmployeeID AS id, CONCAT(FirstName, ' ' + LastName) AS [text]
+		FROM tblEmployees
+		WHERE Department = 'SD'
+		ORDER BY CONCAT(FirstName, ' ' + LastName)
+	END
+
+	ELSE IF(@Operation = 2)
+	BEGIN
+		-- Step 1: List all categories
+		WITH Categories AS (
+			SELECT 'Alternate Specification Projects' AS ProjectCategory
+			UNION ALL
+			SELECT 'Prime Spec Projects with Alternate'
+			UNION ALL
+			SELECT 'Prime Spec Projects without Alternate'
+		)
+
+		-- Step 2: Join your actual query
+		SELECT 
+			c.ProjectCategory,
+			q.[P-Number],
+			q.JobID,
+			q.[Proposal Date],
+			q.[Source Lead],
+			q.SalesActivityDate,
+			q.EffectiveDate,
+			q.SourceLeadRef,
+			q.ShipDate,
+			q.[Project Manager],
+			q.[Project Name],
+			q.[Destination Rep],
+			q.[Project Bid Date],
+			q.[Dealer],
+			q.[Approximate Ship Date],
+			q.NetEqPrice,
+			q.PrimeSpec,
+			q.Alternate,
+			q.tblConsultants2
+		FROM Categories c
+		LEFT JOIN (
+			SELECT 
+				tblPFiles.PNumber AS [P-Number], 
+				ISNULL(tblProjects.JobID, '') AS JobID, 
+				ProposalDate AS [Proposal Date], 
+				tblSourceLead.[name] AS [Source Lead], 
+				Sales_ActivityDetails.[Date] AS SalesActivityDate, 
+				CASE 
+					WHEN ISNULL(@DateType, 0) = 0 THEN Sales_ActivityDetails.[Date]
+					WHEN ISNULL(@DateType, 0) = 1 THEN ProposalDate
+				END AS EffectiveDate,
+				CASE 
+					WHEN tblPFiles.sourceleadid = 1 THEN (SourceREf_HOBLIS.[FirstName] + ' ' + ISNULL(SourceREf_HOBLIS.[LastName], '')) 
+					WHEN tblPFiles.sourceleadid = 2 THEN ISNULL(tblDealers.CompanyName, '')
+					WHEN tblPFiles.sourceleadid = 3 THEN tblConsultants.CompanyName 
+					WHEN tblPFiles.sourceleadid = 4 THEN EMP_INHOUSE.FirstName + ' ' + ISNULL(EMP_INHOUSE.LastName, '') 
+				END AS SourceLeadRef, 
+				ISNULL(CONVERT(NVARCHAR, tblPFiles.shipdate, 101), '') AS ShipDate, 
+				tblEmployees.FirstName AS [Project Manager], 
+				ISNULL(tblPFiles.ProjectName, '') + ', ' + ISNULL(tblPFiles.City, '')  + ', ' + ISNULL(tblStates.[State], '') AS [Project Name],  
+				tblHobartListing.FirstName + ' ' + ISNULL(tblHobartListing.LastName, '') AS [Destination Rep], 
+				ISNULL(CONVERT(NVARCHAR, tblPFiles.biddate, 101), '') AS [Project Bid Date],  
+				DEAL1.CompanyName AS [Dealer], 
+				ISNULL(CONVERT(NVARCHAR, tblPFiles.shipdate, 101), '') AS [Approximate Ship Date], 
+				ISNULL(tblPFiles.NetEqPrice, 0) AS NetEqPrice,
+				tblConveyorSpec.[name] AS PrimeSpec, 
+				tblConveyorAlternate.[name] AS Alternate, 
+				tblConsultants2.CompanyName AS tblConsultants2,
+				CASE 
+					WHEN tblPFiles.conveyoralternate IN (1) THEN 'Alternate Specification Projects'
+					WHEN tblPFiles.conveyorprimespec IN (1) AND tblPFiles.conveyoralternate NOT IN (1) AND ISNULL(tblPFiles.conveyoralternate, 0) <> 0 THEN 'Prime Spec Projects with Alternate'
+					WHEN tblPFiles.conveyorprimespec IN (1) AND ISNULL(tblPFiles.conveyoralternate, 0) = 0 THEN 'Prime Spec Projects without Alternate'        
+					ELSE ''
+				END AS ProjectCategory
+			FROM tblPFiles  
+				LEFT JOIN tblProjects ON tblProjects.ProposalID = tblPFiles.PNumber 
+				LEFT JOIN tblSourceLead ON tblSourceLead.id = tblPFiles.sourceleadid  
+				LEFT JOIN tblConsultants ON tblConsultants.ConsultantID = tblPFiles.sourceleadref 
+				LEFT JOIN tblConsultants tblConsultants2 ON tblConsultants2.ConsultantID = tblPFiles.ConsultantID  
+				LEFT JOIN tblDealers ON tblDealers.DealerID = tblPFiles.sourceleadref  
+				LEFT JOIN tblEmployees AS EMP_INHOUSE ON EMP_INHOUSE.EmployeeID = tblPFiles.sourceleadref  
+				LEFT JOIN tblHobartListing AS SourceREf_HOBLIS ON SourceREf_HOBLIS.RepID = tblPFiles.sourceleadref 
+				LEFT JOIN tblEmployees ON tblEmployees.EmployeeID = tblPFiles.projectmanagerid
+				LEFT JOIN tblHobartListing ON tblHobartListing.RepID = tblPFiles.RepID 
+				LEFT JOIN tblDealers DEAL1 ON DEAL1.DealerID = tblPFiles.DealerID 
+				LEFT JOIN tblStates ON tblStates.StateID = tblPFiles.StateID  
+				LEFT JOIN tblConveyorSpec ON tblConveyorSpec.id = tblPFiles.conveyorprimespec 
+				LEFT JOIN tblConveyorAlternate ON tblConveyorAlternate.id = tblPFiles.conveyoralternate 
+				LEFT JOIN Sales_ActivityFollowups ON Sales_ActivityFollowups.PNumber = tblPFiles.PNumber 
+				LEFT JOIN Sales_ActivityDetails ON Sales_ActivityDetails.Id = Sales_ActivityFollowups.ActivityDetailId 
+			WHERE 
+				(ISNULL(@ProjectManager, 0) = 0 OR tblPFiles.projectmanagerid = @ProjectManager)
+				AND (
+					(ISNULL(@DateType, 0) = 0 AND Sales_ActivityDetails.[Date] >= @FromDate AND Sales_ActivityDetails.[Date] <= @ToDate)
+					OR
+					(ISNULL(@DateType, 0) = 1 AND tblPFiles.ProposalDate >= @FromDate AND tblPFiles.ProposalDate <= @ToDate)
+				)
+				AND (
+					((ISNULL(@OtherFilters, '') = '' OR CHARINDEX(',1,', ',' + @OtherFilters + ',') > 0)
+					 AND tblPFiles.conveyoralternate IN (1))
+					OR
+					((ISNULL(@OtherFilters, '') = '' OR CHARINDEX(',2,', ',' + @OtherFilters + ',') > 0)
+					 AND tblPFiles.conveyorprimespec IN (1)
+					 AND tblPFiles.conveyoralternate NOT IN (1)
+					 AND ISNULL(tblPFiles.conveyoralternate, 0) <> 0)
+					OR
+					((ISNULL(@OtherFilters, '') = '' OR CHARINDEX(',3,', ',' + @OtherFilters + ',') > 0)
+					 AND tblPFiles.conveyorprimespec IN (1)
+					 AND ISNULL(tblPFiles.conveyoralternate, 0) = 0)
+				)
+		) q ON q.ProjectCategory = c.ProjectCategory
+		ORDER BY c.ProjectCategory ASC, q.[Project Manager] ASC, q.[P-Number] ASC, q.EffectiveDate DESC;
+	END
+END

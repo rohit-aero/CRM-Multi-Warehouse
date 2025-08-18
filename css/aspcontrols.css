@@ -1,0 +1,501 @@
+﻿/*GridViewCSS*/ 
+.text 
+{
+font-family: verdana;
+font-size:15px;
+color:#000000;
+text-decoration:none;
+line-height:20px;
+
+}
+
+.smalltext 
+{
+font-family: verdana;
+font-size:11px;
+color:#000000;
+text-decoration:none;
+line-height:16px;
+text-align:justify;
+
+}
+.boldtext 
+{
+font-family: verdana;
+font-size:15px;
+color:#000000;
+text-decoration:none;
+line-height:20px;
+font-weight:bold;
+}
+.boldwhite 
+{
+font-family: verdana;
+font-size:15px;
+color:#FFFFFF;
+text-decoration:none;
+line-height:20px;
+font-weight:bold;
+}
+.ddl 
+{
+font-family: verdana;
+font-size:15px;
+color:#000000;
+text-decoration:none;
+line-height:20px;
+font-weight:bold;
+background-color:Gainsboro;
+}
+.txt 
+{
+font-family: verdana;
+font-size:15px;
+color:#000000;
+text-decoration:none;
+
+font-weight:bold;
+
+}
+.lbold 
+{
+font-family: verdana;
+font-size:15px;
+color:#000000;
+text-decoration:underline;
+line-height:30px;
+font-weight:bold;
+
+}
+.lboldnew 
+{
+font-family: verdana;
+font-size:15px;
+color:#000000;
+text-decoration:none;
+line-height:30px;
+font-weight:bold;
+
+}
+.GridViewStyle 
+
+{ 
+
+    font-family: Arial, Sans-Serif; 
+
+    font-size:small; 
+
+    table-layout: auto; 
+
+    border-collapse: collapse; 
+
+    border: #1d1d1d 5px solid; 
+
+} 
+
+/*Header and Pager styles*/ 
+
+.HeaderStyle, .PagerStyle /*Common Styles*/ 
+
+{ 
+
+    background-image: url(Images/HeaderGlassBlack.jpg); 
+
+    background-position:center; 
+
+    background-repeat:repeat-x; 
+
+    background-color:#1d1d1d; 
+
+} 
+
+.HeaderStyle th 
+
+{ 
+
+    padding: 5px; 
+
+    color: #ffffff; 
+
+} 
+
+.HeaderStyle a 
+
+{ 
+
+    text-decoration:none; 
+
+    color:#ffffff; 
+
+    display:block; 
+
+    text-align:left; 
+
+    font-weight:normal; 
+
+} 
+
+.PagerStyle table 
+
+{ 
+
+    text-align:center; 
+
+    margin:auto; 
+
+} 
+
+.PagerStyle table td 
+
+{ 
+
+    border:0px; 
+
+    padding:5px; 
+
+} 
+
+.PagerStyle td 
+
+{ 
+
+    border-top: #1d1d1d 3px solid; 
+
+} 
+
+.PagerStyle a 
+
+{ 
+
+    color:#ffffff; 
+
+    text-decoration:none; 
+
+    padding:2px 10px 2px 10px; 
+
+    border-top:solid 1px #777777; 
+
+    border-right:solid 1px #333333; 
+
+    border-bottom:solid 1px #333333; 
+
+    border-left:solid 1px #777777; 
+
+} 
+
+.PagerStyle span 
+
+{ 
+
+    font-weight:bold; 
+
+    color:#FFFFFF; 
+
+    text-decoration:none; 
+
+    padding:2px 10px 2px 10px; 
+
+} 
+
+/*RowStyles*/ 
+
+.RowStyle td, .AltRowStyle td, .SelectedRowStyle td, .EditRowStyle td /*Common Styles*/ 
+
+{ 
+    padding: 5px; 
+    border-right: solid 1px #1d1d1d; 
+} 
+
+.RowStyle td 
+{ 
+    background-color: #c9c9c9; 
+} 
+
+.AltRowStyle td 
+
+{ 
+
+    background-color: #f0f0f0; 
+
+} 
+.AltItemStyle td 
+
+{ 
+
+    background-color: #f0f0f0; 
+
+} 
+.SelectedRowStyle td 
+
+{ 
+
+    background-color: #ffff66; 
+
+} 
+.buttons
+{
+	background-image: url(Images/HeaderGlassBlack.jpg);
+	
+	border:outset;
+	border-width:2px;
+	font-weight:bold;
+	font-family:Microsoft Sans Serif;
+	color:White;
+}
+.accordionvr{   
+    border: 1px solid #343230;   
+    background-color: #21201f;   
+    padding: 10px;   
+}   
+.accordion-toggle{   
+    position: relative; /* required for effect */  
+    z-index: 10;        /* required for effect */  
+    background: #3f3c38 url(../images/off.jpg) repeat-x;   
+    background-position: bottombottom;   
+    color: #fff;   
+    cursor: pointer;   
+    margin-bottom: 1px;   
+    padding: 9px 14px 6px 14px;   
+    border-top: 1px solid #5d5852;   
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	
+	font-weight: lighter;
+}   
+.accordion-toggle:hover, accordion-toggle-active{   
+    background-image: url(../images/on.jpg);   
+    background-color: #6d493a;   
+    border-top: 1px solid #a06b55;   
+}   
+.accordion-content{   
+    overflow: hidden;   /* required for effect */  
+    background: #302e2c;   
+    color: #c4bab1;   
+    border-bottom: 1px solid #000;   
+}
+accordion-content p{   
+margin: 9px 24px 6px 24px;   
+}
+.watermark {
+	background: #FFAAFF;
+}
+
+.popupControl {
+	background-color:#AAD4FF;
+	position:absolute;
+	visibility:hidden;
+	border-style:solid;
+	border-color: Black;
+	border-width: 2px;
+}
+
+.modalBackground {
+	background-color:#01EAFF;
+	filter:alpha(opacity=70);
+	opacity:0.7;
+	
+}
+
+.modalPopup {
+	background-color:#ffffff;
+	border-width:3px;
+	border-style:solid;
+	border-color:Gray;
+	padding:3px;
+}
+.ReportsModalPopup {
+	background-color:#ffffdd;
+	border-width:3px;
+	border-style:solid;
+	border-color:Gray;
+	padding:3px;
+}
+.BillReportsModalPopup {
+	background-color:#ffffff;
+	border-width:3px;
+	border-style:solid;
+	border-color:Gray;
+	padding:3px;
+	overflow-y:scroll;
+	overflow-x:hidden;
+	height:300px;
+}
+.sampleStyleA {
+	background-color:#FFF;
+}
+
+.sampleStyleB {
+	background-color:#FFF;
+	font-family:monospace;
+	font-size:10pt;
+	font-weight:bold;
+}
+
+.sampleStyleC {
+	background-color:#ddffdd;
+	font-family:sans-serif;
+	font-size:10pt;
+	font-style:italic;
+}
+
+.sampleStyleD {
+	background-color:Blue;
+	color:White;
+	font-family:Arial;
+	font-size:10pt;
+}
+mainModalTablev
+{
+    border-width:0px;
+    width:240px;
+    background-color:#ecf4fc;
+}
+.mainModaTableTDv
+{
+    border-left: 1px solid #ECE9D8; 
+    border-right: 1px solid #716F64; 
+    border-top: 1px solid #ECE9D8;
+    border-bottom: 1px solid #716F64;
+}
+.mainModalInnerTablev
+{
+    border-width:0px;
+    width:100%;
+}
+.mainModalInnerTableTDv
+{
+    border-left: 1px solid #FFFFFF; 
+    border-right: 1px solid #ACA899; 
+    border-top: 1px solid #FFFFFF;
+    border-bottom: 1px solid #ACA899;
+}
+.mainModalDraggablePanelTDv
+{
+    white-space:nowrap;
+    background-color:#93b6e8;
+    height: 15px; 
+    width: 99%;
+}
+.mainModalDraggablePanelCloseTDv
+{
+    background-color:#93b6e8;
+    width:1%;
+}
+.mainModalDraggablePanelv
+{
+    /*cursor:move; */
+    width:100%;
+}
+.mainModalTitlev
+{
+    color:#FFFFFF;
+    font-weight:bold;
+}
+.mainModalContentsTDv
+{
+    white-space:nowrap;
+    background-color:White;
+    width:95%;
+}
+ .modalBackgroundv 
+ {
+    background-color:Silver;
+    filter:alpha(opacity=30);
+    opacity:0.3;
+ }
+.wireFrame {
+display: 	none; 
+overflow: hidden; 
+height:auto;
+width:auto;
+z-index: 2; 
+background-color: #FFFFFF; 
+border: solid 1px #D0D0D0;
+
+}
+.AutoCompleteExtender_CompletionList 
+{
+background-color : window;
+color : windowtext;
+padding : 1px;
+font-size: small;
+background-color:Gray;
+/*creates border with
+autocomplete_completionListElement
+background-color*/
+}
+
+/*AutoComplete flyout */
+.AutoCompleteExtender_CompletionListItem 
+{ 
+text-align : left;
+background-color:White;
+}
+
+/* AutoComplete highlighted item */
+.AutoCompleteExtender_HighlightedItem
+{
+background-color: Silver;
+color: windowtext;
+font-weight:bold;
+font-size: small;
+}
+/* Rating */
+.ratingStar {
+    font-size: 0pt;
+    width: 13px;
+    height: 12px;
+    margin: 0px;
+    padding: 0px;
+    cursor: pointer;
+    display: block;
+    background-repeat: no-repeat;
+}
+
+.filledRatingStar {
+    background-image: url(Images/FilledStar.png);
+
+}
+
+.emptyRatingStar {
+    background-image: url(Images/EmptyStar.png);
+}
+
+.savedRatingStar {
+    background-image: url(Images/SavedStar.png);
+}
+
+
+.main-text 
+{
+font-family: verdana;
+font-size:15px;
+color:#000000;
+font-weight:normal;
+text-decoration:none;
+line-height:20px;
+}
+.mainhead
+{
+font-family: verdana;
+font-size:12px;
+color:#000000;
+font-weight:bold;
+text-decoration:none;
+line-height:20px;
+}
+.modalPopup1 {
+	background-color:#ffffff;
+	border-width:3px;
+	border-style:solid;
+	border-color:Gray;
+	padding:3px;
+	height:500px;
+	overflow-y:scroll;
+	overflow-x:hidden;
+}
+.note
+{
+color: #FF0000;
+font: bold 12px Arial, Helvetica, sans-serif;
+}

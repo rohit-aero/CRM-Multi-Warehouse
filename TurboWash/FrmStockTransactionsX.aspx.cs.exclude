@@ -1,0 +1,287 @@
+﻿using BLLAERO;
+using BOLAERO;
+using System;
+using System.Data;
+using System.Web.UI;
+
+public partial class TurboWash_FrmStockTransactions : System.Web.UI.Page
+{
+    BOLTurboWashTransaction ObjBOL = new BOLTurboWashTransaction();
+    BLLTurboWashTransaction ObjBLL = new BLLTurboWashTransaction();
+
+    protected void Page_Load(object sender, EventArgs e)
+    {
+        if (!IsPostBack)
+        {
+            btnSave.Enabled = false;
+            BindControls();
+        }
+    }
+
+    #region Bind
+
+    private void BindControls()
+    {
+        try
+        {
+            ObjBOL.Operation = 1;
+            ObjBOL.LoginUserID = Utility.GetCurrentUser();
+            DataSet ds = ObjBLL.GetDataSet(ObjBOL);
+
+            if (ds.Tables[0].Rows.Count > 0)
+            {
+                Utility.BindDropDownList(ddlCategoryLookupList, ds.Tables[0]);
+            }
+            if (ds.Tables[1].Rows.Count > 0)
+            {
+                Utility.BindDropDownList(ddlAdjustmentReason, ds.Tables[1]);
+            }
+            if (ds.Tables[2].Rows.Count > 0)
+            {
+                Utility.BindDropDownList(ddlTransactionType, ds.Tables[2]);
+            }
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+    }
+
+    #endregion
+
+    #region Validation
+
+    private bool ValidationCheck()
+    {
+        try
+        {
+            if (ddlPartLookupList.SelectedIndex == 0)
+            {
+                ScriptManager.RegisterClientScriptBlock(this, this.GetType(), "window", "alert('Please Select Part No. !');", true);
+                ddlTransactionType.Focus();
+                return false;
+            }
+
+            if (ddlTransactionType.SelectedIndex == 0)
+            {
+                ScriptManager.RegisterClientScriptBlock(this, this.GetType(), "window", "alert('Please Select Adjustment Type. !');", true);
+                ddlTransactionType.Focus();
+                return false;
+            }
+
+            if (ddlAdjustmentReason.SelectedIndex == 0)
+            {
+                ScriptManager.RegisterClientScriptBlock(this, this.GetType(), "window", "alert('Please Select Adjustment Reason. !');", true);
+                ddlTransactionType.Focus();
+                return false;
+            }
+
+            if (txtTransactQty.Text == "")
+            {
+                ScriptManager.RegisterClientScriptBlock(this, this.GetType(), "window", "alert('Please Enter Quantity !');", true);
+                txtTransactQty.Focus();
+                return false;
+            }
+
+            if (txtRemarks.Text == "")
+            {
+                ScriptManager.RegisterClientScriptBlock(this, this.GetType(), "window", "alert('Please Enter Summary !');", true);
+                txtRemarks.Focus();
+                return false;
+            }
+
+            if (txtStockInHand.Text != "")
+            {
+                if (Int32.Parse(txtTransactQty.Text) > Int32.Parse(txtStockInHand.Text) && ddlTransactionType.SelectedItem.Text.ToUpper() == "OUT")
+                {
+                    ScriptManager.RegisterClientScriptBlock(this, this.GetType(), "window", "alert('Transaction Qty cannot be more than Stock In Hand!');", true);
+                    txtTransactQty.Focus();
+                    return false;
+                }
+            }
+            else if (ddlTransactionType.SelectedItem.Text.ToUpper() == "OUT")
+            {
+                ScriptManager.RegisterClientScriptBlock(this, this.GetType(), "window", "alert('Transaction Qty cannot be more than Stock In Hand!');", true);
+                txtTransactQty.Focus();
+                return false;
+            }
+
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+        return true;
+    }
+
+    #endregion
+
+    #region EventHandlers
+
+    protected void ddlCategoryLookupList_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        ddlCategoryLookupList_SelectedIndexChanged_Event();
+    }
+
+    protected void ddlPartLookupList_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        ddlPartLookupList_SelectedIndexChanged_Event();
+    }
+
+    protected void btnSave_Click(object sender, EventArgs e)
+    {
+        btnSave_Click_Event();
+    }
+
+    protected void btnCancel_Click(object sender, EventArgs e)
+    {
+        ResetAll();
+    }
+
+    #endregion
+
+    #region Internal Event Functions
+
+    private void ddlCategoryLookupList_SelectedIndexChanged_Event()
+    {
+        try
+        {
+            ResetPart();
+            if (ddlCategoryLookupList.SelectedIndex > 0)
+            {
+                ObjBOL.Operation = 2;
+                ObjBOL.CategoryID = Int32.Parse(ddlCategoryLookupList.SelectedValue);
+                DataTable dt = ObjBLL.GetDataSet(ObjBOL).Tables[0];
+                if (dt.Rows.Count > 0)
+                {
+                    Utility.BindDropDownList(ddlPartLookupList, dt);
+                    ddlPartLookupList.SelectedIndex = 0;
+                }
+                else
+                {
+                    ddlPartLookupList.Items.Clear();
+                }
+            }
+            else
+            {
+                ResetAll();
+            }
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+    }
+
+    private void ddlPartLookupList_SelectedIndexChanged_Event()
+    {
+        try
+        {
+            if (ddlPartLookupList.SelectedIndex > 0)
+            {
+                btnSave.Enabled = true;
+                ObjBOL.Operation = 3;
+                ObjBOL.PartID = Int32.Parse(ddlPartLookupList.SelectedValue);
+                DataSet ds = ObjBLL.GetDataSet(ObjBOL);
+                if (ds.Tables[0].Rows.Count > 0)
+                {
+                    txtStockInHand.Text = ds.Tables[0].Rows[0]["StockInHand"].ToString();
+                }
+
+                if (ds.Tables[1].Rows.Count > 0)
+                {
+                    gvTransactions.DataSource = ds.Tables[1];
+                    gvTransactions.DataBind();
+                }
+                else
+                {
+                    gvTransactions.DataSource = string.Empty;
+                    gvTransactions.DataBind();
+                }
+            }
+            else
+            {
+                ResetPart();
+            }
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+    }
+
+    private void btnSave_Click_Event()
+    {
+        try
+        {
+            if (ValidationCheck())
+            {
+                ObjBOL.Operation = 4;
+                ObjBOL.PartID = Int32.Parse(ddlPartLookupList.SelectedValue);
+                ObjBOL.TransactType = Int32.Parse(ddlTransactionType.SelectedValue);
+                ObjBOL.TransactQty = Int32.Parse(txtTransactQty.Text);
+                ObjBOL.Remarks = txtRemarks.Text;
+                ObjBOL.ReasonID = Int32.Parse(ddlAdjustmentReason.SelectedValue);
+                ObjBOL.LoginUserID = Utility.GetCurrentUser();
+                string returnStatus = ObjBLL.GetString(ObjBOL);
+
+                if (returnStatus.Trim().Length > 0)
+                {
+                    Utility.ShowMessage(Page, returnStatus);
+                    ResetAll();
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+    }
+
+    #endregion
+
+    #region Reset
+
+    private void ResetAll()
+    {
+        if (ddlCategoryLookupList.Items.Count > 0)
+        {
+            ddlCategoryLookupList.SelectedIndex = 0;
+        }
+
+        ddlPartLookupList.Items.Clear();
+        ResetPart();
+    }
+
+    private void ResetPart()
+    {
+        if (ddlPartLookupList.Items.Count > 0)
+        {
+            ddlPartLookupList.SelectedIndex = 0;
+        }
+
+        gvTransactions.DataSource = string.Empty;
+        gvTransactions.DataBind();
+        btnSave.Enabled = false;
+        ResetPartInfo();
+    }
+
+    private void ResetPartInfo()
+    {
+        if (ddlTransactionType.Items.Count > 0)
+        {
+            ddlTransactionType.SelectedIndex = 0;
+        }
+
+        if (ddlAdjustmentReason.Items.Count > 0)
+        {
+            ddlAdjustmentReason.SelectedIndex = 0;
+        }
+
+        txtStockInHand.Text = string.Empty;
+        txtTransactQty.Text = string.Empty;
+        txtRemarks.Text = string.Empty;
+    }
+
+    #endregion  
+}
