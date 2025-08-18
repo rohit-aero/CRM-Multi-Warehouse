@@ -1,2 +1,0 @@
-ALTER TABLE Sales_ActivityFollowups
-ADD RegionalIndustryUpdates VARCHAR(500) NULL

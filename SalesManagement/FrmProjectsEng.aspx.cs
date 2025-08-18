@@ -240,7 +240,7 @@ public partial class SalesManagement_FrmProjectsEng : System.Web.UI.Page
             ObjBOL.Operation = 15;
             ObjBOL.UserID = Utility.GetCurrentUser();
             returnStatus = ObjBLL.SaveProject(ObjBOL);
-            if(ddlFabStatus.SelectedIndex == -1)
+            if (ddlFabStatus.SelectedIndex == -1)
             {
                 Utility.ShowMessage_Error(Page, "Please Select Status. !");
                 string strMethodNameNew = "SetCSSFabChina();";
@@ -308,6 +308,10 @@ public partial class SalesManagement_FrmProjectsEng : System.Web.UI.Page
             if (ds.Tables[5].Rows.Count > 0)
             {
                 Utility.BindDropDownList(ddlFabChinaCorrectedBy, ds.Tables[5]);
+            }
+            if (ds.Tables[6].Rows.Count > 0)
+            {
+                Utility.BindDropDownList(ddlWarehouse, ds.Tables[6]);
             }
         }
         catch (Exception ex)
@@ -888,6 +892,27 @@ public partial class SalesManagement_FrmProjectsEng : System.Web.UI.Page
                         }
                     }
                 },
+                { "WarehouseId", d=>
+                    {
+                       if (ddlWarehouse.Items.FindByValue(d["WarehouseId"].ToString()) != null)
+                        {
+                            ddlWarehouse.SelectedValue = d["WarehouseId"].ToString();
+                        }
+                       else if(ddlWarehouse.Items.Count > 0)
+                        {
+                            ddlWarehouse.SelectedIndex = 0;
+                        }
+
+                       if (ddlWarehouse.Items.FindByValue(d["WarehouseId"].ToString()) != null)
+                        {
+                            ddlWarehouse.SelectedValue = d["WarehouseId"].ToString();
+                        }
+                       else if(ddlWarehouse.Items.Count > 0)
+                        {
+                            ddlWarehouse.SelectedIndex = 0;
+                        }
+                    }
+                },
                 { "Issued", d=>
                     {
                        if (ddlIssued.Items.FindByValue(d["Issued"].ToString()) != null)
@@ -1137,6 +1162,11 @@ public partial class SalesManagement_FrmProjectsEng : System.Web.UI.Page
             if (ddlManuFac.SelectedIndex > 0)
             {
                 ObjBOL.MfgFacilityID = Convert.ToInt32(ddlManuFac.SelectedValue);
+            }
+
+            if (ddlWarehouse.SelectedIndex > 0)
+            {
+                ObjBOL.WarehouseId = Convert.ToInt32(ddlWarehouse.SelectedValue);
             }
             ObjBOL.Issued = ddlIssued.SelectedValue;
             ObjBOL.DueDateCanada = Utility.ConvertDate(txtDueToCanda.Text);
@@ -1703,10 +1733,17 @@ public partial class SalesManagement_FrmProjectsEng : System.Web.UI.Page
                 ObjBOLRel.projectid = HfJObID.Value;
                 ObjBOLRel.userid = Convert.ToInt32(Utility.GetCurrentUser());
                 msg = ObjBLLRel.ReleaseProject(ObjBOLRel);
-                if (msg.Trim() == "Project Released !!")
+                if (msg.Trim() == "ER01")
+                {
+                    Utility.ShowMessage_Error(Page, "No Warehouse present for the Job !!");
+                    ScriptManager.RegisterStartupScript(this.Page, Page.GetType(), "text", "SetCSSFab()", true);
+                    return;
+                }
+
+                if (msg.Trim() == "S")
                 {
                     Utility.MaintainLogsSpecial("FrmProjectsEng", "Release", HfJObID.Value.ToString());
-                    Utility.ShowMessage_Success(Page, msg.Trim());
+                    Utility.ShowMessage_Success(Page, "Project Released !!");
                     FillDetailsFromJnumber(HfJObID.Value);
                 }
             }
@@ -1728,10 +1765,10 @@ public partial class SalesManagement_FrmProjectsEng : System.Web.UI.Page
                 ObjBOLRel.projectid = HfJObID.Value;
                 ObjBOLRel.userid = Convert.ToInt32(Utility.GetCurrentUser());
                 msg = ObjBLLRel.ReleaseProject(ObjBOLRel);
-                if (msg.Trim() == "Project Rollbacked !!")
+                if (msg.Trim() == "S")
                 {
                     Utility.MaintainLogsSpecial("frmRollback", "Rollback", HfJObID.Value.ToString());
-                    Utility.ShowMessage_Success(Page, msg.Trim());
+                    Utility.ShowMessage_Success(Page, "Project Rollbacked !!");
                     FillDetailsFromJnumber(HfJObID.Value);
                 }
             }
@@ -2037,6 +2074,7 @@ public partial class SalesManagement_FrmProjectsEng : System.Web.UI.Page
             ddlProjectDesCanada.SelectedIndex = 0;
             ddlManuFac.SelectedIndex = 0;
             ddlManuFacChina.SelectedIndex = 0;
+            ddlWarehouse.SelectedIndex = 0;
             txtReleasetoNesting.Text = String.Empty;
             txtProjectReleasedToShop.Text = String.Empty;
             txtSearchPName.Text = "";
@@ -2780,8 +2818,8 @@ public partial class SalesManagement_FrmProjectsEng : System.Web.UI.Page
 
                 //if (row["AssignedFrom"].ToString() == "F")
                 //{
-                    ddlAssignedFrom_EditNesting.Enabled = false;
-                    ddlNatureOfTask_EditNesting.Enabled = false;
+                ddlAssignedFrom_EditNesting.Enabled = false;
+                ddlNatureOfTask_EditNesting.Enabled = false;
                 //}
                 //else
                 //{
@@ -2886,7 +2924,7 @@ public partial class SalesManagement_FrmProjectsEng : System.Web.UI.Page
             else if (e.CommandName == "Insert")
             {
                 GridViewRow row = gvNestingTasks.FooterRow;
-                
+
                 ObjBOL_FabricationAndNestingTasks.Operation = 11;
                 DropDownList ddlNatureOfTask_FooterNesting = row.FindControl("ddlNatureOfTask_FooterNesting") as DropDownList;
                 DropDownList ddlAssignedFrom_FooterNesting = row.FindControl("ddlAssignedFrom_FooterNesting") as DropDownList;

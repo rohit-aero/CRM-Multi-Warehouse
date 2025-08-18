@@ -42,6 +42,10 @@ public partial class INVManagement_FrmStockAdjustment : System.Web.UI.Page
             {
                 Utility.BindDropDownList(ddlReason, ds.Tables[3]);
             }
+            if (ds.Tables[4].Rows.Count > 0)
+            {
+                Utility.BindDropDownList(ddlWarehouse, ds.Tables[4]);
+            }
             //ddlReason
         }
         catch (Exception ex)
@@ -83,6 +87,7 @@ public partial class INVManagement_FrmStockAdjustment : System.Web.UI.Page
             ddlPartNumber.SelectedIndex = 0;
             ddlType.SelectedIndex = 0;
             ddlReason.SelectedIndex = 0;
+            ddlWarehouse.SelectedIndex = 0;
             txtQty.Text = string.Empty;
             txtSummary.Text = string.Empty;
             gvSearch.DataSource = "";
@@ -122,6 +127,13 @@ public partial class INVManagement_FrmStockAdjustment : System.Web.UI.Page
                 //ScriptManager.RegisterClientScriptBlock(this, this.GetType(), "window", "alert('Please Select Adjustment Type.');", true);
                 Utility.ShowMessage_Error(Page, "Please Select Adjustment Type.");
                 ddlType.Focus();
+                return false;
+            }
+            if (ddlWarehouse.SelectedIndex == 0)
+            {
+                //ScriptManager.RegisterClientScriptBlock(this, this.GetType(), "window", "alert('Please Select Part No.');", true);
+                Utility.ShowMessage_Error(Page, "Please Select Warehouse");
+                ddlWarehouse.Focus();
                 return false;
             }
             if (ddlReason.SelectedIndex == 0)
@@ -176,11 +188,12 @@ public partial class INVManagement_FrmStockAdjustment : System.Web.UI.Page
                 ObjBOL.adjustmentreasonid = Convert.ToInt32(ddlReason.SelectedValue);
                 ObjBOL.transactsummary = txtSummary.Text;
                 ObjBOL.userid = Convert.ToInt32(Utility.GetCurrentUser());
-                msg = ObjBLL.StockAdjustment(ObjBOL);              
-                Utility.ShowMessage_Success(Page, msg.Trim());
-                if (msg.Trim() == "Stock Adjusted !!")
+                ObjBOL.WarehouseId = Int32.Parse(ddlWarehouse.SelectedValue);
+                msg = ObjBLL.StockAdjustment(ObjBOL);
+                if (msg.Trim() == "S")
                 {
-                    Utility.MaintainLogsSpecial("frmStockAdjustmet", "StockAdjust", ddlPartNumber.SelectedValue.ToString());
+                    Utility.ShowMessage_Success(Page, "Stock Adjusted !!");
+                    Utility.MaintainLogsSpecial("FrmStockAdjustment.aspx", "StockAdjust", ddlPartNumber.SelectedValue.ToString());
                     BindPartNumber(ddlPartNumber.SelectedValue);
                 }
                 Bind_Grid();
@@ -212,6 +225,7 @@ public partial class INVManagement_FrmStockAdjustment : System.Web.UI.Page
             Utility.AddEditException(ex);
         }
     }
+
     private void BindPartNumber(string PartID)
     {
         try

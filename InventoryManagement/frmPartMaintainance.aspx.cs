@@ -514,6 +514,17 @@ public partial class INVManagement_frmPartMaintainance : System.Web.UI.Page
                     }
                     Bind_GridShopDrawingsPartInfo();
                 }
+
+                if (ds.Tables[1].Rows.Count > 0)
+                {
+                    gvWarehouseStock.DataSource = ds.Tables[1];
+                    gvWarehouseStock.DataBind();
+                }
+                else
+                {
+                    gvWarehouseStock.DataSource = string.Empty;
+                    gvWarehouseStock.DataBind();
+                }
             }
             rdbLineStopper_SelectedIndexChanged();
             //else
@@ -588,6 +599,10 @@ public partial class INVManagement_frmPartMaintainance : System.Web.UI.Page
             {
                 ddlProductLineID.Items.Clear();
             }
+
+            gvWarehouseStock.DataSource = string.Empty;
+            gvWarehouseStock.DataBind();
+
             Disable_ITWSpecificFields();
         }
         catch (Exception ex)
@@ -839,6 +854,9 @@ public partial class INVManagement_frmPartMaintainance : System.Web.UI.Page
             //ResetPartInfo();
             gvShopDwg.DataSource = "";
             gvShopDwg.DataBind();
+
+            gvWarehouseStock.DataSource = string.Empty;
+            gvWarehouseStock.DataBind();
         }
         catch (Exception ex)
         {

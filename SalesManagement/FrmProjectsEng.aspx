@@ -11,6 +11,7 @@
                         <div class="d-flex align-items-center mb-2">
                             <button type="button" class="btn btn-info btn-sm mr-3" onclick="previousPage()"><i class="fas fa-chevron-left fa-sm"></i>Back</button>
                             <h4 class="title-hyphen position-relative mr-3">Project Information                            
+                               
                                 <asp:Label ID="lblPM" Visible="false" CssClass="btn btn-primary btn-sm" Style="cursor: no-drop;" runat="server" Text=""></asp:Label>
                                 <asp:Label ID="lblDesRep" Visible="false" CssClass="btn btn-success btn-sm" Style="cursor: no-drop;" runat="server" Text=""></asp:Label>
                                 <asp:Label ID="lblConsultant" Visible="false" CssClass="btn btn-info btn-sm" Style="cursor: no-drop;" runat="server" Text=""></asp:Label>
@@ -422,7 +423,8 @@
                                         <ItemTemplate>
                                             <asp:LinkButton CssClass="btn btn-info btn-sm" ID="LinkButton1" runat="server" CommandName="edit"><i class="far fa-edit" title="Edit"></i></asp:LinkButton>
                                             &nbsp;&nbsp;
-                                        <asp:LinkButton CssClass="btn btn-info btn-danger" ID="LinkButton4" OnClientClick="return confirm('Are you sure to delete. ?');" runat="server" CommandName="delete"><i class="fas fa-times" title="Delete"></i></asp:LinkButton>
+                                       
+                                            <asp:LinkButton CssClass="btn btn-info btn-danger" ID="LinkButton4" OnClientClick="return confirm('Are you sure to delete. ?');" runat="server" CommandName="delete"><i class="fas fa-times" title="Delete"></i></asp:LinkButton>
                                         </ItemTemplate>
                                         <ItemStyle HorizontalAlign="Center" VerticalAlign="Middle" />
                                     </asp:TemplateField>
@@ -474,6 +476,15 @@
                                     <asp:DropDownList CssClass="form-control form-control-sm" ID="ddlManuFac" DataTextField="FacilityName" DataValueField="ID" runat="server" AutoPostBack="true" OnSelectedIndexChanged="ddlManuFac_SelectedIndexChanged"></asp:DropDownList>
                                 </div>
                             </div>
+
+                            <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+                                <div class="form-group chosenFullWidth">
+                                    <label>Warehouse</label>
+                                    <asp:DropDownList CssClass="form-control form-control-sm" ID="ddlWarehouse" runat="server" DataTextField="text" DataValueField="id">
+                                    </asp:DropDownList>
+                                </div>
+                            </div>
+
                             <div class="col-6 col-sm-4 col-md-3 col-lg-2">
                                 <div class="form-group">
                                     <label>Released</label>
@@ -1118,6 +1129,7 @@
                         <div class="input-group-prepend p-1">
                             <button runat="server" data-toggle="modal" data-target="#dialog6" class="btn btn-primary btn-sm" data-backdrop="static" data-keyboard="false" href="#" type="button">
                                 Show Model Info
+                           
                             </button>
                         </div>
                         <!-- Modal -->
@@ -1309,6 +1321,7 @@
             $('#<%=ddlReleaseType_Grid.ClientID%>').chosen();
             $('#<%=ddlProjectDesigner_Grid.ClientID%>').chosen();
             $('#<%=ddlReviewedBy_Grid.ClientID%>').chosen();
+            $('#<%=ddlWarehouse.ClientID%>').chosen();
         }
 
         function ClickEventForPName(e) {

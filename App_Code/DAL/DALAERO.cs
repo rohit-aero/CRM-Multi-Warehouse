@@ -1491,7 +1491,7 @@ namespace DALAERO
     {
         public string SaveProject(BOLManageProjects ObjBOL)
         {
-            SqlParameter[] param = new SqlParameter[166];
+            SqlParameter[] param = new SqlParameter[167];
             param[0] = new SqlParameter("@msg", SqlDbType.VarChar, 500);
             param[0].Direction = ParameterDirection.Output;
             param[1] = new SqlParameter("@JobID", ObjBOL.JobID);
@@ -1662,6 +1662,7 @@ namespace DALAERO
             param[163] = new SqlParameter("@FabDrawingPercentage", ObjBOL.FabDrawingPercentage);
             param[164] = new SqlParameter("@ExpectedSubmissionDate", ObjBOL.ExpectedSubmissionDate);
             param[165] = new SqlParameter("@ActualSubmissionDate", ObjBOL.ActualSubmissionDate);
+            param[166] = new SqlParameter("@WarehouseId", ObjBOL.WarehouseId);
             //ProjectStatus
             SqlHelper1.ExecuteNonQuery(con, CommandType.StoredProcedure, "[aero_ManageProjectsEng]", param);
             string msg = param[0].Value.ToString();
@@ -5931,7 +5932,7 @@ namespace DALAERO
             param[0].Direction = ParameterDirection.Output;
             param[1] = new SqlParameter("@JobID", ObjBOL.projectid);
             param[2] = new SqlParameter("@Operation", ObjBOL.operation);
-            DataSet ds = SqlHelper1.ExecuteDataset(con, CommandType.StoredProcedure, "Inv_StockTransactoions", param);
+            DataSet ds = SqlHelper1.ExecuteDataset(con, CommandType.StoredProcedure, "Inv_StockTransactions_V1", param);
             return ds;
         }
         //ReleaseProject
@@ -5943,7 +5944,7 @@ namespace DALAERO
             param[1] = new SqlParameter("@Operation", ObjBOL.operation);
             param[2] = new SqlParameter("@JobID", ObjBOL.projectid);
             param[3] = new SqlParameter("@userid", ObjBOL.userid);
-            SqlHelper1.ExecuteNonQuery(con, CommandType.StoredProcedure, "[Inv_ProjectReleaseAndRollback]", param);
+            SqlHelper1.ExecuteNonQuery(con, CommandType.StoredProcedure, "[Inv_ProjectReleaseAndRollback_V1]", param);
             //SqlHelper1.ExecuteNonQuery(con, CommandType.StoredProcedure, "Inv_StockTransactoions", param);
             string msg = param[0].Value.ToString();
             return msg;
@@ -5951,7 +5952,7 @@ namespace DALAERO
         //StockAdjustment
         public String StockAdjustment(BOLINVPartsInfo ObjBOL)
         {
-            SqlParameter[] param = new SqlParameter[7];
+            SqlParameter[] param = new SqlParameter[8];
             param[0] = new SqlParameter("@msg", SqlDbType.VarChar, 50);
             param[0].Direction = ParameterDirection.Output;
             param[1] = new SqlParameter("@Operation", ObjBOL.operation);
@@ -5960,7 +5961,8 @@ namespace DALAERO
             param[4] = new SqlParameter("@adjustmentreasonid", ObjBOL.adjustmentreasonid);
             param[5] = new SqlParameter("@transactsummary", ObjBOL.transactsummary);
             param[6] = new SqlParameter("@userid", ObjBOL.userid);
-            SqlHelper1.ExecuteNonQuery(con, CommandType.StoredProcedure, "Inv_StockTransactoions", param);
+            param[7] = new SqlParameter("@WarehouseId", ObjBOL.WarehouseId);
+            SqlHelper1.ExecuteNonQuery(con, CommandType.StoredProcedure, "Inv_StockTransactions_V1", param);
             string msg = param[0].Value.ToString();
             return msg;
         }
@@ -5971,7 +5973,7 @@ namespace DALAERO
             param[0].Direction = ParameterDirection.Output;
             param[1] = new SqlParameter("@PartIdS", ObjBOL.PartId);
             param[2] = new SqlParameter("@Operation", ObjBOL.operation);
-            DataSet ds = SqlHelper1.ExecuteDataset(con, CommandType.StoredProcedure, "Inv_StockTransactoions", param);
+            DataSet ds = SqlHelper1.ExecuteDataset(con, CommandType.StoredProcedure, "Inv_StockTransactions_V1", param);
             return ds;
         }
         //GetPartsCount

@@ -4541,6 +4541,13 @@ namespace BOLAERO
 
     public class BOLManageProjects
     {
+        int _WarehouseId;
+        public int WarehouseId
+        {
+            get { return _WarehouseId; }
+            set { _WarehouseId = value; }
+        }
+
         DateTime? _ExpectedSalesDate;
         public DateTime? ExpectedSalesDate
         {
@@ -9728,6 +9735,13 @@ namespace BOLAERO
 
     public class BOLINVPartsInfo
     {
+        int _WarehouseId;
+        public int WarehouseId
+        {
+            get { return _WarehouseId; }
+            set { _WarehouseId = value; }
+        }
+
         Int32 _operation;
         public Int32 operation
         {

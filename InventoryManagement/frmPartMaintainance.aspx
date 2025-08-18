@@ -323,6 +323,34 @@
                     </div>
                 </asp:Panel>
             </div>
+
+            <div class="col-12 border-top mt-3"></div>
+            <div class="col-3">
+                <div class="row pt-3">
+                    <div class="col-sm-12">
+                        <%--<h5 class="text-uppercase">Warehouse Stock</h5>--%>
+                        <div class="table-responsive">
+                            <asp:GridView CssClass="table mainGridTable table-sm mb-0" ForeColor="White" ID="gvWarehouseStock" runat="server" AutoGenerateColumns="false"
+                                EnableModelValidation="True" ShowFooter="false">
+                                <Columns>
+                                    <asp:TemplateField HeaderText="Warehouse Name">
+                                        <ItemTemplate>
+                                            <asp:Label ID="lblWarehouseName" runat="server" Text='<%# Eval("Warehouse Name") %>'></asp:Label>
+                                        </ItemTemplate>
+                                    </asp:TemplateField>
+
+                                    <asp:TemplateField HeaderText="Stock In Hand" HeaderStyle-CssClass="align-right">
+                                        <ItemTemplate>
+                                            <asp:Label ID="lblStockInHand" runat="server" Text='<%# Eval("Stock In Hand") %>'></asp:Label>
+                                        </ItemTemplate>
+                                        <ItemStyle HorizontalAlign="Right" />
+                                    </asp:TemplateField>
+                                </Columns>
+                            </asp:GridView>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <asp:HiddenField ID="hfpartid" runat="server" />
             <asp:HiddenField ID="hfpartimage" runat="server" />
             <asp:HiddenField ID="hfshopdrawing" runat="server" />

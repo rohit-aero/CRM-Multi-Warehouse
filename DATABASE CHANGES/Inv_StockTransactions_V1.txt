@@ -1,0 +1,320 @@
+ALTER PROCEDURE [dbo].[Inv_StockTransactions_V1]
+	@JobID varchar(10) = NULL,
+	@Operation INT = NULL,
+	@userid INT = NULL,
+	@Qty int = NULL,
+	@adjustmentreasonid INT = NULL,
+	@transactsummary VARCHAR(250) = NULL,
+	@PartIdS INT = NULL,
+	@WarehouseId INT = NULL,
+	@msg VARCHAR(50) OUTPUT
+AS
+BEGIN
+	SET NOCOUNT ON;
+  --BIND CONTROLS
+	IF(@Operation = 1)
+	BEGIN
+	--TBALE 0
+	SELECT tblProjects.JobID + ', ' + ISNULL(tblCustomers.CompanyName,'') +', '+ ISNULL(tblCustomers.City,'')
+	+', '+ ISNULL(tblStates.[State],'') +', '+ ISNULL(tblCountries.Country,'')
+	AS ProjectName,tblProjects.JobID
+	FROM tblProjects
+	INNER JOIN tblCustomers ON tblCustomers.CustomerID=tblProjects.CustomerID
+	LEFT JOIN tblCountries ON tblCustomers.CountryID=tblCountries.CountryID
+	LEFT JOIN tblStates ON tblCustomers.StateID=tblStates.StateID
+	WHERE tblProjects.ReleaseToShop=0
+	ORDER BY tblProjects.JobID
+
+	--TBALE 1
+	SELECT tblProjects.JobID + ', ' + ISNULL(tblCustomers.CompanyName,'') +', '+ ISNULL(tblCustomers.City,'')
+	+', '+ ISNULL(tblStates.[State],'') +', '+ ISNULL(tblCountries.Country,'')
+	AS ProjectName,tblProjects.JobID
+	FROM tblProjects
+	INNER JOIN tblCustomers ON tblCustomers.CustomerID=tblProjects.CustomerID
+	LEFT JOIN tblCountries ON tblCustomers.CountryID=tblCountries.CountryID
+	LEFT JOIN tblStates ON tblCustomers.StateID=tblStates.StateID
+	WHERE tblProjects.ReleaseToShop=1
+	ORDER BY tblProjects.JobID
+
+	--TBALE 2
+	SELECT Inv_Parts.id AS Partid, PartNumber + ', '  + MIN(ISNULL(PartDes,'')) + ' (Current Stock '+ CAST(ISNULL(SUM(S.stockinhand), 0.0) AS VARCHAR(20)) +')' AS PartDetails 
+	FROM Inv_Parts	
+	LEFT JOIN Inv_Parts_StockInHand S ON S.PartId = Inv_Parts.id
+	GROUP BY Inv_Parts.id,PartNumber
+	ORDER BY PartNumber
+
+	--Table 3
+	SELECT ID,Reason 
+	FROM [dbo].[Inv_StockAdjustmentReasons]
+	ORDER BY Reason
+
+	SELECT id, WarehouseName AS [text]
+	FROM Inv_Warehouse
+	ORDER BY WarehouseName
+	END
+
+	ELSE IF(@Operation = 2)
+	BEGIN
+		BEGIN TRY 
+		BEGIN TRANSACTION        			
+			DECLARE @partid INT
+			DECLARE @projectid VARCHAR(50)			
+			DECLARE @partqty int
+
+			DECLARE @tbStockOut AS TABLE
+			(
+				partid INT,
+				projectid VARCHAR(250),
+				partqty INT
+			)
+
+			INSERT INTO @tbStockOut
+			SELECT Inv_ProjectParts.partid,Inv_ProjectParts.projectid,
+			SUM(Inv_ProjectParts.qty) AS Qty
+			FRoM Inv_ProjectParts
+			WHERE Inv_ProjectParts.projectid=@JobID
+			GROUP BY Inv_ProjectParts.partid,Inv_ProjectParts.projectid
+
+				INSERT INTO Inv_StockTransactions
+				([partid], [projectid], [transactqty], [transactdatetime], [transactsummary], [transactby],[transactmode])
+				SELECT partid,projectid,-ABS(partqty),GETDATE(),NULL,@userid,'A'
+				FROM @tbStockOut
+
+			IF(SELECT COUNT(partid) FROM @tbStockOut)>0
+			BEGIN
+					
+					DECLARE CUR_PART CURSOR            
+
+				STATIC FOR
+					SELECT [partid], [projectid], [partqty] FROM @tbStockOut
+
+				OPEN CUR_PART	 
+
+				IF @@CURSOR_ROWS > 0
+				BEGIN
+						FETCH NEXT FROM CUR_PART INTO @partid,@projectid,@partqty
+
+				WHILE @@Fetch_status = 0
+				BEGIN
+				
+				DECLARE @OPENSTOCK int
+				SET @OPENSTOCK =(SELECT TOP 1 ISNULL(stockinhand,0) FROM Inv_Parts WHERE id=@partid)
+
+
+				UPDATE Inv_StockTransactions SET [openingstock]=@OPENSTOCK,[closingstock]=(@OPENSTOCK-ABS(@partqty))
+				WHERE partid=@partid AND projectid=@projectid
+
+				UPDATE tblProjects SET ReleaseToShop=1 WHERE JobID=@projectid
+				UPDATE Inv_Parts SET stockinhand=(@OPENSTOCK-@partqty) WHERE ID=@partid
+				
+				FETCH NEXT FROM CUR_PART INTO @partid,@projectid,@partqty
+
+				END
+				END
+			 
+
+				CLOSE CUR_PART
+				DEALLOCATE CUR_PART
+
+			END
+			ELSE
+			BEGIN
+
+				UPDATE tblProjects SET ReleaseToShop=1 WHERE JobID=@JobID
+
+			END
+
+
+			  
+
+		IF @@TRANCOUNT > 0
+			COMMIT
+		
+		SET @msg='Project Released !!'
+	END TRY
+
+	BEGIN CATCH 
+
+		IF @@TRANCOUNT > 0
+			ROLLBACK
+ 
+		--SELECT ERROR_NUMBER() AS ErrorNumber
+		--SELECT ERROR_MESSAGE() AS ErrorMessage
+ 
+	END CATCH
+	END
+
+	ELSE IF(@Operation = 3)
+	BEGIN
+	
+	BEGIN TRY
+ 
+		BEGIN TRANSACTION 
+        
+		DECLARE @tid INT
+		DECLARE @partidA  VARCHAR(50)
+		DECLARE @projectidA VARCHAR(50)			
+		DECLARE @partqtyA INT
+				
+		IF(SELECT COUNT(PartId) FROM Inv_StockTransactions WHERE ProjectId=@JobID)>0
+			BEGIN
+
+			INSERT INTO Inv_StockTransactions
+			([partid], [projectid], [transactqty], [transactdatetime], [transactsummary], [transactby],[transactmode])
+			SELECT partid,@JobID,ABS(transactqty),GETDATE(),'Rollback',@userid,'A'
+			FROM Inv_StockTransactions WHERE projectid=@JobID AND adjustmentmade IS NULL AND [transactsummary] IS NULL
+
+			DECLARE CUR_PART CURSOR            
+
+		STATIC FOR
+
+			SELECT id,partid, @JobID, ABS(transactqty) FROM Inv_StockTransactions WHERE projectid=@JobID AND adjustmentmade IS NULL AND [transactsummary] IS NULL
+
+		OPEN CUR_PART	 
+
+		IF @@CURSOR_ROWS > 0
+				BEGIN
+						FETCH NEXT FROM CUR_PART INTO @tid,@partidA,@projectidA,@partqtyA
+
+				WHILE @@Fetch_status = 0
+				BEGIN				
+				
+				DECLARE @OPENSTOCKA DECIMAL(18,2)
+				SET @OPENSTOCKA =(SELECT TOP 1 ISNULL(stockinhand,0) FROM Inv_Parts WHERE id=@partidA)
+
+				UPDATE Inv_StockTransactions SET adjustmentmade=1 WHERE ID=@tid and [transactsummary] is null
+
+				UPDATE Inv_StockTransactions SET [openingstock]=@OPENSTOCKA,[closingstock]=(@OPENSTOCKA + ABS(@partqtyA))
+				WHERE partid=@partidA AND projectid=@projectidA and [transactsummary]='Rollback'
+
+				UPDATE tblProjects SET ReleaseToShop=0 WHERE JobID=@projectidA
+				UPDATE Inv_Parts SET stockinhand=(@OPENSTOCKA+@partqtyA) WHERE ID=@partidA
+
+				
+				FETCH NEXT FROM CUR_PART INTO @tid,@partidA,@projectidA,@partqtyA
+
+		END
+		END
+			END
+			ELSE
+			BEGIN
+
+				UPDATE tblProjects SET ReleaseToShop=0 WHERE JobID=@JobID
+			END
+
+
+		
+
+
+		IF @@TRANCOUNT > 0
+			COMMIT
+		SET @msg='Project Rollbacked !!'
+	END TRY
+
+	BEGIN CATCH 
+
+		IF @@TRANCOUNT > 0
+			ROLLBACK
+ 
+		--SELECT ERROR_NUMBER() AS ErrorNumber
+		--SELECT ERROR_MESSAGE() AS ErrorMessage
+ 
+	END CATCH
+	END
+
+	ELSE IF(@Operation = 4)
+	BEGIN	
+		SELECT ISNULL(Inv_Product.Product,'') + ', ' + ISNULL(PartNumber,'') + ', ' + ISNULL(PartDes,'') AS PartNumber,
+		Inv_ProjectParts.projectid,
+		SUM(Inv_ProjectParts.qty) AS Qty
+		FROM Inv_ProjectParts
+		LEFT JOIN Inv_Parts ON Inv_Parts.id=Inv_ProjectParts.partid
+		LEFT JOIN Inv_Product ON Inv_Product.id=Inv_Parts.ProductId
+		WHERE Inv_ProjectParts.projectid=@JobID
+		GROUP BY ISNULL(Inv_Product.Product,'') + ', ' + ISNULL(PartNumber,'') + ', ' + ISNULL(PartDes,''),
+		Inv_ProjectParts.projectid
+		ORDER BY PartNumber
+
+
+		SELECT ISNULL(Inv_Product.Product,'') + ', ' + ISNULL(PartNumber,'') + ', ' + ISNULL(PartDes,'') AS PartNumber,
+		Inv_StockTransactions.projectid,
+		ABS(SUM(Inv_StockTransactions.TransactQty)) AS Qty
+		FROM Inv_StockTransactions
+		LEFT JOIN Inv_Parts ON Inv_Parts.id=Inv_StockTransactions.partid
+		LEFT JOIN Inv_Product ON Inv_Product.id=Inv_Parts.ProductId
+		WHERE Inv_StockTransactions.projectid=@JobID
+		GROUP BY ISNULL(Inv_Product.Product,'') + ', ' + ISNULL(PartNumber,'') + ', ' + ISNULL(PartDes,''),
+		Inv_StockTransactions.projectid
+		ORDER BY PartNumber
+	END
+
+	ELSE IF(@Operation = 5)
+	BEGIN
+		BEGIN TRY
+		BEGIN TRANSACTION
+
+			DECLARE @openstockT INT = 0
+			DECLARE @closestockT INT = 0
+
+			IF EXISTS(SELECT Id FROM Inv_Parts_StockInHand WHERE PartId = @PartIdS AND WarehouseId = @WarehouseId)
+			BEGIN
+				SET @openstockT = (SELECT StockInHand FROM Inv_Parts_StockInHand WHERE PartId = @PartIdS AND WarehouseId = @WarehouseId)
+			END
+			ELSE
+			BEGIN
+				INSERT INTO Inv_Parts_StockInHand(PartId, WarehouseId, StockInHand, InsertedDate, InsertedByUser)
+				VALUES(@PartIdS, @WarehouseId, 0, GETDATE(), @UserId)
+			END
+
+			IF(@Qty > 0)
+			BEGIN
+				SET @closestockT = (@openstockT + ABS(@Qty))
+			END
+			ELSE
+			BEGIN
+				SET @closestockT = (@openstockT - ABS(@Qty))
+			END
+		
+			INSERT INTO Inv_StockTransactions
+			(WarehouseId, [partid], [openingstock], [transactqty], [closingstock], 
+			[transactdatetime], [transactsummary], 
+			[transactby], [transactmode], adjustmentreasonid)
+			VALUES
+			(@WarehouseId, @PartIdS, @openstockT, @Qty, @closestockT,
+				GETDATE(), @transactsummary, @userid, 'M', @adjustmentreasonid)
+
+			UPDATE Inv_Parts_StockInHand SET StockInHand = @closestockT, UpdatedDate = GETDATE(), UpdatedByUser = @UserId 
+			WHERE PartId = @PartIdS AND WarehouseId = @WarehouseId
+
+			SET @msg = 'S'
+
+		IF @@TRANCOUNT > 0
+			 COMMIT
+ 
+		END TRY
+
+		BEGIN CATCH 
+		IF @@TRANCOUNT > 0
+			 ROLLBACK
+		END CATCH		
+	END
+
+	ELSE IF(@Operation = 6)
+	BEGIN
+		SELECT Inv_StockTransactions.id AS TransactionID,ISNULL(Inv_Parts.partnumber,'') AS partnumber,
+		ISNULL(Inv_Parts.PartDes,'') AS PartDes, Inv_Warehouse.WarehouseName,
+		Inv_StockTransactions.openingstock,Inv_StockTransactions.transactqty,
+		Inv_StockTransactions.closingstock, FORMAT(Inv_StockTransactions.transactdatetime,'MM/dd/yyyy hh:mm:s tt') as transactdatetime,
+		Inv_StockAdjustmentReasons.reason,ISNULL(tblEmployees.firstname,'') + ' '+ 
+		ISNULL(tblEmployees.lastname,'') AS EmpName,
+		Inv_StockTransactions.transactsummary,
+		CASE WHEN Inv_StockTransactions.transactqty>0 THEN 'Stock-In' ELSE 'Stock-Out' END AS TransactionType
+		FROM Inv_StockTransactions
+		INNER JOIN Inv_Parts ON Inv_Parts.id=Inv_StockTransactions.partid
+		LEFT JOIN Inv_StockAdjustmentReasons ON Inv_StockAdjustmentReasons.id=Inv_StockTransactions.adjustmentreasonid
+		LEFT JOIN tblEmployees ON tblEmployees.EmployeeID=Inv_StockTransactions.transactby
+		LEFT JOIN Inv_Warehouse ON Inv_Warehouse.Id = Inv_StockTransactions.WarehouseId
+		WHERE partid = @PartIdS
+		--ORDER BY partnumber, WarehouseName, TransactionType
+	END
+END
