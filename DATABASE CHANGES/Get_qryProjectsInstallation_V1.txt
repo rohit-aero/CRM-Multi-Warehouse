@@ -1,9 +1,9 @@
-/****** Object:  StoredProcedure [dbo].[Get_qryProjectsInstallation_V1]    Script Date: 8/20/2025 2:25:39 PM ******/
+/****** Object:  StoredProcedure [dbo].[Get_qryProjectsInstallation_V1]    Script Date: 8/20/2025 2:42:33 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE PROCEDURE [dbo].[Get_qryProjectsInstallation_V1]
+ALTER PROCEDURE [dbo].[Get_qryProjectsInstallation_V1]
     @JobID  Varchar(50) = NULL
 AS
 BEGIN
@@ -16,7 +16,7 @@ BEGIN
 	MIN(ISNULL(dbo.qryDealers.StreetAddress, '') + ' ' + ISNULL(dbo.qryDealers.City, '') + ' ' + ISNULL(dbo.qryDealers.State, '') + ' ' + ISNULL(dbo.qryDealers.ZipCode, '')) AS DealerAdd,
 	MIN(dbo.qryDealers.Fax) AS DealerFax, MIN(dbo.qryDealers.Phone) AS DealerPhone, MIN(dbo.qryHobartListing.FirstName + ' ' + dbo.qryHobartListing.LastName) AS RepLName, MIN(HobartState.State) AS [State],
 	MIN(dbo.qryHobartListing.Telephone) AS RepPhone, MIN(dbo.qryHobartListing.FaxNumber) AS RepFax,
-	SUM(PROJECTS.Qty) AS Qty, MIN(CHILD.stockinhand) AS CurrentStock,
+	SUM(PROJECTS.Qty) AS Qty, (SELECT SUM(StockInHand) FROM Inv_Parts_StockInHand WHERE Inv_Parts_StockInHand.PartId = MIN(CHILD.id) GROUP BY Inv_Parts_StockInHand.PartId) AS CurrentStock,
 	CONCAT(PARENT.PartNumber, ', ' + PARENT.PartDes) AS [ParentPartNumber], 
 	CHILD.PartNumber AS CHILDPartNumber,
 	CHILD.PartDes AS CHILDPartDes, MIN(qryAeroEmps_1.FirstName + ' ' + qryAeroEmps_1.LastName) AS ReviewBy, MIN(dbo.qryAeroEmps.FirstName + ' ' + dbo.qryAeroEmps.LastName) AS ProjectDesigner
