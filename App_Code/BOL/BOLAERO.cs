@@ -10661,6 +10661,12 @@ namespace BOLAERO
             get { return _PORemarks; }
             set { _PORemarks = value; }
         }
+        Int32 _WareHouseID;
+        public Int32 WareHouseID
+        {
+            get { return _WareHouseID; }
+            set { _WareHouseID = value; }
+        }
 
     }
 
@@ -12510,6 +12516,12 @@ namespace BOLAERO
             get { return _UploadDocument; }
             set { _UploadDocument = value; }
         }
+        Int32 _WarehouseID;
+        public Int32 WarehouseID
+        {
+            get { return _WarehouseID; }
+            set { _WarehouseID = value; }
+        }
     }
 
     public class BOLForecastingSubParts
@@ -13343,6 +13355,12 @@ namespace BOLAERO
             get { return _PartID; }
             set { _PartID = value; }
         }
+        Int32 _SourceID;
+        public Int32 SourceID
+        {
+            get { return _SourceID; }
+            set { _SourceID = value; }
+        }
     }
 
     public class BOLAeroInvoice
@@ -14068,6 +14086,12 @@ namespace BOLAERO
         {
             get { return _SearchVar; }
             set { _SearchVar = value; }
+        }
+        Int32 _SourceID;
+        public Int32 SourceID
+        {
+            get { return _SourceID; }
+            set { _SourceID = value; }
         }
     }
 

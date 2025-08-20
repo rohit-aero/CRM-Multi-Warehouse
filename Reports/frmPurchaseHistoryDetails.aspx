@@ -15,24 +15,31 @@
                     </div>
                 </div>
                 <div class="row">
-                        <div class="col-4 col-sm-4 col-md-3 col-lg-4">
+                    <div class="col-4 col-sm-4 col-md-3 col-lg-4">
                         <div class="form-group">
                             <label>By PartNo/Description</label>
-                            <asp:DropDownList CssClass="form-control form-control-sm" ID="ddlPartNo" runat="server" DataTextField="PartDesc" DataValueField="PartID">     
+                            <asp:DropDownList CssClass="form-control form-control-sm" ID="ddlPartNo" runat="server" DataTextField="PartDesc" DataValueField="PartID">
                             </asp:DropDownList>
                         </div>
                     </div>
-                    <div class="col-sm-2 col-md-3 col-lg-2">
+                    <div class="col-sm-2 col-md-3 col-lg-1">
                         <div class="form-group">
                             <label>By Vendor</label>
-                             <asp:DropDownList CssClass="form-control form-control-sm" ID="ddlVendor" runat="server" DataTextField="Source" DataValueField="SourceID">         
+                            <asp:DropDownList CssClass="form-control form-control-sm" ID="ddlVendor" runat="server" DataTextField="Source" DataValueField="SourceID" AutoPostBack="true" OnSelectedIndexChanged="ddlVendor_SelectedIndexChanged">
                             </asp:DropDownList>
                         </div>
-                    </div> 
-                      <div class="col-2 col-sm-4 col-md-3 col-lg-2">
+                    </div>
+                    <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+                        <div class="form-group">
+                            <label>By Destination</label>
+                            <asp:DropDownList CssClass="form-control form-control-sm" ID="ddlDestination" runat="server" DataTextField="Name" DataValueField="WareHouseID">
+                            </asp:DropDownList>
+                        </div>
+                    </div>
+                    <div class="col-2 col-sm-4 col-md-3 col-lg-1">
                         <div class="form-group">
                             <label>By Status</label>
-                            <asp:DropDownList CssClass="form-control form-control-sm" ID="ddlStatus" runat="server">         
+                            <asp:DropDownList CssClass="form-control form-control-sm" ID="ddlStatus" runat="server">
                                 <asp:ListItem Value="0">All</asp:ListItem>
                                 <asp:ListItem Value="1">Open</asp:ListItem>
                                 <asp:ListItem Value="2">Close</asp:ListItem>
@@ -42,14 +49,14 @@
                     <div class="col-sm-4 col-md-3 col-lg-2">
                         <div class="form-group">
                             <label>Ship From Date</label>
-                              <asp:TextBox CssClass="form-control form-control-sm" ID="txtFromDate" runat="server" OnBlur="validateDate(this)" autocomplete="off" ></asp:TextBox>
+                            <asp:TextBox CssClass="form-control form-control-sm" ID="txtFromDate" runat="server" OnBlur="validateDate(this)" autocomplete="off"></asp:TextBox>
                             <asp:CalendarExtender ID="caltxtFrmDate" runat="server" Format="MM/dd/yyyy" PopupButtonID="txtFromDate" TargetControlID="txtFromDate"></asp:CalendarExtender>
                         </div>
-                    </div> 
-                     <div class="col-sm-4 col-md-3 col-lg-2">
+                    </div>
+                    <div class="col-sm-4 col-md-3 col-lg-2">
                         <div class="form-group">
                             <label>Ship To Date</label>
-                            <asp:TextBox CssClass="form-control form-control-sm" ID="txtToDate" runat="server" autocomplete="off"  OnBlur="validateDate(this)"></asp:TextBox>
+                            <asp:TextBox CssClass="form-control form-control-sm" ID="txtToDate" runat="server" autocomplete="off" OnBlur="validateDate(this)"></asp:TextBox>
                             <asp:CalendarExtender ID="caltxtToDate" runat="server" Format="MM/dd/yyyy" PopupButtonID="txtToDate" TargetControlID="txtToDate">
                             </asp:CalendarExtender>
                         </div>
@@ -75,9 +82,10 @@
                 });
                 function BindDrp() {
                     $('#<%=ddlVendor.ClientID%>').chosen();
+                    $('#<%=ddlDestination.ClientID%>').chosen();
                     //ddlContainerNo
-                    $('#<%=ddlPartNo.ClientID%>').chosen();   
-                    $('#<%=ddlStatus.ClientID%>').chosen(); 
+                    $('#<%=ddlPartNo.ClientID%>').chosen();
+                    $('#<%=ddlStatus.ClientID%>').chosen();
                 }
             </script>
         </ContentTemplate>

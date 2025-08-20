@@ -23,6 +23,12 @@
                     </div>
                     <div class="col-6 col-sm-4 col-md-3 col-lg-2">
                         <div class="form-group">
+                            <label>By Destination</label>
+                            <asp:DropDownList CssClass="form-control form-control-sm" ID="ddlDest" runat="server" DataTextField="Name" DataValueField="WareHouseID"></asp:DropDownList>
+                        </div>
+                    </div>
+                    <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+                        <div class="form-group">
                             <label>By PO</label>
                             <asp:DropDownList CssClass="form-control form-control-sm" ID="ddlPOCheckStatus" runat="server" OnSelectedIndexChanged="ddlPOCheckStatus_SelectedIndexChanged" AutoPostBack="true">
                                 <asp:ListItem Value="0">All</asp:ListItem>
@@ -136,6 +142,11 @@
                                             <ItemTemplate>
                                                 <asp:GridView CssClass="ChildGrid" ID="gvContainerInfo" runat="server" AutoGenerateColumns="False" EnableModelValidation="True">
                                                     <Columns>
+                                                        <asp:TemplateField HeaderText="Destination">
+                                                            <ItemTemplate>
+                                                                <asp:Label ID="lblDestination" runat="server" Text='<%# Eval("Destination") %>'></asp:Label>
+                                                            </ItemTemplate>
+                                                        </asp:TemplateField>
                                                         <asp:TemplateField HeaderText="Invoice No">
                                                             <ItemTemplate>
                                                                 <asp:Label ID="lblInvoiceNo" runat="server" Text='<%# Eval("InvoiceNo") %>'></asp:Label>
@@ -191,6 +202,7 @@
                     $('#<%=ddlStatus.ClientID%>').chosen();
                     $('#<%=ddlPOCheckStatus.ClientID%>').chosen();
                     $('#<%=ddlLookupPart.ClientID%>').chosen();
+                    $('#<%=ddlDest.ClientID%>').chosen();
                 }
             </script>
             <CR:CrystalReportViewer ID="rptPO" runat="server" AutoDataBind="true" BestFitPage="False" Width="100%" EnableDatabaseLogonPrompt="False" EnableParameterPrompt="False" ToolPanelView="None" />

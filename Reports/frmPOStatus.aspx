@@ -24,6 +24,13 @@
                     </div>
                     <div class="col-6 col-sm-4 col-md-3 col-lg-2">
                         <div class="form-group">
+                            <label>By Destination</label>
+                            <asp:DropDownList CssClass="form-control form-control-sm" ID="ddlDestination" runat="server" DataTextField="Name" DataValueField="WareHouseID" AutoPostBack="True" OnSelectedIndexChanged="ddlDestination_SelectedIndexChanged">
+                            </asp:DropDownList>
+                        </div>
+                    </div>
+                    <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+                        <div class="form-group">
                             <label>Order Date From*</label>
                             <asp:TextBox CssClass="form-control form-control-sm" ID="txtOrderDateFrom" runat="server" AutoPostBack="True" OnTextChanged="txtOrderDateFrom_TextChanged" OnBlur="validateDate(this)"></asp:TextBox>
                             <asp:CalendarExtender ID="CalendarExtender1" runat="server" Format="MM/dd/yyyy" PopupButtonID="txtOrderDateFrom"
@@ -80,6 +87,7 @@
                 });
                 function BindDrp() {
                     $('#<%=ddlVendor.ClientID%>').chosen();
+                    $('#<%=ddlDestination.ClientID%>').chosen();
                     $('#<%=ddlPOStatus.ClientID%>').chosen();
                     $('#<%=ddlPurchaseOrder.ClientID%>').chosen();
                 }

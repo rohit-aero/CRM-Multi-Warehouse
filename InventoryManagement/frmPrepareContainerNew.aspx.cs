@@ -61,7 +61,7 @@ public partial class InventoryManagement_frmPrepareContainerNew : System.Web.UI.
             ResetContainerOnLookups();
             if (ddlContainerNo.SelectedIndex > 0)
             {
-                BindPartNoandDesc(ddlVendorLookup.SelectedValue);
+                //BindPartNoandDesc(ddlVendorLookup.SelectedValue);
                 pogrid.Visible = true;                
                 containerProjects.Visible = true;
                 AutoFillData();
@@ -102,13 +102,69 @@ public partial class InventoryManagement_frmPrepareContainerNew : System.Web.UI.
                 var temp = ddlVendor.SelectedValue;
                 reset();
                 ddlVendor.SelectedValue = temp;
-                BindPartNoandDesc(temp);
-                Bind_GridContainer();
-
+                BindDestWareHouse(ddlVendor.SelectedValue);
+                
             }
             else
             {
-                reset();
+                reset();                
+            }
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+    }
+
+    private void BindDestWareHouse(string selectedSourceID)
+    {
+        try
+        {
+            DataSet ds = new DataSet();
+            ObjBOL.Operation = 22;
+            if(selectedSourceID != "")
+            {
+                ObjBOL.SourceID = Convert.ToInt32(selectedSourceID);
+            }            
+            ds = ObjBLL.GetBindControl(ObjBOL);
+            if (ds.Tables[0].Rows.Count > 0)
+            {
+                Utility.BindDropDownList(ddlDestWareHouse, ds.Tables[0]);
+                if (ddlDestWareHouse.Items.Count > 0)
+                {
+                    ddlDestWareHouse.SelectedIndex = 0;
+                }
+            }
+            else
+            {
+                if (ddlDestWareHouse.Items.Count > 0)
+                {
+                    ddlDestWareHouse.Items.Clear();
+                }
+
+            }
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+    }
+
+    protected void ddlDestWareHouse_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        try
+        {
+            if (ddlDestWareHouse.SelectedIndex > 0)
+            {
+                string sourceID = string.Empty;
+                string DestWareHouseID = string.Empty;
+                sourceID = ddlVendor.SelectedValue;
+                DestWareHouseID = ddlDestWareHouse.SelectedValue;
+                BindPartNoandDesc(sourceID, DestWareHouseID);
+                Bind_GridContainer();
+            }
+            else
+            {
                 GridReset();
                 pogrid.Visible = false;
                 containerProjects.Visible = false;
@@ -119,6 +175,7 @@ public partial class InventoryManagement_frmPrepareContainerNew : System.Web.UI.
         {
             Utility.AddEditException(ex);
         }
+        
     }
 
     private void VendorLookupEvent(string containerID)
@@ -128,7 +185,7 @@ public partial class InventoryManagement_frmPrepareContainerNew : System.Web.UI.
             ResetContainerOnLookups();
             if (ddlVendorLookup.SelectedIndex > 0)
             {
-                BindPartNoandDesc(ddlVendorLookup.SelectedValue);
+                //BindPartNoandDesc(ddlVendorLookup.SelectedValue);
                 ObjBOL.Operation = 10;
                 ObjBOL.SourceID = Int32.Parse(ddlVendorLookup.SelectedValue);
                 reset();
@@ -159,13 +216,20 @@ public partial class InventoryManagement_frmPrepareContainerNew : System.Web.UI.
     #endregion
 
     #region Container Details Table
-    private void BindPartNoandDesc(string vendor)
+    private void BindPartNoandDesc(string vendor, string DestWareHouse)
     {
         try
         {
             DataSet ds = new DataSet();
             ObjBOL.Operation = 7;
-            ObjBOL.SourceID = Convert.ToInt32(vendor);
+            if(vendor != "")
+            {
+                ObjBOL.SourceID = Convert.ToInt32(vendor);
+            }
+            if(DestWareHouse != "")
+            {
+                ObjBOL.WarehouseID = Convert.ToInt32(DestWareHouse);
+            }            
             ds = ObjBLL.GetBindControl(ObjBOL);
             if (ds.Tables[0].Rows.Count > 0)
             {
@@ -187,6 +251,7 @@ public partial class InventoryManagement_frmPrepareContainerNew : System.Web.UI.
             DataSet ds = new DataSet();
             ObjBOL.Operation = 7;
             ObjBOL.SourceID = Convert.ToInt32(ddlVendor.SelectedValue);
+            ObjBOL.WarehouseID = Convert.ToInt32(ddlDestWareHouse.SelectedValue);
             ds = ObjBLL.GetBindControl(ObjBOL);
             if (ds.Tables[0].Rows.Count > 0)
             {
@@ -582,9 +647,7 @@ public partial class InventoryManagement_frmPrepareContainerNew : System.Web.UI.
         {
             Utility.AddEditException(ex);
         }
-    }
-
-   
+    }   
 
     protected void btnAdd_Click(object sender, EventArgs e)
     {
@@ -867,7 +930,7 @@ public partial class InventoryManagement_frmPrepareContainerNew : System.Web.UI.
             DataSet ds = new DataSet();
             ObjBOL.Operation = 4;
             ObjBOL.SourceID = Int32.Parse(ddlVendor.SelectedValue);
-            ObjBOL.Containerid =Convert.ToInt32(ddlContainerNo.SelectedValue);
+            ObjBOL.Containerid =Convert.ToInt32(ddlContainerNo.SelectedValue);            
             ds = ObjBLL.GetBindControl(ObjBOL);
             if (ds.Tables[1].Rows.Count > 0)
             {
@@ -898,12 +961,14 @@ public partial class InventoryManagement_frmPrepareContainerNew : System.Web.UI.
                 if (row.RowType == DataControlRowType.DataRow)
                 {
                     string POid= (row.FindControl("lblPOId") as Label).Text;
+                    string WareHouseID = (row.FindControl("lblWareHouseID") as Label).Text;
                     GridView gvContainer = row.FindControl("gvContainer") as GridView;
                     string partid = gvMainRequisitionDetail.DataKeys[row.RowIndex].Value.ToString();
                     var EmployeeID = Utility.GetCurrentSession().EmployeeID;
                     ObjBOL.PartId = Convert.ToInt32(partid);
                     ObjBOL.SourceID = Convert.ToInt32(ddlVendor.SelectedValue);
                     ObjBOL.POid = Convert.ToInt32(POid);
+                    ObjBOL.WarehouseID = Convert.ToInt32(WareHouseID);
                     ObjBOL.Operation = 2;                                      
                     ds = ObjBLL.GetBindControl(ObjBOL);
                     DataTable dtContainer = new DataTable();
@@ -1076,6 +1141,13 @@ public partial class InventoryManagement_frmPrepareContainerNew : System.Web.UI.
                 ddlShipment.Focus();
                 return false;
             }
+            if (ddlDestWareHouse.SelectedIndex == 0)
+            {
+                //ScriptManager.RegisterClientScriptBlock(this, this.GetType(), "window", "alert('Please Select Shipment By. !');", true);
+                Utility.ShowMessage_Error(Page, "Please Select Destination WareHouse. !");
+                ddlDestWareHouse.Focus();
+                return false;
+            }
         }
         catch (Exception ex)
         {
@@ -1125,6 +1197,7 @@ public partial class InventoryManagement_frmPrepareContainerNew : System.Web.UI.
             if (ds.Tables[0].Rows.Count > 0)
             {
                 string vendor = ds.Tables[0].Rows[0]["Vendor"].ToString();
+                string Warehouse= ds.Tables[0].Rows[0]["Warehouse"].ToString();
                 string InvoiceNo = ds.Tables[0].Rows[0]["InvoiceNo"].ToString();
                 string SealNo = ds.Tables[0].Rows[0]["SealNo"].ToString();
                 string TentativeSentDate = ds.Tables[0].Rows[0]["TentativeSentDate"].ToString();
@@ -1134,6 +1207,12 @@ public partial class InventoryManagement_frmPrepareContainerNew : System.Web.UI.
                 {
                     Utility.ShowMessage_Error(Page, "Please Select Vendor and Update !!");
                     ddlVendor.Focus();
+                    return false;
+                }
+                if(Warehouse == "")
+                {
+                    Utility.ShowMessage_Error(Page, "Please Select Warehouse and Update !!");
+                    ddlDestWareHouse.Focus();
                     return false;
                 }
                 if (InvoiceNo == "")
@@ -1245,6 +1324,10 @@ public partial class InventoryManagement_frmPrepareContainerNew : System.Web.UI.
             ObjBOL.Attn = Convert.ToInt32(ddlAttn.SelectedValue);
             ObjBOL.Issuedby = Convert.ToInt32(ddlIssuedBy.SelectedValue);
             ObjBOL.ShipmentBy = Convert.ToInt32(ddlShipment.SelectedValue);
+            if (ddlDestWareHouse.Items.Count > 0)
+            {
+                ObjBOL.WarehouseID = Convert.ToInt32(ddlDestWareHouse.SelectedValue);
+            }
             if (fpuploadfile.HasFile)
             {
                 if (SavePdf() == true)
@@ -1351,6 +1434,7 @@ public partial class InventoryManagement_frmPrepareContainerNew : System.Web.UI.
                 DataRow dr;
                 if (row.RowType == DataControlRowType.DataRow)
                 {
+                    string DestWareHouseID = (row.FindControl("lblWareHouseID") as Label).Text;
                     string POid = (row.FindControl("lblPOId") as Label).Text;
                     string PartId = gvMainRequisitionDetail.DataKeys[row.RowIndex].Value.ToString();
                     string PODetailId = (row.FindControl("lblPODetailId") as Label).Text;
@@ -1498,13 +1582,18 @@ public partial class InventoryManagement_frmPrepareContainerNew : System.Web.UI.
                     string partid = gvMainRequisitionDetail.DataKeys[row.RowIndex].Value.ToString();                              
                     ObjBOL.PartId = Convert.ToInt32(partid);
                     ObjBOL.POid = Convert.ToInt32(POId.Text);
-                    ObjBOL.SourceID = Int32.Parse(ddlVendor.SelectedValue);                                                    
+                    ObjBOL.SourceID = Int32.Parse(ddlVendor.SelectedValue);
+                    Label WareHouseID = row.FindControl("lblWareHouseID") as Label;
                     GridView gvContainer = row.FindControl("gvContainer") as GridView;                    
                     if (ddlContainerNo.SelectedIndex > 0)
                     {
                         ObjBOL.Containerid = Convert.ToInt32(ddlContainerNo.SelectedValue);
                     }                   
-                    ObjBOL.Operation = 4;                    
+                    ObjBOL.Operation = 4;
+                    if(WareHouseID.Text != "")
+                    {
+                        ObjBOL.WarehouseID = Convert.ToInt32(WareHouseID.Text);
+                    }                                 
                     ds = ObjBLL.GetBindControl(ObjBOL);
                     DataTable dtContainerUpdate = new DataTable();
                     dtContainerUpdate = ds.Tables[2];
@@ -1548,6 +1637,7 @@ public partial class InventoryManagement_frmPrepareContainerNew : System.Web.UI.
                 if (ds.Tables[0].Rows.Count > 0)
                 {
                     ddlVendor.SelectedValue = ddlVendorLookup.SelectedValue;
+                    BindDestWareHouse(ddlVendor.SelectedValue);
                     DataRow dr = ds.Tables[0].Rows[0];
                     Dictionary<string, Action<DataRow>> assignments = new Dictionary<string, Action<DataRow>>
                     {
@@ -1613,7 +1703,14 @@ public partial class InventoryManagement_frmPrepareContainerNew : System.Web.UI.
                                     hfInvoiceNodrwaing.Value = "-1";
                                 }
                             }
-                        }
+                        },
+                        { "WareHouseID",
+                                d=>
+                                {
+                                    ddlDestWareHouse.SelectedValue=Convert.ToString(d["WareHouseID"]);
+                                }
+
+                        },
                     };
                     foreach (var assignment in assignments)
                     {
@@ -1644,7 +1741,7 @@ public partial class InventoryManagement_frmPrepareContainerNew : System.Web.UI.
         DataTable dt = new DataTable();
         try
         {
-            clscon.Return_DT(dt, "EXEC [dbo].[Get_PackingDetails_Jobs] '" + ddlContainerNo.SelectedValue + "'");
+            clscon.Return_DT(dt, "EXEC [IV].[Get_PackingDetails_Jobs] '" + ddlContainerNo.SelectedValue + "'");
         }
         catch (Exception ex)
         {
@@ -1695,7 +1792,7 @@ public partial class InventoryManagement_frmPrepareContainerNew : System.Web.UI.
             DataTable dt = ReportDataZeroExcel();
 
             // Step 2: Define metadata columns (indexes and order)
-            int[] metaColumnIndexes = new int[] { 0, 1, 2, 3, 4, 5, 6, 7};
+            int[] metaColumnIndexes = new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
             int[] columnsToHide = new int[] {  };
 
             // Step 3: Build metadata (from dt's first row)
@@ -1875,6 +1972,15 @@ public partial class InventoryManagement_frmPrepareContainerNew : System.Web.UI.
                     Message += " <tr style='background:#efefef'><td style='width:1%;white-space:nowrap'> Approved By </td><td style='font-weight:600;width:99%' > " + "" + "</td></tr> ";
                 }
                 Message += " <tr><td style='width:1%;white-space:nowrap'> Tentative Arrival Date </td><td style='font-weight:600;width:99%'> " + ConverterDate(txtArrivalinAerowerks.Text) + "</td></tr> ";
+                if (ddlVendor.SelectedIndex > 0)
+                {
+                    Message += " <tr style='background:#efefef'><td style='width:1%;white-space:nowrap'> Source </td><td style='font-weight:600;width:99%'> " + ddlVendor.SelectedItem.Text + "</td></tr>";
+                }
+                if (ddlDestWareHouse.SelectedIndex > 0)
+                {
+                    Message += " <tr><td style='width:1%;white-space:nowrap'> Destination </td><td style='font-weight:600;width:99%'> " + ddlDestWareHouse.SelectedItem.Text + "</td></tr> ";
+                }
+                
                 if (submitandnotify == "1")
                 {
                     Message += " <tr style='background:#efefef'><td style='width:1%;white-space:nowrap'> Submitted By </td><td style='font-weight:600;width:99%'> " + Utility.GetCurrentSession().EmployeeName + "</td></tr>";
@@ -1887,8 +1993,8 @@ public partial class InventoryManagement_frmPrepareContainerNew : System.Web.UI.
                 List<MailAddress> ccList = new List<MailAddress>();
                 HashSet<MailAddress> sendToListAsList = new HashSet<MailAddress>();
                 HashSet<MailAddress> ccListAsList = new HashSet<MailAddress>();
-                sendToListAsList = Utility.GetMailAddresses(Utility.EmailType.Inventory, "SendToList", Utility.emailDictionaryInventory, "Purchasing", 1,"S","");
-                ccListAsList = Utility.GetMailAddresses(Utility.EmailType.Inventory, "ccList", Utility.emailDictionaryInventory, "", 2,"S","");
+                sendToListAsList = Utility.GetMailAddresses(Utility.EmailType.Inventory, "SendToList", Utility.emailDictionaryInventory, "Purchasing", 1,"C","");
+                ccListAsList = Utility.GetMailAddresses(Utility.EmailType.Inventory, "ccList", Utility.emailDictionaryInventory, "", 2,"C","");
                 sendToList = sendToListAsList.ToList();
                 ccList = ccListAsList.ToList();
                 Send_Email(Message, "Packing List" + " (" + "Invoice No : " + txtInvoiceNo.Text + ") ", sendToList, ccList);
@@ -2145,10 +2251,7 @@ public partial class InventoryManagement_frmPrepareContainerNew : System.Web.UI.
             {
                 string msg = "";
                 ObjBOL.Operation = 12;
-                if(Utility.GetCurrentSession() != null)
-                {
-                    ObjBOL.LoginUserId = Utility.GetCurrentSession().EmployeeID;
-                }                
+                ObjBOL.LoginUserId = Utility.GetCurrentSession().EmployeeID;
                 ObjBOL.Containerid = Convert.ToInt32(ddlContainerNo.SelectedValue);
                 ObjBOL.JobID = txtJobNo.Text;
                 ObjBOL.Desc = txtDesc.Text;
@@ -2265,20 +2368,38 @@ public partial class InventoryManagement_frmPrepareContainerNew : System.Web.UI.
         try
         {
             btnSave.Text = "Save";
-            ddlVendor.SelectedIndex = 0;
+            if (ddlVendor.Items.Count > 0)
+            {
+                ddlVendor.SelectedIndex = 0;
+            }            
             txtTentativeSentDate.Text = String.Empty;
-            ddlApprovedBy.SelectedIndex = 0;
+            if (ddlApprovedBy.Items.Count > 0)
+            {
+                ddlApprovedBy.SelectedIndex = 0;
+            }            
             txtInvoiceNo.Text = String.Empty;
             txtContainerNo.Text = String.Empty;
             txtSealNo.Text = String.Empty;
             txtsentdate.Text = String.Empty;
             txtArrivalinAerowerks.Text = String.Empty;
             txtContainer.Text = String.Empty;
-            ddlAttn.SelectedIndex = 0;
-            ddlIssuedBy.SelectedIndex = 0;
-            ddlShipment.SelectedIndex = 0;
+            if (ddlAttn.Items.Count > 0)
+            {
+                ddlAttn.SelectedIndex = 0;
+            }            
+            if (ddlDestWareHouse.Items.Count > 0)
+            {
+                ddlDestWareHouse.SelectedIndex = 0;
+            }
+            if (ddlIssuedBy.Items.Count > 0)
+            {
+                ddlIssuedBy.SelectedIndex = 0;
+            }
+            if (ddlShipment.Items.Count > 0)
+            {
+                ddlShipment.SelectedIndex = 0;
+            }            
             lnkDownload.Text = String.Empty;
-
         }
         catch (Exception ex)
         {
@@ -2321,13 +2442,23 @@ public partial class InventoryManagement_frmPrepareContainerNew : System.Web.UI.
         try
         {
             ResetControls();
-            ddlContainerNo.Items.Clear();
-            ddlVendorLookup.SelectedIndex = 0;
+            if (ddlContainerNo.Items.Count > 0)
+            {
+                ddlContainerNo.Items.Clear();
+            }
+            if (ddlVendorLookup.Items.Count > 0)
+            {
+                ddlVendorLookup.SelectedIndex = 0;
+            }            
             btnSubmit.Enabled = false;
             btnNotify.Enabled = false;
             btnAddProjects.Enabled = false;
             btnPackingDetails.Enabled = false;
             btnPackingDetailsExcel.Enabled = false;
+            if (ddlDestWareHouse.Items.Count > 0)
+            {
+                ddlDestWareHouse.Items.Clear();
+            }
             GridReset();
         }
         catch (Exception ex)
@@ -2377,7 +2508,7 @@ public partial class InventoryManagement_frmPrepareContainerNew : System.Web.UI.
             var EmployeeID = Utility.GetCurrentSession().EmployeeID;
             DataSet ds = new DataSet();
             ObjBOL.Operation = 1;
-            ObjBOL.EmployeeID = EmployeeID;
+            ObjBOL.EmployeeID = EmployeeID;            
             ds = ObjBLL.GetBindControl(ObjBOL);
             if (ds.Tables[1].Rows.Count > 0)
             {
@@ -2386,7 +2517,7 @@ public partial class InventoryManagement_frmPrepareContainerNew : System.Web.UI.
             if (ds.Tables[2].Rows.Count > 0)
             {
                 Utility.BindDropDownList(ddlIssuedBy, ds.Tables[2]);
-            }
+            }            
             if (vendorID != "")
             {
                 ddlVendorLookup.SelectedValue = vendorID;
@@ -2428,7 +2559,7 @@ public partial class InventoryManagement_frmPrepareContainerNew : System.Web.UI.
         DataTable dt = new DataTable();
         try
         {
-            clscon.Return_DT(dt, "EXEC [dbo].[Get_PackingDetails] '" + ddlContainerNo.SelectedValue + "'");
+            clscon.Return_DT(dt, "EXEC [IV].[Get_PackingDetails_V1] '" + ddlContainerNo.SelectedValue + "'");
         }
         catch (Exception ex)
         {
@@ -2442,7 +2573,7 @@ public partial class InventoryManagement_frmPrepareContainerNew : System.Web.UI.
         DataTable dt = new DataTable();
         try
         {
-            clscon.Return_DT(dt, "EXEC [dbo].[Get_PackingDetails] '" + ddlContainerNo.SelectedValue + "', 2");
+            clscon.Return_DT(dt, "EXEC [IV].[Get_PackingDetails_V1] '" + ddlContainerNo.SelectedValue + "', 2");
         }
         catch (Exception ex)
         {

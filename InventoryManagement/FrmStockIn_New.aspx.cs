@@ -521,7 +521,7 @@ public partial class InventoryManagement_FrmStockIn_New : System.Web.UI.Page
         DataTable dt = new DataTable();
         try
         {
-            clscon.Return_DT(dt, "EXEC [dbo].[Get_PackingDetails] '" + ddlContainerLookup.SelectedValue + "'");
+            clscon.Return_DT(dt, "EXEC [IV].[Get_PackingDetails_V1] '" + ddlContainerLookup.SelectedValue + "'");
         }
         catch (Exception ex)
         {
@@ -535,7 +535,7 @@ public partial class InventoryManagement_FrmStockIn_New : System.Web.UI.Page
         DataTable dt = new DataTable();
         try
         {
-            clscon.Return_DT(dt, "EXEC [dbo].[Get_PackingDetails_Jobs] '" + ddlContainerLookup.SelectedValue + "'");
+            clscon.Return_DT(dt, "EXEC [IV].[Get_PackingDetails_Jobs] '" + ddlContainerLookup.SelectedValue + "'");
         }
         catch (Exception ex)
         {

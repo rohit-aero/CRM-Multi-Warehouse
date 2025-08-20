@@ -262,6 +262,7 @@ public partial class InventoryManagement_FrmShipments : System.Web.UI.Page
      {
          btnPackingDetails_Click_Event();
      }
+    
 
     //Event Handler for Button
     protected void btnSendEmail_Click(object sender, EventArgs e)
@@ -320,7 +321,7 @@ public partial class InventoryManagement_FrmShipments : System.Web.UI.Page
                     }
                     else
                     {
-                        containerText = ddlContainerLookup.SelectedItem.Text;
+                        containerText = ddlContainerLookup.SelectedItem.Text.Replace("/","");
                     }
                 }                             
                 string AcctualArrivalDate = "";
@@ -347,23 +348,29 @@ public partial class InventoryManagement_FrmShipments : System.Web.UI.Page
                 Message += " </p></td ></tr><tr><td colspan='2'><div style = 'width:80px;margin:0 auto'> ";
                 Message += " </div> ";
                 Message += " <h1 style ='font-size:1.65rem;margin:.3rem 0 0;color:#000;text-align:center'>Container Details</h1></td></tr> ";
-                Message += " <tr><td style='width:1%;white-space:nowrap'> Vendor </td><td style='font-weight:600;width:99%'>" + vendorName + " </td></tr>";
-                if(containerNo != "")
+                Message += " <tr><td style='width:1%;white-space:nowrap'> Source </td><td style='font-weight:600;width:99%'>" + vendorName + " </td></tr>";
+                if(HfDestinationID.Value != "-1")
                 {
-                    Message += " <tr style='background:#efefef'><td style='width:1%;white-space:nowrap'>Invoice/Container No: </td><td style='font-weight:600;width:99%'> " + containerText + "</td></tr>";
+                    Message += " <tr style='background:#efefef'><td style='width:1%;white-space:nowrap'> Destination </td><td style='font-weight:600;width:99%'> " + HfDestinationID.Value + "</td></tr>";
+                }
+
+                if (containerNo != "")
+                {
+                    Message += " <tr><td style='width:1%;white-space:nowrap'> Invoice/Container No: </td><td style='font-weight:600;width:99%'>" + containerText + " </td></tr>";                    
                 }
                 else
                 {
-                    Message += " <tr style='background:#efefef'><td style='width:1%;white-space:nowrap'>Invoice No: </td><td style='font-weight:600;width:99%'> " + containerText + "</td></tr>";
+                    Message += " <tr><td style='width:1%;white-space:nowrap'> Invoice No: </td><td style='font-weight:600;width:99%'>" + containerText + " </td></tr>";     
                 }
-                Message += " <tr><td style='width:1%;white-space:nowrap'> Actual Arrival Date </td><td style='font-weight:600;width:99%' > " + AcctualArrivalDate + "</td></tr> ";
+                Message += " <tr style='background:#efefef'><td style='width:1%;white-space:nowrap'>Actual Arrival Date </td><td style='font-weight:600;width:99%'> " + AcctualArrivalDate + "</td></tr>";
+
 
                 //Message += " <tr style='background:#efefef'><td style='width:1%;white-space:nowrap'> Reviced ETA  </td><td style='font-weight:600;width:99%'> " + ETA + "</td></tr>";
 
 
                 //Message += " <tr><td style='width:1%;white-space:nowrap'> Shipping Coordinator Notes </td><td style='font-weight:600;width:99%' > " + Notes + "</td></tr> ";
-                Message += " <tr style='background:#efefef'><td style='width:1%;white-space:nowrap'> Shipment Status </td><td style='font-weight:600;width:99%'> " + "Arrived" + " </td></tr>";
-
+                Message += " <tr><td style='width:1%;white-space:nowrap'> Shipment Status </td><td style='font-weight:600;width:99%'>" + "Arrived" + " </td></tr>";
+                
                 //Message += " <tr><td style='width:1%;white-space:nowrap'>  Info Updated DateTime </td><td style='font-weight:600;width:99%'> " + DateTime.Now.ToString("MMMM dd, yyyy hh:mm tt") + "</td></tr> ";
                 //Message += " <tr style='background:#efefef'><td style='width:1%;white-space:nowrap'>  </td><td style='font-weight:600;width:99%'> " + + "</td></tr>";
 
@@ -588,13 +595,17 @@ public partial class InventoryManagement_FrmShipments : System.Web.UI.Page
                 Message += " <h1 style ='font-size:1.65rem;margin:.3rem 0 0;color:#000;text-align:center'> Shipment Details</h1></td></tr> ";
                 Message += " <tr><td style='width:1%;white-space:nowrap'>Invoice No</td><td style='font-weight:600;width:99%'>" + invoice + " </td></tr>";
                 Message += " <tr style='background:#efefef'><td style='width:1%;white-space:nowrap'>Container No </td><td style='font-weight:600;width:99%'> " + containerNo + "</td></tr>";
-                Message += " <tr><td style='width:1%;white-space:nowrap'> Vendor </td><td style='font-weight:600;width:99%' > " + vendor + "</td></tr> ";
-
-                Message += " <tr style='background:#efefef'><td style='width:1%;white-space:nowrap'> ETA </td><td style='font-weight:600;width:99%'> " + revicedETA + "</td></tr>";
+                Message += " <tr><td style='width:1%;white-space:nowrap'> Source </td><td style='font-weight:600;width:99%' > " + vendor + "</td></tr> ";
+                if (HfDestinationID.Value != "-1")
+                {
+                    Message += " <tr style='background:#efefef'><td style='width:1%;white-space:nowrap'> Destination </td><td style='font-weight:600;width:99%'> " + HfDestinationID.Value + "</td></tr>";
+                }
+                Message += " <tr><td style='width:1%;white-space:nowrap'> ETA  </td><td style='font-weight:600;width:99%' > " + revicedETA + "</td></tr> ";
+                Message += " <tr style='background:#efefef'><td style='width:1%;white-space:nowrap'> Comments </td><td style='font-weight:600;width:99%'> " + comments + "</td></tr>";
 
                 
-                Message += " <tr><td style='width:1%;white-space:nowrap'> Comments  </td><td style='font-weight:600;width:99%' > " + comments + "</td></tr> ";
-                Message += " <tr style='background:#efefef'><td style='width:1%;white-space:nowrap'> Container Status </td><td style='font-weight:600;width:99%'> " + ContainerStatus + "</td></tr>";               
+                Message += " <tr><td style='width:1%;white-space:nowrap'>  Container Status </td><td style='font-weight:600;width:99%' > " + ContainerStatus + "</td></tr> ";        
+
                 Message += " <tr><td colspan = '2'>If you have any questions or concerns regarding the above information, please contact Liezl at liezl@aero-werks.com.<br /><br/ > ";
                 Message += " Thanks, <br/ > <strong> " + Utility.EmailDisplayName() + " </strong> <br />";
                 Message += " </td></tr><tr><td colspan='2' style='color:Red'>"+ Do_Not_Reply +"</td></tr></table></td></tr></table></body></html> ";                       
@@ -703,7 +714,8 @@ public partial class InventoryManagement_FrmShipments : System.Web.UI.Page
                 {
                     ddlVendorLookup.SelectedValue = returnValue;
                 }
-                GetContainerInfo();                
+                GetContainerInfo();
+                GetDestinationID();               
                 GetFilePath(ddlContainerLookup.SelectedValue);
                 GetContainerHistory();
             }
@@ -897,6 +909,31 @@ public partial class InventoryManagement_FrmShipments : System.Web.UI.Page
             Utility.AddEditException(ex);
         }
     }
+    //GetDestinationID
+    private void GetDestinationID()
+    {
+        try
+        {
+            if (ddlContainerLookup.SelectedIndex > 0)
+            {
+                ObjBOL.Operation = 22;
+                ObjBOL.ID = Int32.Parse(ddlContainerLookup.SelectedValue);
+                string returnValue = ObjBLL.Return_String(ObjBOL);
+                if (returnValue.Trim() != "")
+                {
+                    HfDestinationID.Value = returnValue;
+                }
+                else
+                {
+                    HfDestinationID.Value = "-1";
+                }               
+            }
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+    }
 
     private void GetContainerHistory()
     {
@@ -965,7 +1002,7 @@ public partial class InventoryManagement_FrmShipments : System.Web.UI.Page
         DataTable dt = new DataTable();
         try
         {
-            clscon.Return_DT(dt, "EXEC [dbo].[Get_PackingDetails] '" + ddlContainerLookup.SelectedValue + "'");
+            clscon.Return_DT(dt, "EXEC [IV].[Get_PackingDetails_V1] '" + ddlContainerLookup.SelectedValue + "'");
         }
         catch (Exception ex)
         {
@@ -979,7 +1016,7 @@ public partial class InventoryManagement_FrmShipments : System.Web.UI.Page
         DataTable dt = new DataTable();
         try
         {
-            clscon.Return_DT(dt, "EXEC [dbo].[Get_PackingDetails_Jobs] '" + ddlContainerLookup.SelectedValue + "'");
+            clscon.Return_DT(dt, "EXEC [IV].[Get_PackingDetails_Jobs] '" + ddlContainerLookup.SelectedValue + "'");
         }
         catch (Exception ex)
         {

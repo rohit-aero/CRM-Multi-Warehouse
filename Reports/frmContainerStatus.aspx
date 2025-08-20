@@ -15,14 +15,20 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+                    <div class="col-2 col-sm-2 col-md-2 col-lg-1">
                         <div class="form-group">
                             <label>By Vendor</label>
                             <asp:DropDownList CssClass="form-control form-control-sm" ID="ddlVendor" runat="server" DataTextField="Source" DataValueField="SourceId" AutoPostBack="True" OnSelectedIndexChanged="ddlVendor_SelectedIndexChanged">
                             </asp:DropDownList>
                         </div>
                     </div>
-
+                    <div class="col-2 col-sm-2 col-md-2 col-lg-2">
+                    <div class="form-group">
+                            <label>By Destination</label>
+                            <asp:DropDownList CssClass="form-control form-control-sm" ID="ddlDestination" runat="server" DataTextField="Name" DataValueField="WareHouseID" AutoPostBack="True" OnSelectedIndexChanged="ddlDestination_SelectedIndexChanged">
+                            </asp:DropDownList>
+                        </div>
+                    </div>
                     <div class="col-sm-4 col-md-3 col-lg-2">
                         <div class="form-group">
                             <label>Sent Date From</label>
@@ -41,9 +47,9 @@
                             </asp:CalendarExtender>
                         </div>
                     </div>
-                    <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+                    <div class="col-6 col-sm-4 col-md-3 col-lg-1">
                         <div class="form-group">
-                            <label>Shippment By</label>
+                            <label>Ship By</label>
                             <asp:DropDownList CssClass="form-control form-control-sm" ID="ddlShipmentBy" runat="server" AutoPostBack="True" OnSelectedIndexChanged="ddlShipmentBy_SelectedIndexChanged">
                                 <asp:ListItem Value="0">All</asp:ListItem>
                                 <asp:ListItem Value="1">By Sea</asp:ListItem>
@@ -52,9 +58,9 @@
                         </div>
                     </div>
 
-                    <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+                    <div class="col-6 col-sm-4 col-md-3 col-lg-1">
                         <div class="form-group">
-                            <label>By Container Status</label>
+                            <label>By Status</label>
                             <asp:DropDownList CssClass="form-control form-control-sm" ID="ddlContainerCheckStatus" runat="server" AutoPostBack="True" OnSelectedIndexChanged="ddlContainerCheckStatus_SelectedIndexChanged">
                                 <asp:ListItem Value="0">All</asp:ListItem>
                                 <asp:ListItem Value="1">Submitted</asp:ListItem>
@@ -90,6 +96,7 @@
                 });
                 function BindDrp() {
                     $('#<%=ddlVendor.ClientID%>').chosen();
+                    $('#<%=ddlDestination.ClientID%>').chosen();
                     //ddlContainerNo
                     $('#<%=ddlContainerNo.ClientID%>').chosen();
                     $('#<%=ddlContainerCheckStatus.ClientID%>').chosen();

@@ -15,6 +15,7 @@ public partial class Reports_frmContainerStatus : System.Web.UI.Page
         if (!IsPostBack)
         {
             Bind_Controls();
+            BindDestWareHouse("");
         }
     }
 
@@ -51,6 +52,60 @@ public partial class Reports_frmContainerStatus : System.Web.UI.Page
             }
             //SetAutoDefaultDates();
             //BindContainer();            
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+    }
+
+    private void BindDestWareHouse(string selectedSourceID)
+    {
+        try
+        {
+            if (selectedSourceID != "")
+            {
+                DataSet ds = new DataSet();
+                ObjBOL.Operation = 3;
+                if (selectedSourceID != "")
+                {
+                    ObjBOL.SourceID = Convert.ToInt32(selectedSourceID);
+                }
+                ds = ObjBLL.GetSearchContainerData(ObjBOL);
+                if (ds.Tables[0].Rows.Count > 0)
+                {
+                    Utility.BindDropDownListAll(ddlDestination, ds.Tables[0]);
+                    if (ddlDestination.Items.Count > 0)
+                    {
+                        ddlDestination.SelectedIndex = 0;
+                    }
+                }
+                else
+                {
+                    if (ddlDestination.Items.Count > 0)
+                    {
+                        ClearDestination();
+                    }
+
+                }
+            }
+            else
+            {
+                ClearDestination();
+            }
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+    }
+
+    private void ClearDestination()
+    {
+        try
+        {
+            ddlDestination.Items.Clear();
+            ddlDestination.Items.Insert(0, new System.Web.UI.WebControls.ListItem("All", "0"));
         }
         catch (Exception ex)
         {
@@ -110,7 +165,7 @@ public partial class Reports_frmContainerStatus : System.Web.UI.Page
         DataTable dt = new DataTable();
         try
         {
-            clscon.Return_DT(dt, "EXEC [dbo].[Get_PackingDetails] '" + ddlContainerNo.SelectedValue + "'");
+            clscon.Return_DT(dt, "EXEC [IV].[Get_PackingDetails_V1] '" + ddlContainerNo.SelectedValue + "'");
         }
         catch (Exception ex)
         {
@@ -124,7 +179,7 @@ public partial class Reports_frmContainerStatus : System.Web.UI.Page
         DataTable dt = new DataTable();
         try
         {
-            clscon.Return_DT(dt, "EXEC [dbo].[Get_PackingDetails_Jobs] '" + ddlContainerNo.SelectedValue + "'");
+            clscon.Return_DT(dt, "EXEC [IV].[Get_PackingDetails_Jobs] '" + ddlContainerNo.SelectedValue + "'");
         }
         catch (Exception ex)
         {
@@ -171,6 +226,10 @@ public partial class Reports_frmContainerStatus : System.Web.UI.Page
             txtSentDateFrom.Text = String.Empty;
             txtSentDateTo.Text = String.Empty;
             ddlVendor.SelectedIndex = 0;
+            if (ddlDestination.Items.Count > 0)
+            {
+                ClearDestination();
+            }
             ddlContainerCheckStatus.SelectedIndex = 0;
             ddlShipmentBy.SelectedIndex = 0;
             Bind_Controls();
@@ -196,6 +255,10 @@ public partial class Reports_frmContainerStatus : System.Web.UI.Page
             if (ddlVendor.SelectedIndex > 0)
             {
                 qstr += " AND Inv_Container.Sourceid= '" + ddlVendor.SelectedValue + "' ";
+            }
+            if (ddlDestination.SelectedIndex > 0)
+            {
+                qstr += " AND Inv_Container.WareHouseID= '" + ddlDestination.SelectedValue + "' ";
             }
             if (txtSentDateFrom.Text != "" && txtSentDateTo.Text != "")
             {
@@ -235,6 +298,26 @@ public partial class Reports_frmContainerStatus : System.Web.UI.Page
     }
 
     protected void ddlVendor_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        try
+        {
+            if (ddlVendor.SelectedIndex > 0)
+            {
+                BindDestWareHouse(ddlVendor.SelectedValue);
+            }
+            else
+            {
+                ClearDestination();
+            }
+            BindContainer();
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+    }
+
+    protected void ddlDestination_SelectedIndexChanged(object sender, EventArgs e)
     {
         try
         {

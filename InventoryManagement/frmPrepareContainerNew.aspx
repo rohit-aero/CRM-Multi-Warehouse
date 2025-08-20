@@ -35,13 +35,13 @@
                         <div class="row">
                             <div class="col-auto">
                                 <asp:Button ID="btnSave" runat="server" CssClass="btn btn-success btn-sm" Text="Save" CausesValidation="false" OnClientClick="return confirm('Are you sure.?');" OnClick="btnSave_Click" />
-                                     <asp:Button ID="btnPackingDetails" runat="server" CausesValidation="false" Enabled="false" CssClass="btn btn-secondary btn-sm" OnClientClick="window.document.forms[0].target='_blank';"
+                                <asp:Button ID="btnPackingDetails" runat="server" CausesValidation="false" Enabled="false" CssClass="btn btn-secondary btn-sm" OnClientClick="window.document.forms[0].target='_blank';"
                                     Text="Generate Packing List" OnClick="btnPackingDetails_Click" />
-                                <asp:Button ID="btnNotify" runat="server" CssClass="btn btn-danger btn-sm" Text="Acknowledgement" Enabled="false" CausesValidation="false" OnClick="btnNotify_Click" />
-                                <asp:Button ID="btnSubmit" runat="server" CssClass="btn btn-danger btn-sm" Text="Submission" Enabled="false" CausesValidation="false" OnClick="btnSubmit_Click" />
+                                <asp:Button ID="btnNotify" runat="server" CssClass="btn btn-danger btn-sm" Text="Acknowledgement" Enabled="false" CausesValidation="false" OnClick="btnNotify_Click" OnClientClick="return confirm('Are you sure you want to Acknowledgement.?');" />
+                                <asp:Button ID="btnSubmit" runat="server" CssClass="btn btn-danger btn-sm" Text="Submission" Enabled="false" CausesValidation="false" OnClick="btnSubmit_Click" OnClientClick="return confirm('Are you sure to Submit this Container?');" />
                                 <asp:Button ID="btnGenerate" runat="server" CausesValidation="false" Enabled="false" CssClass="btn btn-primary btn-sm" OnClientClick="window.document.forms[0].target='_blank';" Text="Preview" Visible="false" OnClick="btnGenerate_Click" />
                                 <asp:Button ID="btnAddProjects" runat="server" CausesValidation="false" Enabled="false" CssClass="btn btn-secondary btn-sm" OnClientClick="window.document.forms[0].target='_blank';"
-                                    Text="Add Parts/Projects" OnClick="btnAddProjects_Click" />                           
+                                    Text="Add Parts/Projects" OnClick="btnAddProjects_Click" />
                                 <asp:Button ID="btnPackingDetailsExcel" runat="server" CausesValidation="false" Enabled="false" CssClass="btn btn-secondary btn-sm" OnClientClick="window.document.forms[0].target='_blank';"
                                     Text="Export To Excel" OnClick="btnPackingDetailsExcel_Click" />
                                 <asp:Button ID="btnContainerReport" runat="server" CssClass="btn btn-secondary btn-sm" Text="Report" OnClick="btnContainerReport_Click" />
@@ -64,8 +64,14 @@
                     </div>
                     <div class="col-sm-6 col-md-3 col-lg-2">
                         <div class="form-group">
-                            <label class="text-danger">Vendor*</label>
+                            <label class="text-danger"> Source WareHouse*</label>
                             <asp:DropDownList CssClass="form-control" ID="ddlVendor" runat="server" DataTextField="Source" DataValueField="id" AutoPostBack="True" OnSelectedIndexChanged="ddlVendor_SelectedIndexChanged"></asp:DropDownList>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-md-3 col-lg-2">
+                        <div class="form-group">
+                            <label class="text-danger">Destination WareHouse*</label>
+                            <asp:DropDownList CssClass="form-control" ID="ddlDestWareHouse" runat="server" DataTextField="Name" DataValueField="WareHouseID" AutoPostBack="True" OnSelectedIndexChanged="ddlDestWareHouse_SelectedIndexChanged"></asp:DropDownList>
                         </div>
                     </div>
                     <div class="col-sm-6 col-md-3 col-lg-2">
@@ -234,6 +240,7 @@
                                                     <ItemTemplate>
                                                         <asp:Label ID="lblPartid" runat="server" Text='<%# Eval("PartId") %>' Visible="false">
                                                         </asp:Label>
+                                                        <asp:Label ID="lblWareHouseID" runat="server" Text='<%# Eval("DestWareHouseID") %>' Visible="false"></asp:Label>
                                                         <asp:Label ID="lblPartNumber" runat="server" Text='<%# Eval("PartNumber") %>'></asp:Label>
                                                         <asp:Label ID="lblPOId" runat="server" Text='<%# Eval("POid") %>' Visible="false"></asp:Label>
                                                         <asp:Label ID="lblPODetailId" runat="server" Text='<%# Eval("PODetailid") %>' Visible="false"></asp:Label>
@@ -438,9 +445,9 @@
                     </div>
                 </div>
             </div>
-            <asp:GridView  ID="gvPackingListExcelExport" runat="server" CellPadding="3" EmptyDataText="No Items Found" Width="100%" CssClass="table mainGridTable table-sm verticalHeading mx-auto text-center"
-                        EnableModelValidation="True" ShowFooter="false" OnRowDataBound="gvPackingListExcelExport_RowDataBound" style="display:none;">
-                    </asp:GridView>
+            <asp:GridView ID="gvPackingListExcelExport" runat="server" CellPadding="3" EmptyDataText="No Items Found" Width="100%" CssClass="table mainGridTable table-sm verticalHeading mx-auto text-center"
+                EnableModelValidation="True" ShowFooter="false" OnRowDataBound="gvPackingListExcelExport_RowDataBound" Style="display: none;">
+            </asp:GridView>
             <script type="text/javascript">
                 $(document).ready(function () {
                     Sys.WebForms.PageRequestManager.getInstance().add_pageLoaded(PageLoaded)
@@ -462,7 +469,9 @@
                     $('#<%=ddlPartNo.ClientID%>').chosen();
                     $('#<%=ddlPONumber.ClientID%>').chosen();
                     $('#<%=ddlStatus.ClientID%>').chosen();
-                   <%-- $('#<%=ddlContainerJobNo.ClientID%>').chosen({ width: "inherit" }); --%>
+                    $('#<%=ddlDestWareHouse.ClientID%>').chosen();
+                   <%-- $('#<%=ddlContainerJobNo.ClientID%>').chosen({ width: 
+                "inherit" }); --%>
                 }
 
             </script>

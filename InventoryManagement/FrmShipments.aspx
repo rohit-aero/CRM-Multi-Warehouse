@@ -141,6 +141,7 @@
             <asp:HiddenField ID="HfCheckEmployee" runat="server" Value="-1" />
               <asp:HiddenField ID="HfCheckRecDate" runat="server" Value="-1" />
             <asp:HiddenField ID="HfEditRowID" runat="server" Value="-1" />
+            <asp:HiddenField ID="HfDestinationID" runat="server" Value="-1" />
             <script type="text/javascript">
                 $(document).ready(function () {
                     Sys.WebForms.PageRequestManager.getInstance().add_pageLoaded(PageLoaded)

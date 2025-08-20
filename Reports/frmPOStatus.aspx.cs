@@ -19,12 +19,13 @@ public partial class Reports_frmPOStatus : System.Web.UI.Page
             {
                 Bind_Controls();
                 chkDeletePermission();
-            }            
+                BindDestWareHouse("");
+            }
         }
     }
 
 
-    private void  chkDeletePermission()
+    private void chkDeletePermission()
     {
         try
         {
@@ -66,7 +67,7 @@ public partial class Reports_frmPOStatus : System.Web.UI.Page
         {
             string msg = "";
             var EmployeeID = Utility.GetCurrentSession().EmployeeID;
-            if(ddlPurchaseOrder.SelectedIndex>0)
+            if (ddlPurchaseOrder.SelectedIndex > 0)
             {
                 string PurchaseOrderID = ddlPurchaseOrder.SelectedValue;
                 ObjBOL.Operation = 2;
@@ -88,9 +89,9 @@ public partial class Reports_frmPOStatus : System.Web.UI.Page
             }
             else
             {
-                Utility.ShowMessage_Error(Page, "Please Select Purchase Order No. !!");                
+                Utility.ShowMessage_Error(Page, "Please Select Purchase Order No. !!");
             }
-            
+
         }
         catch (Exception ex)
         {
@@ -127,10 +128,10 @@ public partial class Reports_frmPOStatus : System.Web.UI.Page
     {
         try
         {
-            if(ValidationCheck()==true)
+            if (ValidationCheck() == true)
             {
                 string filename = String.Empty;
-                if (ddlPurchaseOrder.SelectedIndex>0)
+                if (ddlPurchaseOrder.SelectedIndex > 0)
                 {
                     filename = ddlPurchaseOrder.SelectedItem.Text;
                 }
@@ -138,12 +139,12 @@ public partial class Reports_frmPOStatus : System.Web.UI.Page
                 {
                     filename = "";
                 }
-                DataTable dt = new DataTable();               
-                dt = ReportDataZero();                
+                DataTable dt = new DataTable();
+                dt = ReportDataZero();
                 rprt.Load(Server.MapPath("~/Reports/rptPurchaseOrderManual.rpt"));
                 if (dt.Rows.Count > 0)
                 {
-                    rprt.SetDataSource(dt);                    
+                    rprt.SetDataSource(dt);
                     rprt.ExportToHttpResponse(CrystalDecisions.Shared.ExportFormatType.PortableDocFormat, Response, false, filename);
                 }
                 else
@@ -164,10 +165,10 @@ public partial class Reports_frmPOStatus : System.Web.UI.Page
         }
         catch (Exception ex)
         {
-            if(ex.ToString() != "Thread was being aborted.")
+            if (ex.ToString() != "Thread was being aborted.")
             {
                 Utility.AddEditException(ex);
-            }            
+            }
         }
         finally
         {
@@ -181,7 +182,7 @@ public partial class Reports_frmPOStatus : System.Web.UI.Page
         DataTable dt = new DataTable();
         try
         {
-            clscon.Return_DT(dt, "EXEC [dbo].[Inv_GeneratePurchaseOrder] '" + ddlPurchaseOrder.SelectedValue + "'");
+            clscon.Return_DT(dt, "EXEC [IV].[Inv_GeneratePurchaseOrder] '" + ddlPurchaseOrder.SelectedValue + "'");
         }
         catch (Exception ex)
         {
@@ -229,7 +230,12 @@ public partial class Reports_frmPOStatus : System.Web.UI.Page
             txtOrderDateTo.Text = String.Empty;
             ddlVendor.SelectedIndex = 0;
             ddlPOStatus.SelectedValue = "1";
-            Bind_Controls();            
+            if (ddlDestination.Items.Count > 0)
+            {
+                ddlDestination.Items.Clear();
+                ddlDestination.Items.Insert(0, new System.Web.UI.WebControls.ListItem("All", "0"));
+            }
+            Bind_Controls();
         }
         catch (Exception ex)
         {
@@ -250,19 +256,23 @@ public partial class Reports_frmPOStatus : System.Web.UI.Page
             if (ddlVendor.SelectedIndex > 0)
             {
                 qstr += " AND Inv_PurchaseOrder_Manual.SourceId= '" + ddlVendor.SelectedValue + "' ";
-            }  
-            if(txtOrderDateFrom.Text != "" && txtOrderDateTo.Text != "")
+            }
+            if (ddlDestination.SelectedIndex > 0)
             {
-                qstr += " AND Inv_PurchaseOrder_Manual.IssueDate BETWEEN '" + txtOrderDateFrom.Text  + "' AND '" +  txtOrderDateTo.Text +"'";
-            }  
-            if(ddlPOStatus.SelectedIndex>0)
+                qstr += " AND Inv_PurchaseOrder_Manual.WareHouseID= '" + ddlDestination.SelectedValue + "' ";
+            }
+            if (txtOrderDateFrom.Text != "" && txtOrderDateTo.Text != "")
+            {
+                qstr += " AND Inv_PurchaseOrder_Manual.IssueDate BETWEEN '" + txtOrderDateFrom.Text + "' AND '" + txtOrderDateTo.Text + "'";
+            }
+            if (ddlPOStatus.SelectedIndex > 0)
             {
                 qstr += " AND Inv_PurchaseOrder_Manual.Status = '" + ddlPOStatus.SelectedValue + "' ";
-            }        
+            }
             qstr += " Order by Inv_PurchaseOrder_Manual.PONumber asc ";
             FQstr = qstr;
             clscon.Return_DT(dt, FQstr);
-            if(dt.Rows.Count>0)
+            if (dt.Rows.Count > 0)
             {
                 Utility.BindDropDownList(ddlPurchaseOrder, dt);
             }
@@ -281,6 +291,10 @@ public partial class Reports_frmPOStatus : System.Web.UI.Page
     {
         try
         {
+            if (ddlVendor.SelectedIndex > 0)
+            {
+                BindDestWareHouse(ddlVendor.SelectedValue);
+            }
             BindContainer();
         }
         catch (Exception ex)
@@ -288,6 +302,62 @@ public partial class Reports_frmPOStatus : System.Web.UI.Page
             Utility.AddEditException(ex);
         }
     }
+
+    protected void ddlDestination_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        try
+        {
+            BindContainer();
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+    }
+
+
+    private void BindDestWareHouse(string selectedSourceID)
+    {
+        try
+        {
+            if (selectedSourceID != "")
+            {
+                DataSet ds = new DataSet();
+                ObjBOL.Operation = 3;
+                if (selectedSourceID != "")
+                {
+                    ObjBOL.SourceID = Convert.ToInt32(selectedSourceID);
+                }
+                ds = ObjBLL.GetSearchContainerData(ObjBOL);
+                if (ds.Tables[0].Rows.Count > 0)
+                {
+                    Utility.BindDropDownListAll(ddlDestination, ds.Tables[0]);
+                    if (ddlDestination.Items.Count > 0)
+                    {
+                        ddlDestination.SelectedIndex = 0;
+                    }
+                }
+                else
+                {
+                    if (ddlDestination.Items.Count > 0)
+                    {
+                        ddlDestination.Items.Clear();
+                        ddlDestination.Items.Insert(0, new System.Web.UI.WebControls.ListItem("All", "0"));
+                    }
+
+                }
+            }
+            else
+            {
+                ddlDestination.Items.Insert(0, new System.Web.UI.WebControls.ListItem("All", "0"));
+            }
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+    }
+
 
     protected void ddlContainerCheckStatus_SelectedIndexChanged(object sender, EventArgs e)
     {

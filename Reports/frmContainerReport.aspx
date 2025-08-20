@@ -19,7 +19,14 @@
                     <div class="col-6 col-sm-4 col-md-3 col-lg-2">
                         <div class="form-group">
                             <label>By Vendor</label>
-                            <asp:DropDownList CssClass="form-control form-control-sm" ID="ddlVendor" runat="server" DataTextField="Source" DataValueField="SourceId"></asp:DropDownList>
+                            <asp:DropDownList CssClass="form-control form-control-sm" ID="ddlVendor" runat="server" DataTextField="Source" DataValueField="SourceId" AutoPostBack="true" OnSelectedIndexChanged="ddlVendor_SelectedIndexChanged"></asp:DropDownList>
+                        </div>
+                    </div>
+                    <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+                        <div class="form-group">
+                            <label>By Destination</label>
+                            <asp:DropDownList CssClass="form-control form-control-sm" ID="ddlDestination" runat="server" DataTextField="Name" DataValueField="WareHouseID">
+                            </asp:DropDownList>
                         </div>
                     </div>
                     <div class="col-6 col-sm-4 col-md-3 col-lg-2">
@@ -74,6 +81,7 @@
         });
         function BindDrp() {
             $('#<%=ddlVendor.ClientID%>').chosen();
+            $('#<%=ddlDestination.ClientID%>').chosen();
             $('#<%=ddlStatus.ClientID%>').chosen();
             $('#<%=ddlContainerCheckStatus.ClientID%>').chosen();
         }

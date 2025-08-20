@@ -1783,6 +1783,7 @@ public static class Utility
                     headerText = headerText.Replace("&nbsp;", "").Replace("&amp;", "&");
                     workSheet.Cells[1, excelColumnIndex].Value = headerText;
                     workSheet.Cells["A1:" + GetColumnLetter(excelColumnIndex) + "1"].Style.Font.Bold = true;
+                    workSheet.Cells["A1:" + GetColumnLetter(excelColumnIndex) + "1"].Style.Font.Color.SetColor(System.Drawing.Color.Black);
                     workSheet.Column(excelColumnIndex).Width = 20;
 
                     excelColumnIndex++; // Increment the Excel column index
@@ -1792,8 +1793,13 @@ public static class Utility
                     for (int i = 0; i < gridView.HeaderRow.Cells.Count; i++)
                     {
                         headerText = GetTextFromHtml(gridView.HeaderRow.Cells[i].Text);
+                        if(headerText == "")
+                        {
+                            headerText = gridView.HeaderRow.Cells[i].Text;
+                        }
                         workSheet.Cells[1, excelColumnIndex].Value = headerText.Replace("&nbsp;", "").Replace("&amp;", "&").Replace("&quot;", " ");
                         workSheet.Cells["A1:" + GetColumnLetter(excelColumnIndex) + "1"].Style.Font.Bold = true;
+                        workSheet.Cells["A1:" + GetColumnLetter(excelColumnIndex) + "1"].Style.Font.Color.SetColor(System.Drawing.Color.Black);
                         workSheet.Column(excelColumnIndex).Width = 20;
                         excelColumnIndex++;
                     }

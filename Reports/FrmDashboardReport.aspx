@@ -17,7 +17,7 @@
                 <div class="row pb-2">
                     <div class="col-2">
                         <label class="text-danger">Report Type*</label>
-                        <asp:DropDownList ID="ddlReportType" runat="server" CssClass="form-control form-control-sm chosenFullWidth" AutoPostBack="True" OnSelectedIndexChanged="ddlReportType_SelectedIndexChanged">                          
+                        <asp:DropDownList ID="ddlReportType" runat="server" CssClass="form-control form-control-sm chosenFullWidth" AutoPostBack="True" OnSelectedIndexChanged="ddlReportType_SelectedIndexChanged">
                             <asp:ListItem Value="1" Selected="True">In-Transit</asp:ListItem>
                             <asp:ListItem Value="2">Arrived Container</asp:ListItem>
                             <asp:ListItem Value="3">Inventory Report</asp:ListItem>
@@ -194,6 +194,22 @@
                             <asp:GridView CssClass="table mainGridTable table-sm mb-0" ID="gvInTransit" runat="server" AutoGenerateColumns="False"
                                 EnableModelValidation="True">
                                 <Columns>
+                                    <asp:TemplateField HeaderText="Source" HeaderStyle-Width="5%">
+                                        <ItemTemplate>
+                                            <asp:Label ID="lblSource" runat="server" Text='<%# Eval("Source") %>'>
+                                            </asp:Label>
+                                        </ItemTemplate>
+                                        <ItemStyle />
+                                        <HeaderStyle Width="5%" />
+                                    </asp:TemplateField>
+                                    <asp:TemplateField HeaderText="Destination" HeaderStyle-Width="5%">
+                                        <ItemTemplate>
+                                            <asp:Label ID="lblDestination" runat="server" Text='<%# Eval("Destination") %>'>
+                                            </asp:Label>
+                                        </ItemTemplate>
+                                        <ItemStyle />
+                                        <HeaderStyle Width="5%" />
+                                    </asp:TemplateField>
                                     <asp:TemplateField HeaderText="Container No" HeaderStyle-Width="5%">
                                         <ItemTemplate>
                                             <asp:Label ID="lblContainerNo" runat="server" Text='<%# Eval("ContainerNo") %>'>
@@ -300,6 +316,14 @@
                                         <ItemStyle />
                                         <HeaderStyle Width="10%" />
                                     </asp:TemplateField>
+                                       <asp:TemplateField HeaderText="Destination" HeaderStyle-Width="10%">
+                                        <ItemTemplate>
+                                            <asp:Label ID="lblWareHouseDest" runat="server" Text='<%# Eval("DestWarehouse") %>'>
+                                            </asp:Label>
+                                        </ItemTemplate>
+                                        <ItemStyle />
+                                        <HeaderStyle Width="10%" />
+                                    </asp:TemplateField>
                                     <asp:TemplateField HeaderText="Issue Date" HeaderStyle-Width="10%">
                                         <ItemTemplate>
                                             <asp:Label ID="lblIssueDate" runat="server" Text='<%# Eval("IssueDate","{0:MM/dd/yyyy}") %>'>
@@ -371,6 +395,8 @@
                 </div>
             </asp:Panel>
             <asp:LinkButton ID="LinkButton3" runat="server"></asp:LinkButton>
+
+            <asp:GridView CssClass="table mainGridTable table-sm" ID="gvInventoryReportExcel" runat="server" Visible="false" AutoGenerateColumns="false"></asp:GridView>
         </ContentTemplate>
         <Triggers>
             <asp:PostBackTrigger ControlID="btnGeneratePDF" />

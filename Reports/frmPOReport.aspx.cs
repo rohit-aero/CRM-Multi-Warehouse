@@ -41,6 +41,57 @@ public partial class Reports_frmPOReport : System.Web.UI.Page
                 Utility.BindDropDownListAll(ddlLookupPart, ds.Tables[1]);
                 ddlLookupPart.SelectedIndex = 0;
             }
+            BindDestWareHouse("");
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+    }
+
+    private void BindDestWareHouse(string selectedSourceID)
+    {
+        try
+        {
+            if (selectedSourceID != "")
+            {
+                DataSet ds = new DataSet();
+                ObjBOL.Operation = 4;
+                if (selectedSourceID != "")
+                {
+                    ObjBOL.SourceID = Convert.ToInt32(selectedSourceID);
+                }
+                ds = ObjBLL.GetSearchPODataReport(ObjBOL);
+                if (ds.Tables[0].Rows.Count > 0)
+                {
+                    Utility.BindDropDownListAll(ddlDest, ds.Tables[0]);
+                }
+                else
+                {
+                    if (ddlDest.Items.Count > 0)
+                    {
+                        ClearDestWarehouse();
+                    }
+
+                }
+            }
+            else
+            {
+                ClearDestWarehouse();
+            }
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+    }
+
+    private void ClearDestWarehouse()
+    {
+        try
+        {
+            ddlDest.Items.Clear();
+            ddlDest.Items.Insert(0, new System.Web.UI.WebControls.ListItem("All", "0"));
         }
         catch (Exception ex)
         {
@@ -138,9 +189,9 @@ public partial class Reports_frmPOReport : System.Web.UI.Page
             string FQstr = String.Empty;
             Qstr += " DECLARE @TempTable as Table( PONumber varchar(50), Part# varchar(50), ";
             Qstr += " [Description] varchar(500),  OrderDate   varchar(50), Requestor   varchar(50), ";
-            Qstr += " Sourceid    varchar(10),  OrderQty    int, ShipQty     int, PendingQty  int, ";
+            Qstr += " Sourceid    varchar(10), Destination Varchar(20), OrderQty    int, ShipQty     int, PendingQty  int, ";
             Qstr += " DetailsStatus varchar(10), Shipmentby  VARCHAR(10), UM varchar(10),  ";
-            Qstr += " POId int, PartID int,  IsSubmitted int ) ";
+            Qstr += " POId int, PartID int,  IsSubmitted int, ReqDetailID int ) ";
             Qstr += " INSERT INTO @TempTable SELECT  ";
             Qstr += " Inv_PurchaseOrder_Manual.PONumber, ";
             Qstr += " MIN(Inv_Parts.PartNumber) AS PartNumber,MIN(Inv_Parts.PartDes) AS PartDes, ";
@@ -148,32 +199,38 @@ public partial class Reports_frmPOReport : System.Web.UI.Page
             Qstr += " CASE WHEN MIN(Inv_PurchaseOrderDetail_Manual.Requestor) IS NULL THEN  ";
             Qstr += " concat(MIN(EmpRequestor.FirstName) + ' ', MIN(EmpRequestor.LastName)) ";
             Qstr += " ELSE concat(MIN(EmpPORequestor.FirstName) + ' ', MIN(EmpPORequestor.LastName)) end as Requestor, ";
-            Qstr += " MIN(Inv_Source.[Source]) AS [Source],NULL AS OrderQty,NULL AS ShipQty,NULL AS PendingQty, ";
-            Qstr += " MIN(Inv_PurchaseOrderDetail_Manual.[StatusID]) AS StatusID, ";
+            Qstr += "   MIN(Inv_Source.[WarehouseName]) AS [Source], MIN(Inv_Warehouse.[WarehouseName]),";
+            Qstr += " NULL AS OrderQty,NULL AS ShipQty,NULL AS PendingQty, ";
+            Qstr += " NULL AS StatusID, ";
             Qstr += " CASE WHEN MIN(Inv_PurchaseOrderDetail_Manual.ReqID) IS NULL THEN MIN(Inv_PurchaseOrderDetail_Manual.ShipmentBy) ";
             Qstr += " ELSE MIN(Inv_RequisitionDetail.ShipmentBy) END AS ShipmentBy,MIN(Inv_UM.UM) AS [UM],MIN(Inv_PurchaseOrder_Manual.Id) AS POId, ";
-            Qstr += " Inv_Parts.id,MIN(Inv_PurchaseOrder_Manual.IsSubmitted) AS IsSubmitted FROM Inv_PurchaseOrderDetail_Manual ";
+            Qstr += " Inv_Parts.id,MIN(Inv_PurchaseOrder_Manual.IsSubmitted) AS IsSubmitted,MIN(Inv_RequisitionDetail.id) AS ReqDetailID FROM Inv_PurchaseOrderDetail_Manual ";
             Qstr += " Inner join Inv_PurchaseOrder_Manual on Inv_PurchaseOrder_Manual.Id=Inv_PurchaseOrderDetail_Manual.PurchaseOrderId ";
             Qstr += " LEFT JOIN Inv_RequisitionDetail ON Inv_RequisitionDetail.id=Inv_PurchaseOrderDetail_Manual.ReqDetailID ";
             Qstr += " LEFT JOIN tblEmployees as EmpRequestor ON EmpRequestor.EmployeeID=Inv_RequisitionDetail.Requestor ";
             Qstr += " LEFT JOIN tblEmployees as EmpPORequestor ON EmpPORequestor.EmployeeID=Inv_PurchaseOrderDetail_Manual.Requestor ";
             Qstr += " LEFT JOIN Inv_Parts ON Inv_Parts.id=Inv_PurchaseOrderDetail_Manual.PartId ";
-            Qstr += " LEFT JOIN Inv_Source ON Inv_Source.id=Inv_PurchaseOrder_Manual.SourceId ";
+            Qstr += " LEFT JOIN Inv_Warehouse AS Inv_Source ON Inv_Source.id=Inv_PurchaseOrder_Manual.SourceId ";
+            Qstr += " LEFT JOIN Inv_Warehouse ON Inv_Warehouse.Id=Inv_PurchaseOrder_Manual.WareHouseID ";
             Qstr += " LEFT JOIN Inv_UM ON Inv_UM.id=Inv_Parts.UMId ";
             Qstr += " Group by Inv_PurchaseOrder_Manual.PONumber,Inv_Parts.id ";
-            Qstr += " DECLARE @PART_ID int  DECLARE @PO_id int DECLARE CUR_PART CURSOR ";
-            Qstr += " STATIC FOR SELECT Partid,POID FROM @Temptable   OPEN  CUR_PART ";
-            Qstr += " IF @@CURSOR_ROWS > 0  BEGIN FETCH NEXT FROM CUR_PART INTO @PART_ID,@PO_id ";
+            Qstr += " DECLARE @PART_ID int  DECLARE @PO_id int DECLARE @ReqDetailID int DECLARE CUR_PART CURSOR ";
+            Qstr += " STATIC FOR SELECT Partid,POID,ReqDetailID FROM @Temptable   OPEN  CUR_PART ";
+            Qstr += " IF @@CURSOR_ROWS > 0  BEGIN FETCH NEXT FROM CUR_PART INTO @PART_ID,@PO_id,@ReqDetailID ";
             Qstr += "  WHILE @@Fetch_status = 0  BEGIN  ";
             Qstr += " UPDATE @TempTable SET OrderQty=(SELECT CASE WHEN MIN(ReqID) IS NOT NULL THEN SUM(OrderQty) ELSE MIN(OrderQty) END AS OrderQty FROM ";
             Qstr += " Inv_PurchaseOrderDetail_Manual  WHERE Inv_PurchaseOrderDetail_Manual.PartId=@PART_ID AND Inv_PurchaseOrderDetail_Manual.PurchaseOrderId=@PO_id ";
             Qstr += " GROUP BY Inv_PurchaseOrderDetail_Manual.PurchaseOrderId,PartId) WHERE PartID=@PART_ID AND POId=@PO_id ";
             Qstr += " UPDATE @TempTable SET ShipQty=(SELECT SUM(ShipQty) FROM Inv_ContainerDetail WHERE Inv_ContainerDetail.PartId=@PART_ID ";
             Qstr += " AND POId=@PO_id ) WHERE PartID=@PART_ID AND POId=@PO_id  ";
-            Qstr += " FETCH NEXT FROM CUR_PART INTO @PART_ID,@PO_id ";
+            Qstr += " UPDATE @Temptable SET DetailsStatus = ( SELECT StatusID FROM Inv_RequisitionDetail ";
+            Qstr += " WHERE id=(SELECT ReqDetailID FROM Inv_PurchaseOrderDetail_Manual ";
+            Qstr += " WHERE PartId=@PART_ID AND PurchaseOrderId=@PO_id)) ";
+            Qstr += " where Partid=@PART_ID and POID=@PO_id ";
+            Qstr += " FETCH NEXT FROM CUR_PART INTO @PART_ID,@PO_id,@ReqDetailID ";
             Qstr += " END  END CLOSE CUR_PART DEALLOCATE CUR_PART ";
             Qstr += " SELECT PONumber,Part#,[Description],OrderDate, ";
-            Qstr += " Requestor,Sourceid,OrderQty,ShipQty, ";
+            Qstr += " Requestor,Sourceid, Destination, OrderQty,ShipQty, ";
             Qstr += " case when (ISNULL(OrderQty,0)-ISNULL(ShipQty,0))<0 then 0 else (ISNULL(OrderQty,0)-ISNULL(ShipQty,0)) end as  PendingQty, ";
             Qstr += " CASE WHEN ISNULL(DetailsStatus,1)=1 Then 'Open' WHEN DetailsStatus=2 THEN 'Close' WHEN DetailsStatus=3 THEN 'Cancelled' End AS DetailsStatus, ";
             Qstr += " CASE WHEN Shipmentby=1 Then 'By Sea' When Shipmentby=2 Then 'By Air' End as Shipmentby,  ";
@@ -191,6 +248,10 @@ public partial class Reports_frmPOReport : System.Web.UI.Page
             if (ddlVendor.SelectedIndex > 0)
             {
                 Qstr += "And SourceId='" + ddlVendor.SelectedItem.Text + "' ";
+            }
+            if (ddlDest.SelectedIndex > 0)
+            {
+                Qstr += "And Destination='" + ddlDest.SelectedItem.Text + "' ";
             }
             if (ddlStatus.SelectedIndex > 0)
             {
@@ -237,6 +298,10 @@ public partial class Reports_frmPOReport : System.Web.UI.Page
             if (ddlVendor.SelectedIndex > 0)
             {
                 Qstr += "And SourceId='" + ddlVendor.SelectedItem.Text + "' ";
+            }
+            if (ddlDest.SelectedIndex > 0)
+            {
+                Qstr += "And Destination='" + ddlDest.SelectedItem.Text + "' ";
             }
             if (ddlStatus.SelectedIndex > 0)
             {
@@ -349,54 +414,57 @@ public partial class Reports_frmPOReport : System.Web.UI.Page
                 ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
                 var workSheet = excel.Workbook.Worksheets.Add("PurchaseOrderDetails");
                 // Add headers
-                workSheet.Cells[1, 1].Value = "Source";
-                workSheet.Cells[1, 2].Value = "PO Number";
-                workSheet.Cells[1, 3].Value = "Part Number";
-                workSheet.Cells[1, 4].Value = "Part Description";
-                workSheet.Cells[1, 5].Value = "Invoice No";
-                workSheet.Cells[1, 6].Value = "Container No";
-                workSheet.Cells[1, 7].Value = "Sent Date";
-                workSheet.Cells[1, 8].Value = "Received Date";
-                workSheet.Cells[1, 9].Value = "Container Ship Qty";
-                workSheet.Cells[1, 10].Value = "Order Date";
-                workSheet.Cells[1, 11].Value = "Requestor";
-                workSheet.Cells[1, 12].Value = "Ship by";
-                workSheet.Cells[1, 13].Value = "Order Qty";
-                workSheet.Cells[1, 14].Value = "UM";
-                workSheet.Cells[1, 15].Value = "Ship Qty";
-                workSheet.Cells[1, 16].Value = "Pending Qty";
-                workSheet.Cells[1, 17].Value = "Status";
-                workSheet.Cells["A1:Q1"].Style.Font.Bold = true;
+                
+                workSheet.Cells[1, 1].Value = "PO Number";
+                workSheet.Cells[1, 2].Value = "Part Number";
+                workSheet.Cells[1, 3].Value = "Part Description";
+                workSheet.Cells[1, 4].Value = "Source";
+                workSheet.Cells[1, 5].Value = "Destination";
+                workSheet.Cells[1, 6].Value = "Invoice No";
+                workSheet.Cells[1, 7].Value = "Container No";
+                workSheet.Cells[1, 8].Value = "Sent Date";
+                workSheet.Cells[1, 9].Value = "Received Date";
+                workSheet.Cells[1, 10].Value = "Container Ship Qty";
+                workSheet.Cells[1, 11].Value = "Order Date";
+                workSheet.Cells[1, 12].Value = "Requestor";
+                workSheet.Cells[1, 13].Value = "Ship by";
+                workSheet.Cells[1, 14].Value = "Order Qty";
+                workSheet.Cells[1, 15].Value = "UM";
+                workSheet.Cells[1, 16].Value = "Ship Qty";
+                workSheet.Cells[1, 17].Value = "Pending Qty";
+                workSheet.Cells[1, 18].Value = "Status";
+                workSheet.Cells["A1:R1"].Style.Font.Bold = true;
 
 
-                workSheet.Column(1).Width = 15; // Source
-                workSheet.Column(2).Width = 15; // PO Number
-                workSheet.Column(3).Width = 25; // Part Number
-                workSheet.Column(4).Width = 60; // Part Description
-                workSheet.Column(5).Width = 25; // Invoice No
-                workSheet.Column(6).Width = 25; // Container No
-                workSheet.Column(7).Width = 15; // Sent Date
-                workSheet.Column(8).Width = 15; // Received Date
-                workSheet.Column(9).Width = 25; // Qty
-                workSheet.Column(10).Width = 15; // Order Date
-                workSheet.Column(11).Width = 20; // Requestor
-                workSheet.Column(12).Width = 15; // Ship by
-                workSheet.Column(13).Width = 15; // Order Qty
-                workSheet.Column(14).Width = 10; // UM
-                workSheet.Column(15).Width = 15; // Ship Qty
-                workSheet.Column(16).Width = 15; // Pending Qty
-                workSheet.Column(17).Width = 15; // Status
+                workSheet.Column(1).Width = 15; // PO Number
+                workSheet.Column(2).Width = 15; // Part Number
+                workSheet.Column(3).Width = 60; // Part Description
+                workSheet.Column(4).Width = 15; // Source
+                workSheet.Column(5).Width = 15; // Destination
+                workSheet.Column(6).Width = 25; // Invoice No
+                workSheet.Column(7).Width = 25; // Container No
+                workSheet.Column(8).Width = 15; // Sent Date
+                workSheet.Column(9).Width = 15; // Received Date
+                workSheet.Column(10).Width = 25; // Qty
+                workSheet.Column(11).Width = 15; // Order Date
+                workSheet.Column(12).Width = 20; // Requestor
+                workSheet.Column(13).Width = 15; // Ship by
+                workSheet.Column(14).Width = 15; // Order Qty
+                workSheet.Column(15).Width = 10; // UM
+                workSheet.Column(16).Width = 15; // Ship Qty
+                workSheet.Column(17).Width = 15; // Pending Qty
+                workSheet.Column(18).Width = 15; // Status
                 int rowMain = 2;
                 foreach (GridViewRow mainRow in mainGridView.Rows)
-                {
-                    string source = ((Label)mainRow.FindControl("lblSource")).Text;
-                    workSheet.Cells[rowMain, 1].Value = source;
-                    workSheet.Cells[rowMain, 1].Style.Font.Bold = true;
+                {                    
                     string PONumber = ((Label)mainRow.FindControl("lblPONumber")).Text;
-                    workSheet.Cells[rowMain, 2].Value = PONumber;
-                    workSheet.Cells[rowMain, 2].Style.Font.Bold = true;
+                    workSheet.Cells[rowMain, 1].Value = PONumber;
+                    workSheet.Cells[rowMain, 1].Style.Font.Bold = true;
                     string PartNo = ((Label)mainRow.FindControl("lblPartNo")).Text;
                     string Description = ((Label)mainRow.FindControl("lblDescription")).Text;
+                    string source = ((Label)mainRow.FindControl("lblSource")).Text;
+                    workSheet.Cells[rowMain, 4].Value = source;
+                    workSheet.Cells[rowMain, 4].Style.Font.Bold = true;
                     string orderDate = ((Label)mainRow.FindControl("lblOrderDate")).Text;
                     string requestor = ((Label)mainRow.FindControl("lblRequestor")).Text;
                     string shipBy = ((Label)mainRow.FindControl("lblShipby")).Text;
@@ -405,34 +473,36 @@ public partial class Reports_frmPOReport : System.Web.UI.Page
                     string shipQty = ((Label)mainRow.FindControl("lblShipQty")).Text;
                     string pendingQty = ((Label)mainRow.FindControl("lblPendingQty")).Text;
                     string status = ((Label)mainRow.FindControl("lblStatus")).Text;
-                    workSheet.Cells[rowMain, 3].Value = PartNo;
-                    workSheet.Cells[rowMain, 4].Value = Description;
-                    workSheet.Cells[rowMain, 10].Value = orderDate;
-                    workSheet.Cells[rowMain, 11].Value = requestor;
-                    workSheet.Cells[rowMain, 12].Value = shipBy;
-                    workSheet.Cells[rowMain, 13].Value = orderQty;
-                    workSheet.Cells[rowMain, 13].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
-                    workSheet.Cells[rowMain, 14].Value = um;
-                    workSheet.Cells[rowMain, 15].Value = shipQty;
-                    workSheet.Cells[rowMain, 15].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
-                    workSheet.Cells[rowMain, 16].Value = pendingQty;
+                    workSheet.Cells[rowMain, 2].Value = PartNo;
+                    workSheet.Cells[rowMain, 3].Value = Description;
+                    workSheet.Cells[rowMain, 11].Value = orderDate;
+                    workSheet.Cells[rowMain, 12].Value = requestor;
+                    workSheet.Cells[rowMain, 13].Value = shipBy;
+                    workSheet.Cells[rowMain, 14].Value = orderQty;
+                    workSheet.Cells[rowMain, 14].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+                    workSheet.Cells[rowMain, 15].Value = um;
+                    workSheet.Cells[rowMain, 16].Value = shipQty;
                     workSheet.Cells[rowMain, 16].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
-                    workSheet.Cells[rowMain, 17].Value = status;
+                    workSheet.Cells[rowMain, 17].Value = pendingQty;
+                    workSheet.Cells[rowMain, 17].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+                    workSheet.Cells[rowMain, 18].Value = status;
                     rowMain = rowMain + 1;
                     GridView childContainerDetailGridView = (GridView)mainRow.FindControl("gvContainerInfo");
                     foreach (GridViewRow childContainerDetailRow in childContainerDetailGridView.Rows)
                     {
+                        string Destination = ((Label)childContainerDetailRow.FindControl("lblDestination")).Text;
                         string InvoiceNo = ((Label)childContainerDetailRow.FindControl("lblInvoiceNo")).Text;
                         string ContainerNo = ((Label)childContainerDetailRow.FindControl("lblContainerNo")).Text;
                         string sentDate = ((Label)childContainerDetailRow.FindControl("lblSentDate")).Text;
                         string receiveDate = ((Label)childContainerDetailRow.FindControl("lblReceivedDate")).Text;
                         string Qty = ((Label)childContainerDetailRow.FindControl("lblShipQty")).Text;
-                        workSheet.Cells[rowMain, 5].Value = InvoiceNo;
-                        workSheet.Cells[rowMain, 6].Value = ContainerNo;
-                        workSheet.Cells[rowMain, 7].Value = sentDate;
-                        workSheet.Cells[rowMain, 8].Value = receiveDate;
-                        workSheet.Cells[rowMain, 9].Value = Qty;
-                        workSheet.Cells[rowMain, 9].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+                        workSheet.Cells[rowMain, 5].Value = Destination;
+                        workSheet.Cells[rowMain, 6].Value = InvoiceNo;
+                        workSheet.Cells[rowMain, 7].Value = ContainerNo;
+                        workSheet.Cells[rowMain, 8].Value = sentDate;
+                        workSheet.Cells[rowMain, 9].Value = receiveDate;
+                        workSheet.Cells[rowMain, 10].Value = Qty;
+                        workSheet.Cells[rowMain, 10].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
                         rowMain++;
                     }
                 }
@@ -483,6 +553,10 @@ public partial class Reports_frmPOReport : System.Web.UI.Page
             ddlPOCheckStatus.SelectedIndex = 0;
             ddlLookupPart.SelectedIndex = 0;
             btnExporttoExcel.Enabled = false;
+            if (ddlDest.Items.Count > 0)
+            {
+                ClearDestWarehouse();
+            }
             ResetGrid();
             Bind_Controls();
         }
@@ -492,7 +566,7 @@ public partial class Reports_frmPOReport : System.Web.UI.Page
         }
     }
 
-    private DataTable PreparePartsDT(int sourceid, string issubmitted, int statusid, int Partid)
+    private DataTable PreparePartsDT(int sourceid, int destID, string issubmitted, int statusid, int Partid)
     {
         DataTable dt = new DataTable();
         DataSet ds = new DataSet();
@@ -511,6 +585,10 @@ public partial class Reports_frmPOReport : System.Web.UI.Page
             if (sourceid > 0)
             {
                 Qstr += "And Inv_PurchaseOrder_Manual.SourceId='" + sourceid + "' ";
+            }
+            if (destID > 0)
+            {
+                Qstr += "And Inv_PurchaseOrder_Manual.WareHouseID='" + destID + "' ";
             }
             if (statusid > 0)
             {
@@ -553,10 +631,18 @@ public partial class Reports_frmPOReport : System.Web.UI.Page
             string issubmitted = "";
             int statusid = 0;
             int partid = 0;
+            int destid = 0;
             if (ddlVendor.SelectedIndex > 0)
             {
                 sourceid = Convert.ToInt32(ddlVendor.SelectedValue);
                 hidStatusID.Value = sourceid.ToString();
+            }
+            if (ddlDest.Items.Count > 0)
+            {
+                if (ddlDest.SelectedIndex > 0)
+                {
+                    destid = Convert.ToInt32(ddlDest.SelectedValue);
+                }
             }
             if (ddlPOCheckStatus.SelectedIndex > 0)
             {
@@ -573,7 +659,7 @@ public partial class Reports_frmPOReport : System.Web.UI.Page
                 partid = Convert.ToInt32(ddlLookupPart.SelectedValue);
                 hidPartID.Value = partid.ToString();
             }
-            dt = PreparePartsDT(sourceid, issubmitted, statusid, partid);
+            dt = PreparePartsDT(sourceid, destid, issubmitted, statusid, partid);
         }
         catch (Exception ex)
         {
@@ -586,14 +672,22 @@ public partial class Reports_frmPOReport : System.Web.UI.Page
     {
         try
         {
+
             DataTable dt = new DataTable();
             if (ddlVendor.SelectedIndex > 0)
             {
+                BindDestWareHouse(ddlVendor.SelectedValue);
                 dt = CommonPartNoFunction();
                 if (dt.Rows.Count > 0)
                 {
-
                     Utility.BindDropDownListAll(ddlLookupPart, dt);
+                }
+            }
+            else
+            {
+                if (ddlDest.Items.Count > 0)
+                {
+                    ClearDestWarehouse();
                 }
             }
         }

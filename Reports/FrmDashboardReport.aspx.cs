@@ -120,11 +120,92 @@ public partial class Reports_FrmDashboardReport : System.Web.UI.Page
         }
     }
 
+    private void ExportToExcelInventory()
+    {
+        try
+        {
+            string Qstr = string.Empty;
+            DataSet ds = new DataSet();
+            ObjBOL.Operation = 9;
+            if (txtFromDate.Text != "" && txtToDate.Text != "")
+            {
+                Qstr += " AND Inv_Container.ReceivedDate Between '" + txtFromDate.Text + "' AND '" + txtToDate.Text + "' ";
+            }
+
+            if (ddlVendor.SelectedIndex > 0)
+            {
+                Qstr += " AND WarehouseName= '" + ddlVendor.SelectedItem.Text + "' ";
+            }
+
+            if (ddlProductCode.SelectedIndex > 0)
+            {
+                Qstr += " AND Inv_Product.ProductLineSubID = '" + ddlProductCode.SelectedValue + "' ";
+            }
+
+            if (ddlProductLine.SelectedIndex > 0)
+            {
+                Qstr += " AND Inv_Product.id = '" + ddlProductLine.SelectedValue + "' ";
+            }
+
+            if (ddlPartNo.SelectedIndex > 0)
+            {
+                Qstr += " AND Inv_Parts.id = '" + ddlPartNo.SelectedValue + "' ";
+            }
+
+            if (ddlPartStatus.SelectedIndex > 0)
+            {
+                Qstr += " AND Inv_Parts.PartStatus = '" + ddlPartStatus.SelectedValue + "' ";
+            }
+            //Qstr += " Order by Inv_Parts.PartNumber asc";
+            ObjBOL.searchvar = Qstr;
+            ds = ObjBLL.Return_DataSet(ObjBOL);
+            if (ds.Tables[0].Rows.Count > 0)
+            {
+                ViewState["dirState"] = ds.Tables[0];
+                gvInventoryReportExcel.DataSource = ds.Tables[0];
+                gvInventoryReportExcel.DataBind();
+            }
+            else
+            {
+                gvInventoryReportExcel.DataSource = "";
+                gvInventoryReportExcel.DataBind();
+            }
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+    }
+
+    private void CheckReportTypeExcel()
+    {
+        try
+        {
+            if (ddlReportType.SelectedValue == "1")
+            {
+                BindInTransitGrid();
+            }
+            else if (ddlReportType.SelectedValue == "2")
+            {
+                BindArrivedContainerGrid();
+            }
+            else if (ddlReportType.SelectedValue == "3")
+            {
+                ExportToExcelInventory();
+            }
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+    }
+
+
     protected void btnGenerateExcel_Click(object sender, EventArgs e)
     {
         try
         {
-            CheckReportType();
+            CheckReportTypeExcel();
             ExportDatatabletoExcel();
         }
         catch (Exception ex)
@@ -291,7 +372,7 @@ public partial class Reports_FrmDashboardReport : System.Web.UI.Page
 
             if (ddlVendor.SelectedIndex > 0)
             {
-                Qstr += " AND Source= '" + ddlVendor.SelectedItem.Text + "' ";
+                Qstr += " AND WarehouseName= '" + ddlVendor.SelectedItem.Text + "' ";
             }
 
             if (ddlProductCode.SelectedIndex > 0)

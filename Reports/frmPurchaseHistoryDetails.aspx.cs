@@ -10,6 +10,8 @@ public partial class Reports_frmPurchaseHistoryDetails : System.Web.UI.Page
 {
     BOLPurchaseHistoryDetails ObjBOL = new BOLPurchaseHistoryDetails();
     BLLPurchaseHistoryDetails ObjBLL = new BLLPurchaseHistoryDetails();
+    BOLSearchContainer ObjBOL1 = new BOLSearchContainer();
+    BLLManageSearchContainer ObjBLL1 = new BLLManageSearchContainer();
     ReportDocument rprt = new ReportDocument();
     commonclass1 clscon = new commonclass1();
     protected void Page_Load(object sender, EventArgs e)
@@ -17,6 +19,7 @@ public partial class Reports_frmPurchaseHistoryDetails : System.Web.UI.Page
         if (!IsPostBack)
         {
             Bind_Controls();
+            BindDestWareHouse("");
         }
     }
 
@@ -25,7 +28,7 @@ public partial class Reports_frmPurchaseHistoryDetails : System.Web.UI.Page
         try
         {
             DataSet ds = new DataSet();
-            clscon.Return_DS(ds, "EXEC [dbo].[Get_PurchaseHistoryDetails] 2,'" + null + "'");
+            clscon.Return_DS(ds, "EXEC [IV].[Get_PurchaseHistoryDetails] 2,'" + null + "'");
             if (ds.Tables[0].Rows.Count > 0)
             {
                 if (ds.Tables[0].Rows.Count > 0)
@@ -45,7 +48,78 @@ public partial class Reports_frmPurchaseHistoryDetails : System.Web.UI.Page
     }
 
 
+    private void BindDestWareHouse(string selectedSourceID)
+    {
+        try
+        {
+            if (selectedSourceID != "")
+            {
+                DataSet ds = new DataSet();
+                ObjBOL1.Operation = 3;
+                if (selectedSourceID != "")
+                {
+                    ObjBOL1.SourceID = Convert.ToInt32(selectedSourceID);
+                }
+                ds = ObjBLL1.GetSearchContainerData(ObjBOL1);
+                if (ds.Tables[0].Rows.Count > 0)
+                {
+                    Utility.BindDropDownListAll(ddlDestination, ds.Tables[0]);
+                    if (ddlDestination.Items.Count > 0)
+                    {
+                        ddlDestination.SelectedIndex = 0;
+                    }
+                }
+                else
+                {
+                    if (ddlDestination.Items.Count > 0)
+                    {
+                        ClearWareHouse();
+                    }
 
+                }
+            }
+            else
+            {
+                ClearWareHouse();
+            }
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+    }
+
+    private void ClearWareHouse()
+    {
+        try
+        {
+            ddlDestination.Items.Clear();
+            ddlDestination.Items.Insert(0, new System.Web.UI.WebControls.ListItem("All", "0"));
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+    }
+
+    protected void ddlVendor_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        try
+        {
+            if (ddlVendor.SelectedIndex > 0)
+            {
+                BindDestWareHouse(ddlVendor.SelectedValue);
+            }
+            else
+            {
+                ClearWareHouse();
+            }
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+    }
 
     private DataTable Bind_Report()
     {
@@ -57,6 +131,10 @@ public partial class Reports_frmPurchaseHistoryDetails : System.Web.UI.Page
             if (ddlVendor.SelectedIndex > 0)
             {
                 Qstr += " AND [Source] Like '" + ddlVendor.SelectedItem.Text + "'";
+            }
+            if (ddlDestination.SelectedIndex > 0)
+            {
+                Qstr += " AND [Destination] Like '" + ddlDestination.SelectedItem.Text + "'";
             }
             if (ddlPartNo.SelectedIndex > 0)
             {
@@ -129,11 +207,28 @@ public partial class Reports_frmPurchaseHistoryDetails : System.Web.UI.Page
                 DateTime dtto = Convert.ToDateTime(txtToDate.Text);
                 string strDateFrom = dtfrom.ToString("MM/dd/yyyy");
                 string strDateTo = dtto.ToString("MM/dd/yyyy");
-                clscon.Return_DT(dt, "Exec [dbo].[Get_POPartsDetails_ContainerInformation] '" + strDateFrom + "','" + strDateTo + "'");
+                if (ddlDestination.SelectedIndex > 0)
+                {
+                    clscon.Return_DT(dt, "Exec [IV].[Get_POPartsDetails_ContainerInformation] '" + strDateFrom + "','" + strDateTo + "','" + ddlDestination.SelectedValue + "'");
+                }
+                else
+                {
+                    clscon.Return_DT(dt, "Exec [IV].[Get_POPartsDetails_ContainerInformation] '" + strDateFrom + "','" + strDateTo + "'");
+                }
             }
             else
             {
-                clscon.Return_DT(dt, "Exec [dbo].[Get_POPartsDetails_ContainerInformation]");
+                if (ddlDestination.SelectedIndex > 0)
+                {
+                    clscon.Return_DT(dt, "Exec [IV].[Get_POPartsDetails_ContainerInformation] " +
+                    "null, null, '" + ddlDestination.SelectedValue + "'");
+
+                }
+                else
+                {
+                    clscon.Return_DT(dt, "Exec [IV].[Get_POPartsDetails_ContainerInformation]");
+                }
+                   
             }
         }
         catch (Exception ex)
@@ -154,11 +249,11 @@ public partial class Reports_frmPurchaseHistoryDetails : System.Web.UI.Page
                 DateTime dtto = Convert.ToDateTime(txtToDate.Text);
                 string strDateFrom = dtfrom.ToString("MM/dd/yyyy");
                 string strDateTo = dtto.ToString("MM/dd/yyyy");
-                clscon.Return_DT(dt, "Exec [dbo].[Get_POPartsDetails_ContainerJobs] '" + strDateFrom + "','" + strDateTo + "'");
+                clscon.Return_DT(dt, "Exec [IV].[Get_POPartsDetails_ContainerJobs] '" + strDateFrom + "','" + strDateTo + "'");
             }
             else
             {
-                clscon.Return_DT(dt, "Exec [dbo].[Get_POPartsDetails_ContainerJobs]");
+                clscon.Return_DT(dt, "Exec [IV].[Get_POPartsDetails_ContainerJobs]");
             }
         }
         catch (Exception ex)
@@ -198,7 +293,7 @@ public partial class Reports_frmPurchaseHistoryDetails : System.Web.UI.Page
                     rptPurchaseHistoryDetails.ReportSource = rprt;
                     rptPurchaseHistoryDetails.DataBind();
                     rprt.ExportToHttpResponse(CrystalDecisions.Shared.ExportFormatType.PortableDocFormat, Response, false, txtheader.Text);
-                }
+                }                
                 else
                 {
                     rprt.Load(Server.MapPath("~/Reports/rptNoDataFound.rpt"));
@@ -238,6 +333,10 @@ public partial class Reports_frmPurchaseHistoryDetails : System.Web.UI.Page
             ddlStatus.SelectedIndex = 0;
             txtFromDate.Text = String.Empty;
             txtToDate.Text = String.Empty;
+            if (ddlDestination.Items.Count > 0)
+            {
+                ClearWareHouse();
+            }
         }
         catch (Exception ex)
         {

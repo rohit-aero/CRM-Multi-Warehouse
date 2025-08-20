@@ -19,10 +19,10 @@ public partial class InventoryManagement_frmPurchaseOrderManual : System.Web.UI.
     BLLPurchaseOrderManual ObjBLL = new BLLPurchaseOrderManual();
     commonclass1 cls = new commonclass1();
     commonclass1 clscon = new commonclass1();
-    ReportDocument rprt = new ReportDocument();    
+    ReportDocument rprt = new ReportDocument();
     string Do_Not_Reply = "[Please do not reply to this message. Replies to this message are routed to an unmonitored mailbox]";
-    DataTable dt_DropdownData = new DataTable();    
-    
+    DataTable dt_DropdownData = new DataTable();
+
     protected void Page_Load(object sender, EventArgs e)
     {
         try
@@ -36,13 +36,13 @@ public partial class InventoryManagement_frmPurchaseOrderManual : System.Web.UI.
                     BindReqParts();
                     BindGridReqInfoBySource();
                 }
-            }            
+            }
         }
         catch (Exception ex)
         {
             Utility.AddEditException(ex);
         }
-      
+
     }
 
     #region Bind Tables
@@ -52,12 +52,12 @@ public partial class InventoryManagement_frmPurchaseOrderManual : System.Web.UI.
         {
             DataSet ds = new DataSet();
             ObjBOL.Operation = 1;
-            ds = ObjBLL.GetBindControl(ObjBOL);            
-            if(ds.Tables[0].Rows.Count>0)
+            ds = ObjBLL.GetBindControl(ObjBOL);
+            if (ds.Tables[0].Rows.Count > 0)
             {
                 Utility.BindDropDownList(ddlSource, ds.Tables[0]);
             }
-            if(ds.Tables[1].Rows.Count>0)
+            if (ds.Tables[1].Rows.Count > 0)
             {
                 Utility.BindDropDownList(ddlPreparedby, ds.Tables[1]);
             }
@@ -75,10 +75,10 @@ public partial class InventoryManagement_frmPurchaseOrderManual : System.Web.UI.
             DataSet ds = new DataSet();
             ObjBOL.Operation = 4;
             ds = ObjBLL.GetBindControl(ObjBOL);
-            if(ds.Tables[0].Rows.Count>0)
+            if (ds.Tables[0].Rows.Count > 0)
             {
                 Utility.BindDropDownList(ddlPurchaseOrder, ds.Tables[0]);
-                if(msg != "")
+                if (msg != "")
                 {
                     ddlPurchaseOrder.SelectedValue = msg;
                 }
@@ -105,13 +105,13 @@ public partial class InventoryManagement_frmPurchaseOrderManual : System.Web.UI.
             ObjBOL.PartId = Convert.ToInt32(PartID);
             ds = ObjBLL.GetBindControl(ObjBOL);
             count = ds.Tables[0].Rows.Count;
-            if(ds.Tables[0].Rows.Count>0)
+            if (ds.Tables[0].Rows.Count > 0)
             {
                 Utility.BindDropDownList(ddlReqNumber, ds.Tables[0]);
-                if(count==1)
+                if (count == 1)
                 {
                     ddlReqNumber.SelectedValue = ds.Tables[0].Rows[0]["ReqID"].ToString();
-                    if(ddlPartNo.SelectedIndex>0 && ddlReqNumber.SelectedIndex>0)
+                    if (ddlPartNo.SelectedIndex > 0 && ddlReqNumber.SelectedIndex > 0)
                     {
                         BindPartDetails(ddlPartNo.SelectedValue, ddlReqNumber.SelectedValue);
                     }
@@ -125,7 +125,7 @@ public partial class InventoryManagement_frmPurchaseOrderManual : System.Web.UI.
         }
     }
 
-    private void BindPartDetails(string PartID,string ReqID)
+    private void BindPartDetails(string PartID, string ReqID)
     {
         try
         {
@@ -134,15 +134,15 @@ public partial class InventoryManagement_frmPurchaseOrderManual : System.Web.UI.
             ObjBOL.PartId = Convert.ToInt32(PartID);
             ObjBOL.ReqId = Convert.ToInt32(ReqID);
             ds = ObjBLL.GetBindControl(ObjBOL);
-            if(ds.Tables[0].Rows.Count>0)
+            if (ds.Tables[0].Rows.Count > 0)
             {
                 lblReqOrderQty.Text = ds.Tables[0].Rows[0]["ReqQty"].ToString();
-                lblInStock.Text= ds.Tables[0].Rows[0]["InStock"].ToString();
-                lnkInTransit.Text= ds.Tables[0].Rows[0]["InTransit"].ToString();
-                lblReqDetailID.Text= ds.Tables[0].Rows[0]["ReqDetailId"].ToString();
-                lblReqNumber.Text= ds.Tables[0].Rows[0]["ReqNumber"].ToString();
-                lblRequestor.Text= ds.Tables[0].Rows[0]["Requestor"].ToString();                
-                if(Convert.ToBoolean(ds.Tables[0].Rows[0]["Priority"])==true)
+                lblInStock.Text = ds.Tables[0].Rows[0]["InStock"].ToString();
+                lnkInTransit.Text = ds.Tables[0].Rows[0]["InTransit"].ToString();
+                lblReqDetailID.Text = ds.Tables[0].Rows[0]["ReqDetailId"].ToString();
+                lblReqNumber.Text = ds.Tables[0].Rows[0]["ReqNumber"].ToString();
+                lblRequestor.Text = ds.Tables[0].Rows[0]["Requestor"].ToString();
+                if (Convert.ToBoolean(ds.Tables[0].Rows[0]["Priority"]) == true)
                 {
                     chkPriority.Checked = true;
                 }
@@ -169,31 +169,31 @@ public partial class InventoryManagement_frmPurchaseOrderManual : System.Web.UI.
     {
         try
         {
-            ResetNewButton();            
-            ResetRequisitionTable();          
-            if (ddlPurchaseOrder.Items.Count>0)
+            ResetNewButton();
+            ResetRequisitionTable();
+            if (ddlPurchaseOrder.Items.Count > 0)
             {
                 ddlPurchaseOrder.SelectedIndex = 0;
-            }            
+            }
             string msg = "";
             ObjBOL.Operation = 2;
             msg = ObjBLL.GetPurchaseOrderNumber(ObjBOL);
             if (msg != "")
             {
-                txtPurchaseOrderNo.Text = msg;                
+                txtPurchaseOrderNo.Text = msg;
                 btnSave.Text = "Save";
                 btnSave.Enabled = true;
                 btnGenerate.Enabled = true;
                 btnNotify.Enabled = false;
                 btnSubmit.Enabled = false;
-                btnGenerate.Enabled = false;     
+                btnGenerate.Enabled = false;
                 BindGridReqInfoBySource();
             }
             else
             {
                 txtPurchaseOrderNo.Text = String.Empty;
                 ResetNewButton();
-                ResetRequisitionTable();                
+                ResetRequisitionTable();
                 DisabledControls();
                 BindGridReqInfoBySource();
             }
@@ -207,10 +207,10 @@ public partial class InventoryManagement_frmPurchaseOrderManual : System.Web.UI.
     {
         try
         {
-            if(ValidationCheck()==true)
+            if (ValidationCheck() == true)
             {
                 SaveData();
-            }            
+            }
         }
         catch (Exception ex)
         {
@@ -221,18 +221,18 @@ public partial class InventoryManagement_frmPurchaseOrderManual : System.Web.UI.
     {
         try
         {
-            if(ddlPurchaseOrder.SelectedIndex>0)
+            if (ddlPurchaseOrder.SelectedIndex > 0)
             {
                 AutoFillData();
                 BindGridReqInfo();
-                btnSave.Text = "Update";                
+                btnSave.Text = "Update";
                 EnableControls();
-            }            
+            }
             else
             {
-                btnSave.Text = "Save";                
+                btnSave.Text = "Save";
                 ResetPOInformation();
-                ResetRequisitionTable();                
+                ResetRequisitionTable();
                 DisabledControls();
                 BindGridReqInfoBySource();
             }
@@ -247,13 +247,13 @@ public partial class InventoryManagement_frmPurchaseOrderManual : System.Web.UI.
         try
         {
             ResetPOInformation();
-            ResetRequisitionTable();            
+            ResetRequisitionTable();
             DisabledControls();
             btnSave.Text = "Save";
             if (ddlPurchaseOrder.Items.Count > 0)
             {
                 ddlPurchaseOrder.SelectedIndex = 0;
-            }       
+            }
             BindGridReqInfoBySource();
         }
         catch (Exception ex)
@@ -280,7 +280,7 @@ public partial class InventoryManagement_frmPurchaseOrderManual : System.Web.UI.
     {
         try
         {
-            if(ddlPartNo.SelectedIndex>0)
+            if (ddlPartNo.SelectedIndex > 0)
             {
                 BindReqNo(ddlPartNo.SelectedValue);
             }
@@ -302,7 +302,7 @@ public partial class InventoryManagement_frmPurchaseOrderManual : System.Web.UI.
     {
         try
         {
-            if(ddlPartNo.SelectedIndex>0 && ddlReqNumber.SelectedIndex>0)
+            if (ddlPartNo.SelectedIndex > 0 && ddlReqNumber.SelectedIndex > 0)
             {
                 BindPartDetails(ddlPartNo.SelectedValue, ddlReqNumber.SelectedValue);
             }
@@ -321,16 +321,16 @@ public partial class InventoryManagement_frmPurchaseOrderManual : System.Web.UI.
     {
         try
         {
-            if(ValidationCheck()==true)
-            {        
-                if(ValidationCheckPartDetails()==true)
-                {                    
+            if (ValidationCheck() == true)
+            {
+                if (ValidationCheckPartDetails() == true)
+                {
                     AddDetails();
                     ResetRequisitionTable();
-                }        
-                
+                }
+
             }
-            
+
         }
         catch (Exception ex)
         {
@@ -366,7 +366,11 @@ public partial class InventoryManagement_frmPurchaseOrderManual : System.Web.UI.
     {
         try
         {
-            SendEmail_Prepare(true);
+            if (ValidationCheck() == true)
+            {
+                SendEmail_Prepare(true);
+            }
+            
         }
         catch (Exception ex)
         {
@@ -379,9 +383,6 @@ public partial class InventoryManagement_frmPurchaseOrderManual : System.Web.UI.
         try
         {
             SubmitPO();            
-            btnSubmit.Enabled = false;
-            btnNotify.Enabled = false;
-            btnGenerate.Enabled = false;
         }
         catch (Exception ex)
         {
@@ -401,7 +402,7 @@ public partial class InventoryManagement_frmPurchaseOrderManual : System.Web.UI.
             dt.Columns.Add(new DataColumn("ReqID", typeof(int)));
             dt.Columns.Add(new DataColumn("ReqNumber", typeof(string)));
             dt.Columns.Add(new DataColumn("ReqDetailID", typeof(int)));
-            dt.Columns.Add(new DataColumn("Requestor", typeof(string)));           
+            dt.Columns.Add(new DataColumn("Requestor", typeof(string)));
             dt.Columns.Add(new DataColumn("partid", typeof(int)));
             dt.Columns.Add(new DataColumn("PartNumber", typeof(string)));
             dt.Columns.Add(new DataColumn("ReqQty", typeof(int)));
@@ -445,30 +446,30 @@ public partial class InventoryManagement_frmPurchaseOrderManual : System.Web.UI.
                             Label PurchaseOrderReqid = ((Label)PurchaseOrderrow.FindControl("lblReqId"));
                             Label ReqNumber = ((Label)PurchaseOrderrow.FindControl("lblReqNumber"));
                             Label POReqDetailId = ((Label)PurchaseOrderrow.FindControl("lblReqDetailId"));
-                            Label Partid = ((Label)PurchaseOrderrow.FindControl("lblItemPartid"));                        
+                            Label Partid = ((Label)PurchaseOrderrow.FindControl("lblItemPartid"));
                             Label lblRequestor = ((Label)PurchaseOrderrow.FindControl("lblGvRequestor"));
                             Label ReqQty = ((Label)PurchaseOrderrow.FindControl("lblReqQty"));
                             Label InStock = ((Label)PurchaseOrderrow.FindControl("lblInStock"));
                             LinkButton InTransit = ((LinkButton)PurchaseOrderrow.FindControl("lnkInTransit"));
                             LinkButton InShop = ((LinkButton)PurchaseOrderrow.FindControl("lnkInShop"));
                             TextBox POOrderQty = ((TextBox)PurchaseOrderrow.FindControl("txtPOOrderQty"));
-                            CheckBox Priority= ((CheckBox)PurchaseOrderrow.FindControl("chkPriorityFooter"));
+                            CheckBox Priority = ((CheckBox)PurchaseOrderrow.FindControl("chkPriorityFooter"));
                             TextBox ItemRemarks = ((TextBox)PurchaseOrderrow.FindControl("txtItemRemarks"));
                             DropDownList ddlStatus = ((DropDownList)PurchaseOrderrow.FindControl("ddlReqStatus"));
                             Label StatusID = ((Label)PurchaseOrderrow.FindControl("lblStatusID"));
-                            dr[0] = 0;                            
-                            if(PurchaseOrderReqid.Text != "")
+                            dr[0] = 0;
+                            if (PurchaseOrderReqid.Text != "")
                             {
                                 dr[1] = Convert.ToInt32(PurchaseOrderReqid.Text);
-                            }      
+                            }
                             else
                             {
                                 dr[1] = 0;
-                            }      
-                            if(ReqNumber.Text != "")
+                            }
+                            if (ReqNumber.Text != "")
                             {
                                 dr[2] = ReqNumber.Text;
-                            }                
+                            }
                             else
                             {
                                 dr[2] = 0;
@@ -482,7 +483,7 @@ public partial class InventoryManagement_frmPurchaseOrderManual : System.Web.UI.
                                 dr[3] = 0;
                             }
                             dr[4] = lblRequestor.Text;
-                            if(Partid.Text != "")
+                            if (Partid.Text != "")
                             {
                                 dr[5] = Partid.Text;
                             }
@@ -491,7 +492,7 @@ public partial class InventoryManagement_frmPurchaseOrderManual : System.Web.UI.
                                 dr[5] = 0;
                             }
                             dr[6] = PartNo;
-                            if(ReqQty.Text != "")
+                            if (ReqQty.Text != "")
                             {
                                 dr[7] = ReqQty.Text;
                             }
@@ -499,7 +500,7 @@ public partial class InventoryManagement_frmPurchaseOrderManual : System.Web.UI.
                             {
                                 dr[7] = 0;
                             }
-                            if(InStock.Text != "")
+                            if (InStock.Text != "")
                             {
                                 dr[8] = InStock.Text;
                             }
@@ -507,7 +508,7 @@ public partial class InventoryManagement_frmPurchaseOrderManual : System.Web.UI.
                             {
                                 dr[8] = 0;
                             }
-                            if(InTransit.Text != "")
+                            if (InTransit.Text != "")
                             {
                                 dr[9] = InTransit.Text;
                             }
@@ -531,7 +532,7 @@ public partial class InventoryManagement_frmPurchaseOrderManual : System.Web.UI.
                             {
                                 dr[11] = 0;
                             }
-                            if(Priority.Checked == true)
+                            if (Priority.Checked == true)
                             {
                                 dr[12] = Priority.Checked;
                             }
@@ -561,7 +562,7 @@ public partial class InventoryManagement_frmPurchaseOrderManual : System.Web.UI.
         catch (Exception ex)
         {
             Utility.AddEditException(ex);
-        }       
+        }
     }
 
     private void AddDetails()
@@ -573,7 +574,7 @@ public partial class InventoryManagement_frmPurchaseOrderManual : System.Web.UI.
             DataRow dr;
             dr = dt.NewRow();
             int PurchaseOrderID = 0;
-            if(ddlPurchaseOrder.SelectedIndex>0)
+            if (ddlPurchaseOrder.SelectedIndex > 0)
             {
                 PurchaseOrderID = Convert.ToInt32(ddlPurchaseOrder.SelectedValue);
             }
@@ -589,20 +590,20 @@ public partial class InventoryManagement_frmPurchaseOrderManual : System.Web.UI.
                 ReqDetailid = Convert.ToInt32(lblReqDetailID.Text);
             }
             int partid = 0;
-            if(ddlPartNo.SelectedIndex>0)
+            if (ddlPartNo.SelectedIndex > 0)
             {
                 partid = Convert.ToInt32(ddlPartNo.SelectedValue);
             }
             string Requestor = "";
-            if(lblRequestor.Text != "")
+            if (lblRequestor.Text != "")
             {
                 Requestor = lblRequestor.Text;
-            }            
+            }
             string PartNumber = ddlPartNo.SelectedItem.Text;
             int ReqQty = 0;
-            if(lblReqOrderQty.Text != "")
+            if (lblReqOrderQty.Text != "")
             {
-                ReqQty =Convert.ToInt32(lblReqOrderQty.Text);
+                ReqQty = Convert.ToInt32(lblReqOrderQty.Text);
             }
             int InStock = 0;
             if (lblInStock.Text != "")
@@ -610,26 +611,26 @@ public partial class InventoryManagement_frmPurchaseOrderManual : System.Web.UI.
                 InStock = Convert.ToInt32(lblInStock.Text);
             }
             int InTransit = 0;
-            if(lnkInTransit.Text != "")
+            if (lnkInTransit.Text != "")
             {
                 InTransit = Convert.ToInt32(lnkInTransit.Text);
-            }                     
+            }
             int orderqty = 0;
             if (txtPOOrder.Text != "")
             {
-                orderqty =Convert.ToInt32(txtPOOrder.Text);
+                orderqty = Convert.ToInt32(txtPOOrder.Text);
             }
             bool priority = false;
-            if(chkPriority.Checked==true)
+            if (chkPriority.Checked == true)
             {
                 priority = chkPriority.Checked;
-            }            
+            }
             string remarks = "";
             if (txtRemarks.Text != "")
             {
                 remarks = txtRemarks.Text;
-            }                        
-            PrepareDT(PurchaseOrderID, ReqNumber, Reqid, ReqDetailid,partid, Requestor, PartNumber,ReqQty ,InStock, InTransit, orderqty, priority, remarks);            
+            }
+            PrepareDT(PurchaseOrderID, ReqNumber, Reqid, ReqDetailid, partid, Requestor, PartNumber, ReqQty, InStock, InTransit, orderqty, priority, remarks);
 
         }
         catch (Exception ex)
@@ -638,7 +639,7 @@ public partial class InventoryManagement_frmPurchaseOrderManual : System.Web.UI.
         }
     }
 
-    private void PrepareDT(int PurchaseOrderID,string ReqNumber, int Reqid, int ReqDetailid, int partid, string Requestor, string PartNumber,int ReqQty, int InStock, int InTransit, int orderqty, bool priority, string remarks)
+    private void PrepareDT(int PurchaseOrderID, string ReqNumber, int Reqid, int ReqDetailid, int partid, string Requestor, string PartNumber, int ReqQty, int InStock, int InTransit, int orderqty, bool priority, string remarks)
     {
         try
         {
@@ -650,19 +651,19 @@ public partial class InventoryManagement_frmPurchaseOrderManual : System.Web.UI.
             drCurrentRow["ReqID"] = Reqid;
             drCurrentRow["ReqDetailID"] = ReqDetailid;
             drCurrentRow["partid"] = partid;
-            drCurrentRow["Requestor"] = Requestor;            
+            drCurrentRow["Requestor"] = Requestor;
             drCurrentRow["PartNumber"] = PartNumber;
             drCurrentRow["ReqQty"] = ReqQty;
             drCurrentRow["InStock"] = InStock;
             drCurrentRow["InTransit"] = InTransit;
             drCurrentRow["POOrderQty"] = orderqty;
             drCurrentRow["Priority"] = priority;
-            drCurrentRow["remarks"] = remarks;            
+            drCurrentRow["remarks"] = remarks;
             for (int i = dtCurrentTable.Rows.Count - 1; i >= 0; i--)
             {
-                DataRow dr = dtCurrentTable.Rows[i];    
+                DataRow dr = dtCurrentTable.Rows[i];
                 int qty1 = Convert.ToInt32(orderqty);
-                int qty2 = Convert.ToInt32(dr["POOrderQty"].ToString());               
+                int qty2 = Convert.ToInt32(dr["POOrderQty"].ToString());
                 if (dr["ReqID"].ToString() == Convert.ToString(Reqid) && dr["Partid"].ToString() == Convert.ToString(partid))
                 {
                     drCurrentRow["POOrderQty"] = qty1 + qty2;
@@ -824,6 +825,11 @@ public partial class InventoryManagement_frmPurchaseOrderManual : System.Web.UI.
             txtIssueDate.Text = String.Empty;
             ddlStatus.SelectedIndex = 0;
             txtPORemarks.Text = String.Empty;
+            if (ddlWareHouse.Items.Count > 0)
+            {
+                ddlWareHouse.Items.Clear();
+            }
+
         }
         catch (Exception ex)
         {
@@ -833,7 +839,7 @@ public partial class InventoryManagement_frmPurchaseOrderManual : System.Web.UI.
     private void ResetPOInformationandDetail()
     {
         try
-        {            
+        {
             ddlPreparedby.SelectedIndex = 0;
             txtIssueDate.Text = String.Empty;
             ddlStatus.SelectedIndex = 0;
@@ -852,7 +858,7 @@ public partial class InventoryManagement_frmPurchaseOrderManual : System.Web.UI.
             ddlPreparedby.SelectedIndex = 0;
             txtIssueDate.Text = String.Empty;
             ddlStatus.SelectedIndex = 0;
-            txtPORemarks.Text = String.Empty;            
+            txtPORemarks.Text = String.Empty;
         }
         catch (Exception ex)
         {
@@ -868,7 +874,7 @@ public partial class InventoryManagement_frmPurchaseOrderManual : System.Web.UI.
             ObjBOL.Operation = 13;
             ObjBOL.SourceID = ddlSource.SelectedValue;
             ds = ObjBLL.GetBindControl(ObjBOL);
-            if(ds.Tables[0].Rows.Count>0)
+            if (ds.Tables[0].Rows.Count > 0)
             {
                 gvMainPartDetail.DataSource = ds.Tables[0];
                 gvMainPartDetail.DataBind();
@@ -897,16 +903,16 @@ public partial class InventoryManagement_frmPurchaseOrderManual : System.Web.UI.
                 if (row.RowType == DataControlRowType.DataRow)
                 {
                     string partid = gvMainPartDetail.DataKeys[row.RowIndex].Value.ToString();
-                    GridView gvChild = row.FindControl("gvRequisitionInfo") as GridView;          
-                    ObjBOL.PartId = Convert.ToInt32(partid);                    
-                    ObjBOL.SourceID =ddlSource.SelectedValue;
+                    GridView gvChild = row.FindControl("gvRequisitionInfo") as GridView;
+                    ObjBOL.PartId = Convert.ToInt32(partid);
+                    ObjBOL.SourceID = ddlSource.SelectedValue;
                     ObjBOL.Operation = 13;
                     ds = ObjBLL.GetBindControl(ObjBOL);
-                    if(ds.Tables[1].Rows.Count>0)
+                    if (ds.Tables[1].Rows.Count > 0)
                     {
                         gvChild.DataSource = ds.Tables[1];
                         gvChild.DataBind();
-                    }                   
+                    }
                     else
                     {
                         gvChild.DataSource = "";
@@ -944,7 +950,7 @@ public partial class InventoryManagement_frmPurchaseOrderManual : System.Web.UI.
     private void ResetRequisitionTableOnPartNo()
     {
         try
-        {            
+        {
             if (ddlReqNumber.Items.Count > 0)
             {
                 ddlReqNumber.Items.Clear();
@@ -960,7 +966,7 @@ public partial class InventoryManagement_frmPurchaseOrderManual : System.Web.UI.
     private void ResetRequisitionTableOnReqNo()
     {
         try
-        {            
+        {
             lblReqOrderQty.Text = String.Empty;
             lblRequestor.Text = String.Empty;
             lblInStock.Text = String.Empty;
@@ -980,7 +986,7 @@ public partial class InventoryManagement_frmPurchaseOrderManual : System.Web.UI.
         try
         {
             gvMainPartDetail.DataSource = "";
-            gvMainPartDetail.DataBind();            
+            gvMainPartDetail.DataBind();
         }
         catch (Exception ex)
         {
@@ -996,13 +1002,13 @@ public partial class InventoryManagement_frmPurchaseOrderManual : System.Web.UI.
         {
             if (e.Row.RowType == DataControlRowType.DataRow)
             {
-                Label lblStatusID = (Label)e.Row.FindControl("lblStatusID");              
+                Label lblStatusID = (Label)e.Row.FindControl("lblStatusID");
                 TextBox txtOrderQty = (TextBox)e.Row.FindControl("txtPOOrderQty");
                 CheckBox chkPriority = (CheckBox)e.Row.FindControl("chkPriorityFooter");
                 TextBox txtRemarks = (TextBox)e.Row.FindControl("txtItemRemarks");
                 LinkButton lnkInTransit = (LinkButton)e.Row.FindControl("lnkInTransit");
-                LinkButton lnkInShop = (LinkButton)e.Row.FindControl("lnkInShop");  
-                DropDownList ddlReqStatus= (DropDownList)e.Row.FindControl("ddlReqStatus");
+                LinkButton lnkInShop = (LinkButton)e.Row.FindControl("lnkInShop");
+                DropDownList ddlReqStatus = (DropDownList)e.Row.FindControl("ddlReqStatus");
                 if (lnkInTransit != null)
                 {
                     if (lnkInTransit.Text == "0")
@@ -1025,7 +1031,7 @@ public partial class InventoryManagement_frmPurchaseOrderManual : System.Web.UI.
                         }
                     }
                 }
-                if (lblStatusID.Text=="2")
+                if (lblStatusID.Text == "2")
                 {
                     txtOrderQty.Enabled = false;
                     chkPriority.Enabled = false;
@@ -1100,18 +1106,18 @@ public partial class InventoryManagement_frmPurchaseOrderManual : System.Web.UI.
             DataSet ds = new DataSet();
             ObjBOL.Operation = 15;
             ObjBOL.SourceID = ddlSource.SelectedValue;
-            ObjBOL.PONumberID =Convert.ToInt32(ddlPurchaseOrder.SelectedValue);
+            ObjBOL.PONumberID = Convert.ToInt32(ddlPurchaseOrder.SelectedValue);
             ds = ObjBLL.GetBindControl(ObjBOL);
-            if(ds.Tables[0].Rows.Count>0)
-            {                
+            if (ds.Tables[0].Rows.Count > 0)
+            {
                 gvMainPartDetail.DataSource = ds.Tables[0];
                 gvMainPartDetail.DataBind();
-            }   
+            }
             else
             {
                 gvMainPartDetail.DataSource = "";
                 gvMainPartDetail.DataBind();
-            }         
+            }
         }
         catch (Exception ex)
         {
@@ -1128,15 +1134,15 @@ public partial class InventoryManagement_frmPurchaseOrderManual : System.Web.UI.
             foreach (GridViewRow row in gvMainPartDetail.Rows)
             {
                 if (row.RowType == DataControlRowType.DataRow)
-                {                    
-                    string partid = gvMainPartDetail.DataKeys[row.RowIndex].Value.ToString();                    
-                    GridView gvChild = row.FindControl("gvRequisitionInfo") as GridView;                    
+                {
+                    string partid = gvMainPartDetail.DataKeys[row.RowIndex].Value.ToString();
+                    GridView gvChild = row.FindControl("gvRequisitionInfo") as GridView;
                     ObjBOL.PONumberID = Convert.ToInt32(ddlPurchaseOrder.SelectedValue);
                     ObjBOL.SourceID = ddlSource.SelectedValue;
                     ObjBOL.PartId = Convert.ToInt32(partid);
                     ObjBOL.Operation = 11;
                     ds = ObjBLL.GetBindControl(ObjBOL);
-                    if(ds.Tables[0].Rows.Count>0)
+                    if (ds.Tables[0].Rows.Count > 0)
                     {
                         gvChild.DataSource = ds.Tables[0];
                         gvChild.DataBind();
@@ -1165,7 +1171,7 @@ public partial class InventoryManagement_frmPurchaseOrderManual : System.Web.UI.
             DataSet ds = new DataSet();
             ObjBOL.Operation = 6;
             ds = ObjBLL.GetBindControl(ObjBOL);
-            if(ds.Tables[0].Rows.Count>0)
+            if (ds.Tables[0].Rows.Count > 0)
             {
                 Utility.BindDropDownList(ddlPartNo, ds.Tables[0]);
             }
@@ -1183,7 +1189,7 @@ public partial class InventoryManagement_frmPurchaseOrderManual : System.Web.UI.
         try
         {
             string msg = "";
-            if(ddlPurchaseOrder.SelectedIndex>0)
+            if (ddlPurchaseOrder.SelectedIndex > 0)
             {
                 ObjBOL.PONumberID = Convert.ToInt32(ddlPurchaseOrder.SelectedValue);
                 ObjBOL.Operation = 16;
@@ -1196,11 +1202,12 @@ public partial class InventoryManagement_frmPurchaseOrderManual : System.Web.UI.
             ObjBOL.PONumber = txtPurchaseOrderNo.Text;
             ObjBOL.SourceID = ddlSource.SelectedValue;
             ObjBOL.PreparedBy = ddlPreparedby.SelectedValue;
-            if(txtIssueDate.Text != "")
+            if (txtIssueDate.Text != "")
             {
                 ObjBOL.IssueDate = Utility.ConvertDate(txtIssueDate.Text);
-            }            
-            ObjBOL.Status =Convert.ToInt32(ddlStatus.SelectedValue);
+            }
+            ObjBOL.WareHouseID = Convert.ToInt32(ddlWareHouse.SelectedValue);
+            ObjBOL.Status = Convert.ToInt32(ddlStatus.SelectedValue);
             ObjBOL.PORemarks = txtPORemarks.Text;
             SaveGridData();
             DataTable selected = (DataTable)ViewState["POSummary"];
@@ -1208,7 +1215,7 @@ public partial class InventoryManagement_frmPurchaseOrderManual : System.Web.UI.
             DataTable summarytemp = dv.ToTable("selected", false, "ReqID", "ReqDetailID", "Partid", "ReqQty", "POOrderQty", "Priority", "Remarks", "StatusID");
             ObjBOL.PurchaseOrderDetails = summarytemp;
             msg = ObjBLL.SavePurchaseOrderInfoAndDetail(ObjBOL);
-            if(msg == "2627")
+            if (msg == "2627")
             {
                 Utility.ShowMessage_Error(Page, "PO Duplicate !!");
             }
@@ -1240,8 +1247,8 @@ public partial class InventoryManagement_frmPurchaseOrderManual : System.Web.UI.
                     EnableControls();
                     BindGridReqInfo();
                 }
-            }               
-              
+            }
+
         }
         catch (Exception ex)
         {
@@ -1257,14 +1264,22 @@ public partial class InventoryManagement_frmPurchaseOrderManual : System.Web.UI.
             ObjBOL.Operation = 5;
             ObjBOL.PONumberID = Convert.ToInt32(ddlPurchaseOrder.SelectedValue);
             ds = ObjBLL.GetBindControl(ObjBOL);
-            if(ds.Tables[0].Rows.Count>0)
+            if (ds.Tables[0].Rows.Count > 0)
             {
                 txtPurchaseOrderNo.Text = ds.Tables[0].Rows[0]["PONumber"].ToString();
                 ddlSource.SelectedValue = ds.Tables[0].Rows[0]["SourceId"].ToString();
+                if (ddlSource.Items.FindByValue(ds.Tables[0].Rows[0]["SourceId"].ToString()) != null)
+                {
+                    BindDestWareHouse(ddlSource.SelectedValue);
+                }
                 ddlPreparedby.SelectedValue = ds.Tables[0].Rows[0]["PreparedBy"].ToString();
-                txtIssueDate.Text =ds.Tables[0].Rows[0]["IssueDate"].ToString();
+                txtIssueDate.Text = ds.Tables[0].Rows[0]["IssueDate"].ToString();
                 ddlStatus.SelectedValue = ds.Tables[0].Rows[0]["Status"].ToString();
-                txtPORemarks.Text = ds.Tables[0].Rows[0]["Remarks"].ToString();                
+                if (ddlWareHouse.Items.FindByValue(ds.Tables[0].Rows[0]["WareHouseID"].ToString()) != null)
+                {
+                    ddlWareHouse.SelectedValue = ds.Tables[0].Rows[0]["WareHouseID"].ToString();
+                }
+                txtPORemarks.Text = ds.Tables[0].Rows[0]["Remarks"].ToString();
             }
         }
         catch (Exception ex)
@@ -1307,6 +1322,12 @@ public partial class InventoryManagement_frmPurchaseOrderManual : System.Web.UI.
                 ddlStatus.Focus();
                 return false;
             }
+            if (ddlWareHouse.SelectedIndex == 0)
+            {
+                Utility.ShowMessage_Error(Page, "Please Select Destination Warehouse !");
+                ddlWareHouse.Focus();
+                return false;
+            }
         }
         catch (Exception ex)
         {
@@ -1320,7 +1341,7 @@ public partial class InventoryManagement_frmPurchaseOrderManual : System.Web.UI.
         try
         {
             if (ddlPartNo.SelectedIndex == 0)
-            {                
+            {
                 Utility.ShowMessage_Error(Page, "Please Select Part#. !");
                 ddlPartNo.Focus();
                 return false;
@@ -1372,7 +1393,7 @@ public partial class InventoryManagement_frmPurchaseOrderManual : System.Web.UI.
         DataTable dt = new DataTable();
         try
         {
-            clscon.Return_DT(dt, "EXEC [dbo].[Inv_GeneratePurchaseOrder] '" + ddlPurchaseOrder.SelectedValue + "'");
+            clscon.Return_DT(dt, "EXEC [IV].[Inv_GeneratePurchaseOrder] '" + ddlPurchaseOrder.SelectedValue + "'");
         }
         catch (Exception ex)
         {
@@ -1390,6 +1411,7 @@ public partial class InventoryManagement_frmPurchaseOrderManual : System.Web.UI.
             if (Utility.InventoryEmailSwitch())
             {
                 string vendor = string.Empty;
+                string destination = string.Empty;
                 string preparedBy = string.Empty;
                 string status = string.Empty;
                 string issueDateString = string.Empty;
@@ -1403,6 +1425,11 @@ public partial class InventoryManagement_frmPurchaseOrderManual : System.Web.UI.
                 if (ddlSource.SelectedItem.Text.Trim().ToLower() != "select")
                 {
                     vendor = ddlSource.SelectedItem.Text;
+                }
+
+                if (ddlWareHouse.SelectedItem.Text.Trim().ToLower() != "select")
+                {
+                    destination = ddlWareHouse.SelectedItem.Text;
                 }
 
                 if (ddlPreparedby.SelectedItem.Text.Trim().ToLower() != "select")
@@ -1450,25 +1477,25 @@ public partial class InventoryManagement_frmPurchaseOrderManual : System.Web.UI.
                 Message += " <path d = 'm451.29 344.78v21.67h-88.71c3.04-7.16 5.95-14.39 8.75-21.67z' fill='#ffaf40' /> ";
                 Message += " <path d = 'm230.47 59.4v21.69h-34.74v-21.69c0-9.59 7.78-17.37 17.37-17.37 4.8 0 9.14 1.95 12.28 5.09s5.09 7.48 5.09 12.28z' fill='#ffe059' /></g></svg></div> ";
                 Message += " <h1 style ='font-size:1.65rem;margin:.3rem 0 0;color:#000;text-align:center'>Purchase Order List</h1> ";
-                Message += " </td></tr><tr><td style='width:1%;white-space:nowrap'>PO#</td><td style='font-weight:600;width:99%'>" + txtPurchaseOrderNo.Text + " </td>";
-                Message += " </tr><tr style='background:#efefef'><td style='width:1%;white-space:nowrap'>Vendor</td><td style='font-weight:600;width:99%'> " + vendor + "</td>";
-                Message += " </tr><tr><td style='width:1%;white-space:nowrap'> Prepared By </td><td style='font-weight:600;width:99%'>" + preparedBy + "</td>";
-                Message += " </tr><tr style='background:#efefef'><td style='width:1%;white-space:nowrap'> Issue Date </td><td style='font-weight:600;width:99%' > " + issueDateString + "</td> ";
-                Message += " </tr><tr><td style='width:1%;white-space:nowrap'> PO Status </td><td style='font-weight:600;width:99%'> " + status + "</td></tr>";
+                Message += " </td></tr><tr><td style='width:1%;white-space:nowrap'>PO#</td><td style='font-weight:600;width:99%'>" + txtPurchaseOrderNo.Text + " </td></tr>";
+                Message += " <tr style='background:#efefef'><td style='width:1%;white-space:nowrap'>Vendor</td><td style='font-weight:600;width:99%'> " + vendor + "</td></tr>";
+                Message += " <tr><td style='width:1%;white-space:nowrap'> Destination </td><td style='font-weight:600;width:99%'>" + destination + "</td></tr>";
+                Message += " <tr style='background:#efefef'><td style='width:1%;white-space:nowrap'> Prepared By </td><td style='font-weight:600;width:99%' > " + preparedBy + "</td></tr> ";
+                Message += " <tr><td style='width:1%;white-space:nowrap'> Issue Date </td><td style='font-weight:600;width:99%'> " + issueDateString + "</td></tr>";
+                Message += " <tr style='background:#efefef'><td style='width:1%;white-space:nowrap'> PO Status </td><td style='font-weight:600;width:99%' > " + status + "</td></tr> ";
                 if (!NotifyOnly)
                 {
-                    Message += " <tr style='background:#efefef'><td style='width:1%;white-space:nowrap'> Submitted By </td><td style='font-weight:600;width:99%'> " + Utility.GetCurrentSession().EmployeeName + "</td> ";
-                    Message += " </tr><tr><td style='width:1%;white-space:nowrap'> Submitted Date / Time </td><td style='font-weight:600;width:99%'> " + DateTime.Now.ToString("MMMM dd, yyyy hh:mm tt") + "</td></tr>";
+                    Message += " <tr><td style='width:1%;white-space:nowrap'> Submitted By </td><td style='font-weight:600;width:99%'> " + Utility.GetCurrentSession().EmployeeName + "</td></tr>";
+                    Message += " <tr style='background:#efefef'><td style='width:1%;white-space:nowrap'> Submitted Date / Time </td><td style='font-weight:600;width:99%' > " + DateTime.Now.ToString("MMMM dd, yyyy hh:mm tt") + "</td></tr> ";
                 }
-
                 Message += " <tr><td colspan = '2'>If you have any questions or concerns regarding your requisition, please contact the purchasing department. <br /><br /> ";
                 Message += " Thanks, <br/ > <strong> " + Utility.EmailDisplayName() + " </strong> <br /> ";
                 Message += " </td></tr></table></td></tr></table></body></html> ";
                 List<MailAddress> sendToList = new List<MailAddress>();
                 List<MailAddress> ccList = new List<MailAddress>();
-                HashSet<MailAddress> sendToListAsList = Utility.GetMailAddresses(Utility.EmailType.Inventory, "SendToList", Utility.emailDictionaryInventory, "Purchasing", 1,"P","");
+                HashSet<MailAddress> sendToListAsList = Utility.GetMailAddresses(Utility.EmailType.Inventory, "SendToList", Utility.emailDictionaryInventory, "Purchasing", 1, "P", "");
                 HashSet<MailAddress> ccListAsList = new HashSet<MailAddress>();
-                ccListAsList = Utility.GetMailAddresses(Utility.EmailType.Inventory, "ccList", Utility.emailDictionaryInventory, "", 2, "P","");
+                ccListAsList = Utility.GetMailAddresses(Utility.EmailType.Inventory, "ccList", Utility.emailDictionaryInventory, "", 2, "P", "");
                 sendToList = sendToListAsList.ToList();
                 ccList = ccListAsList.ToList();
                 Send_Email(Message, "Purchase Order List (" + txtPurchaseOrderNo.Text + ")", sendToList, ccList);
@@ -1527,7 +1554,7 @@ public partial class InventoryManagement_frmPurchaseOrderManual : System.Web.UI.
                 Message = string.Empty;
                 Utility.ShowMessage_Success(Page, "Email Sent Successfully!!");
             }
-            
+
         }
         catch (Exception ex)
         {
@@ -1605,7 +1632,7 @@ public partial class InventoryManagement_frmPurchaseOrderManual : System.Web.UI.
             }
         }
         return reportStream;
-    }  
+    }
 
     //btnReport_Click
     protected void btnReport_Click(object sender, EventArgs e)
@@ -1624,29 +1651,41 @@ public partial class InventoryManagement_frmPurchaseOrderManual : System.Web.UI.
     {
         try
         {
-            int purchaseOrderID = Int32.Parse(ddlPurchaseOrder.SelectedValue);
-            if (purchaseOrderID > 0)
+            if(ValidationCheck() == true)
             {
-                ObjBOL.PONumberID = Int32.Parse(ddlPurchaseOrder.SelectedValue);
-                var EmployeeID = Utility.GetCurrentSession().EmployeeID;
-                ObjBOL.EmployeeID = EmployeeID;
-                ObjBOL.Operation = 12;
-                string returnStatus = ObjBLL.SavePurchaseOrderInfo(ObjBOL);                
-                if (returnStatus.Trim() != "")
+                int purchaseOrderID = Int32.Parse(ddlPurchaseOrder.SelectedValue);
+                if (purchaseOrderID > 0)
                 {
-                    Utility.ShowMessage_Success(Page, returnStatus);
-                    SendEmail_Prepare(false);
-                    UpdateStatusID();
-                    ResetPOInformation();
-                    ResetRequisitionTable();                                        
-                    btnSave.Text = "Save";
-                    BindLookUpPO("");
-                    if(ddlPurchaseOrder.Items.Count>0)
+                    ObjBOL.PONumberID = Int32.Parse(ddlPurchaseOrder.SelectedValue);
+                    var EmployeeID = Utility.GetCurrentSession().EmployeeID;
+                    ObjBOL.EmployeeID = EmployeeID;
+                    ObjBOL.Operation = 12;
+                    string returnStatus = ObjBLL.SavePurchaseOrderInfo(ObjBOL);
+                    if (returnStatus.Trim() != "")
                     {
-                        ddlPurchaseOrder.SelectedIndex = 0;
-                    }               
-                    BindGridReqInfoBySource();
+                        Utility.ShowMessage_Success(Page, returnStatus);
+                        SendEmail_Prepare(false);
+                        UpdateStatusID();
+                        ResetPOInformation();
+                        ResetRequisitionTable();
+                        btnSave.Text = "Save";
+                        BindLookUpPO("");
+                        if (ddlPurchaseOrder.Items.Count > 0)
+                        {
+                            ddlPurchaseOrder.SelectedIndex = 0;
+                        }
+                        BindGridReqInfoBySource();
+                        btnSubmit.Enabled = false;
+                        btnNotify.Enabled = false;
+                        btnGenerate.Enabled = false;
+                    }
                 }
+            }
+            else
+            {
+                btnSubmit.Enabled = true;
+                btnNotify.Enabled = true;
+                btnGenerate.Enabled = true;
             }
         }
         catch (Exception ex)
@@ -1662,23 +1701,23 @@ public partial class InventoryManagement_frmPurchaseOrderManual : System.Web.UI.
             int ReqQty = 0;
             int OrderQty = 0;
             int InTransitQty = 0;
-            if(lnkInTransit.Text != "")
+            if (lnkInTransit.Text != "")
             {
-                InTransitQty =Convert.ToInt32(lnkInTransit.Text);
+                InTransitQty = Convert.ToInt32(lnkInTransit.Text);
             }
-            if(txtPOOrder.Text != "")
+            if (txtPOOrder.Text != "")
             {
-                OrderQty =Convert.ToInt32(txtPOOrder.Text);
+                OrderQty = Convert.ToInt32(txtPOOrder.Text);
             }
-            if(lblReqOrderQty.Text != "")
+            if (lblReqOrderQty.Text != "")
             {
                 ReqQty = Convert.ToInt32(lblReqOrderQty.Text);
             }
-            if(OrderQty>InTransitQty && InTransitQty>0)
+            if (OrderQty > InTransitQty && InTransitQty > 0)
             {
-                Utility.ShowMessage_Error(Page, "Intransit Qty Not more than Order Qty !!");                
+                Utility.ShowMessage_Error(Page, "Intransit Qty Not more than Order Qty !!");
             }
-            if(OrderQty>ReqQty)
+            if (OrderQty > ReqQty)
             {
                 Utility.ShowMessage_Error(Page, "Please Enter Remarks !");
                 txtRemarks.Focus();
@@ -1700,33 +1739,33 @@ public partial class InventoryManagement_frmPurchaseOrderManual : System.Web.UI.
             int InTransitQty = 0;
             GridViewRow row = ((GridViewRow)((TextBox)sender).NamingContainer);
             LinkButton lnkInTransit = (LinkButton)row.FindControl("lnkInTransit");
-            Label lblReqNo= (Label)row.FindControl("lblReqQty");
+            Label lblReqNo = (Label)row.FindControl("lblReqQty");
             TextBox txtOrderQty = (TextBox)row.FindControl("txtPOOrderQty");
             TextBox txtRemarks = (TextBox)row.FindControl("txtItemRemarks");
             if (lblReqNo.Text != "")
             {
                 ReqQty = Convert.ToInt32(lblReqNo.Text);
             }
-            if(txtOrderQty.Text != "")
+            if (txtOrderQty.Text != "")
             {
                 OrderQty = Convert.ToInt32(txtOrderQty.Text);
             }
-            if(lnkInTransit.Text != "")
+            if (lnkInTransit.Text != "")
             {
-               InTransitQty=Convert.ToInt32(lnkInTransit.Text);
+                InTransitQty = Convert.ToInt32(lnkInTransit.Text);
             }
-            if(OrderQty < InTransitQty && InTransitQty>0)
+            if (OrderQty < InTransitQty && InTransitQty > 0)
             {
-                Utility.ShowMessage_Error(Page, "Intransit Qty Not more than Order Qty !!");                
+                Utility.ShowMessage_Error(Page, "Intransit Qty Not more than Order Qty !!");
             }
-            if(OrderQty> ReqQty && ReqQty>0)
+            if (OrderQty > ReqQty && ReqQty > 0)
             {
-                if(txtRemarks.Text == "")
+                if (txtRemarks.Text == "")
                 {
                     Utility.ShowMessage_Error(Page, "Please Enter Remarks !!");
                     txtRemarks.Focus();
                 }
-                
+
             }
 
         }
@@ -1735,5 +1774,49 @@ public partial class InventoryManagement_frmPurchaseOrderManual : System.Web.UI.
             Utility.AddEditException(ex);
         }
     }
-   
+
+    private void BindDestWareHouse(string selectedSourceID)
+    {
+        try
+        {
+            DataSet ds = new DataSet();
+            ObjBOL.Operation = 17;
+            ObjBOL.SourceID = selectedSourceID;
+            ds = ObjBLL.GetBindControl(ObjBOL);
+            if (ds.Tables[0].Rows.Count > 0)
+            {
+                Utility.BindDropDownList(ddlWareHouse, ds.Tables[0]);
+            }
+            else
+            {
+                if (ddlWareHouse.Items.Count > 0)
+                {
+                    ddlWareHouse.Items.Clear();
+                }
+
+            }
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+    }
+
+    protected void ddlSource_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        try
+        {
+            if (ddlSource.SelectedIndex > 0)
+            {
+                BindDestWareHouse(ddlSource.SelectedValue);
+            }
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+    }
+
+
+
 }

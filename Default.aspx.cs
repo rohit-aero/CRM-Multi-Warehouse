@@ -2553,23 +2553,13 @@ public partial class _Default : System.Web.UI.Page
 
     protected void btnExportToExcel_TrackJobStatus_Click(object sender, EventArgs e)
     {
-        Response.Clear();
-        Response.Buffer = true;
-        Response.ClearContent();
-        string FileName = containerJobsHeader.InnerText + ".xls";
-        //gvSearch.AllowPaging = false;
-        gvContainerJobs.AllowSorting = false;
-        gvContainerJobs.AllowSorting = false;
-        BindContainerJobs();
-        Response.AddHeader("Content-Disposition", string.Format("attachment;filename=" + FileName));
-        Response.Charset = "";
-        StringWriter strwritter = new StringWriter();
-        HtmlTextWriter htmltextwrtter = new HtmlTextWriter(strwritter);
-        Response.Cache.SetCacheability(HttpCacheability.NoCache);
-        Response.ContentType = "application/vnd.ms-excel";
-        gvContainerJobs.RenderControl(htmltextwrtter);
-        Response.Write(strwritter.ToString());
-        Response.Flush();
-        Response.End();
+        try
+        {
+            Utility.ExportToExcelGrid(gvContainerJobs, "Track Jobs Status");
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }       
     }
 }
