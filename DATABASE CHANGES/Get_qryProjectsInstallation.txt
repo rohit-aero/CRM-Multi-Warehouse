@@ -1,0 +1,40 @@
+
+ALTER PROCEDURE [dbo].[Get_qryProjectsInstallation]
+    @JobID VARCHAR(50) = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+   
+	SELECT  dbo.qryNewProjectsAll.JobID, dbo.qryShipType.Description + ':' AS Descriptions, dbo.qryShippingInf.UpdatedBy, dbo.qryShippingInf.Memo, dbo.qryShippingInf.Date, dbo.qryInstallationBy.[Desc], 
+	dbo.qryNewProjectsAll.InstallDate, dbo.qryNewProjectsAll.ProjectName + ', ' + ISNULL(dbo.tblCustomers.City, '') + ', ' + dbo.tblStates.State + ', ' + dbo.tblCountries.Country AS PName, dbo.qryNewProjectsAll.ReleaseDate, 
+	dbo.qryNewProjectsAll.ShipDate, dbo.qryNewProjectsAll.ShipToName, 
+	dbo.qryNewProjectsAll.ShipToStreet + ',  ' + dbo.qryNewProjectsAll.ShipToCity + ', ' + dbo.qryNewProjectsAll.ShipToState + ', ' + dbo.qryNewProjectsAll.ShipToCountry AS ShipAddress, dbo.qryNewProjectsAll.ShipToZipCode, 
+	dbo.qryNewProjectsAll.SiteContact, dbo.qryNewProjectsAll.SiteContactTelephone, dbo.qryDealers.CompanyName AS DCompanyName, dbo.qryDearlerAttention.Name AS DealerContact, ISNULL(dbo.qryDealers.StreetAddress, '') 
+	+ ' ' + ISNULL(dbo.qryDealers.City, '') + ' ' + ISNULL(dbo.qryDealers.State, '') + ' ' + ISNULL(dbo.qryDealers.ZipCode, '') AS DealerAdd, dbo.qryDealers.Fax AS DealerFax, dbo.qryDealers.Phone AS DealerPhone, 
+	dbo.qryHobartListing.FirstName + ' ' + dbo.qryHobartListing.LastName AS RepLName, dbo.qryHobartListing.StreetAddress + ', ' + dbo.qryHobartListing.City + ', ' + dbo.qryHobartListing.ZipCode AS RepAdd, HobartState.State, 
+	dbo.qryHobartListing.Telephone AS RepPhone, dbo.qryHobartListing.FaxNumber AS RepFax, dbo.qryAeroEmps.FirstName + ' ' + dbo.qryAeroEmps.LastName AS ProjectDesigner, dbo.qryNewProjectsAll.SiteFloor, 
+	dbo.qryNewProjectsAll.DoorOpen, dbo.qryNewProjectsAll.Width, dbo.qryNewProjectsAll.Height, dbo.qryNewProjectsAll.Depth, 
+	qryAeroEmps_1.FirstName + ' ' + qryAeroEmps_1.LastName AS ReviewBy,
+	ISNULL(dbo.Inv_Parts.PartNumber,'') AS partno,Inv_Product.Product,
+	ISNULL([dbo].[ProperCase](dbo.Inv_Parts.PartDes),'') AS PartDes, dbo.Inv_ProjectParts.qty AS Qty,
+	(SELECT SUM(StockInHand) FROM Inv_Parts_StockInHand WHERE Inv_Parts_StockInHand.PartId = Inv_Parts.id GROUP BY Inv_Parts_StockInHand.PartId) AS CurrentStock
+	FROM dbo.qryAeroEmps AS qryAeroEmps_1 
+	RIGHT OUTER JOIN dbo.tblCountries
+	RIGHT OUTER JOIN dbo.qryNewProjectsAll 
+	LEFT JOIN  Inv_ProjectParts ON Inv_ProjectParts.projectid=qryNewProjectsAll.JobID
+	LEFT JOIN Inv_Parts ON Inv_Parts.id=Inv_ProjectParts.partid    
+	LEFT JOIN Inv_Product  ON Inv_Product.id=Inv_Parts.ProductId
+	LEFT OUTER JOIN
+	dbo.qryShippingInf ON dbo.qryNewProjectsAll.JobID = dbo.qryShippingInf.JobID LEFT OUTER JOIN
+	dbo.qryShipType ON dbo.qryShippingInf.Type = dbo.qryShipType.TypeID LEFT OUTER JOIN
+	dbo.qryDealers ON dbo.qryNewProjectsAll.DealerID = dbo.qryDealers.DealerID LEFT OUTER JOIN
+	dbo.qryDearlerAttention ON dbo.qryNewProjectsAll.JobID = dbo.qryDearlerAttention.JobID LEFT OUTER JOIN
+	dbo.qryHobartListing ON dbo.qryNewProjectsAll.RepID = dbo.qryHobartListing.RepID LEFT OUTER JOIN
+	dbo.tblStates AS HobartState ON dbo.qryHobartListing.StateID = HobartState.StateID LEFT OUTER JOIN
+	dbo.qryInstallationBy ON dbo.qryNewProjectsAll.InstallationBy = dbo.qryInstallationBy.InstallationByID LEFT OUTER JOIN
+	dbo.qryAeroEmps ON dbo.qryNewProjectsAll.ProjectDesignerID = dbo.qryAeroEmps.EmployeeID INNER JOIN
+	dbo.tblCustomers ON dbo.qryNewProjectsAll.CustomerID = dbo.tblCustomers.CustomerID LEFT OUTER JOIN
+	dbo.tblStates ON dbo.tblCustomers.StateID = dbo.tblStates.StateID 
+	ON dbo.tblCountries.CountryID = dbo.tblCustomers.CountryID ON qryAeroEmps_1.EmployeeID = dbo.qryNewProjectsAll.ReviewedBy
+	WHERE  (dbo.qryNewProjectsAll.ProjectName IS NOT NULL) AND (dbo.qryNewProjectsAll.JobID IS NOT NULL) AND (dbo.qryNewProjectsAll.JobID = @JobID)
+END
