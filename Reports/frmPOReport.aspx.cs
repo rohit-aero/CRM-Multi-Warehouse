@@ -201,7 +201,7 @@ public partial class Reports_frmPOReport : System.Web.UI.Page
             Qstr += " ELSE concat(MIN(EmpPORequestor.FirstName) + ' ', MIN(EmpPORequestor.LastName)) end as Requestor, ";
             Qstr += "   MIN(Inv_Source.[WarehouseName]) AS [Source], MIN(Inv_Warehouse.[WarehouseName]),";
             Qstr += " NULL AS OrderQty,NULL AS ShipQty,NULL AS PendingQty, ";
-            Qstr += " NULL AS StatusID, ";
+            Qstr += " MIN(Inv_PurchaseOrderDetail_Manual.StatusID) AS StatusID, ";
             Qstr += " CASE WHEN MIN(Inv_PurchaseOrderDetail_Manual.ReqID) IS NULL THEN MIN(Inv_PurchaseOrderDetail_Manual.ShipmentBy) ";
             Qstr += " ELSE MIN(Inv_RequisitionDetail.ShipmentBy) END AS ShipmentBy,MIN(Inv_UM.UM) AS [UM],MIN(Inv_PurchaseOrder_Manual.Id) AS POId, ";
             Qstr += " Inv_Parts.id,MIN(Inv_PurchaseOrder_Manual.IsSubmitted) AS IsSubmitted,MIN(Inv_RequisitionDetail.id) AS ReqDetailID FROM Inv_PurchaseOrderDetail_Manual ";
@@ -222,11 +222,7 @@ public partial class Reports_frmPOReport : System.Web.UI.Page
             Qstr += " Inv_PurchaseOrderDetail_Manual  WHERE Inv_PurchaseOrderDetail_Manual.PartId=@PART_ID AND Inv_PurchaseOrderDetail_Manual.PurchaseOrderId=@PO_id ";
             Qstr += " GROUP BY Inv_PurchaseOrderDetail_Manual.PurchaseOrderId,PartId) WHERE PartID=@PART_ID AND POId=@PO_id ";
             Qstr += " UPDATE @TempTable SET ShipQty=(SELECT SUM(ShipQty) FROM Inv_ContainerDetail WHERE Inv_ContainerDetail.PartId=@PART_ID ";
-            Qstr += " AND POId=@PO_id ) WHERE PartID=@PART_ID AND POId=@PO_id  ";
-            Qstr += " UPDATE @Temptable SET DetailsStatus = ( SELECT StatusID FROM Inv_RequisitionDetail ";
-            Qstr += " WHERE id=(SELECT ReqDetailID FROM Inv_PurchaseOrderDetail_Manual ";
-            Qstr += " WHERE PartId=@PART_ID AND PurchaseOrderId=@PO_id)) ";
-            Qstr += " where Partid=@PART_ID and POID=@PO_id ";
+            Qstr += " AND POId=@PO_id ) WHERE PartID=@PART_ID AND POId=@PO_id  ";    
             Qstr += " FETCH NEXT FROM CUR_PART INTO @PART_ID,@PO_id,@ReqDetailID ";
             Qstr += " END  END CLOSE CUR_PART DEALLOCATE CUR_PART ";
             Qstr += " SELECT PONumber,Part#,[Description],OrderDate, ";

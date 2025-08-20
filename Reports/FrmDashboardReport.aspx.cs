@@ -279,7 +279,7 @@ public partial class Reports_FrmDashboardReport : System.Web.UI.Page
             }
             if (ddlVendor.SelectedIndex > 0)
             {
-                Qstr += " And Inv_Source.[Source] = '" + ddlVendor.SelectedItem.Text + "' ";
+                Qstr += " And Inv_Warehouse.[WarehouseName] = '" + ddlVendor.SelectedItem.Text + "' ";
             }
             Qstr += " Group By Inv_Container.id ";
             Qstr += " Order by MIN(InvoiceNo),MIN(Inv_Container.ArrivalInAerowerks) DESC ";
