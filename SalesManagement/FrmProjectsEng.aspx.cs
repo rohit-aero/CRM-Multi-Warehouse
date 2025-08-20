@@ -1376,11 +1376,11 @@ public partial class SalesManagement_FrmProjectsEng : System.Web.UI.Page
         try
         {
             DataTable dt = new DataTable();
-            rprt.Load(Server.MapPath("~/Reports/rptProjectShippingInf.rpt"));
+            rprt.Load(Server.MapPath("~/Reports/rptProjectShippingInf_V1.rpt"));
             //cls.Return_DT(dt, "EXEC [dbo].[Get_ProjectInstallation] '" + HfJObID.Value + "'");
             //if (dt.Rows.Count == 1 && dt.Rows[0]["partno"].ToString().Trim() == "")
             //{
-            cls.Return_DT(dt, "EXEC [dbo].[Get_qryProjectsInstallation] '" + HfJObID.Value + "'");
+            cls.Return_DT(dt, "EXEC [dbo].[Get_qryProjectsInstallation_V1] '" + HfJObID.Value + "'");
             //}
             rprt.SetDataSource(dt);
             rprt.ExportToHttpResponse(CrystalDecisions.Shared.ExportFormatType.PortableDocFormat, Response, false, "");
