@@ -1791,11 +1791,13 @@ public partial class SalesManagement_FrmProjectsEng : System.Web.UI.Page
                 {
                     if (hfReleased.Value == "True")
                     {
+                        ddlWarehouse.Enabled = false;
                         btnRelease.Enabled = false;
                         btnRollback.Enabled = true;
                     }
                     else if (hfReleased.Value == "False")
                     {
+                        ddlWarehouse.Enabled = true;
                         btnRelease.Enabled = true;
                         btnRollback.Enabled = false;
                     }
@@ -2075,6 +2077,7 @@ public partial class SalesManagement_FrmProjectsEng : System.Web.UI.Page
             ddlManuFac.SelectedIndex = 0;
             ddlManuFacChina.SelectedIndex = 0;
             ddlWarehouse.SelectedIndex = 0;
+            ddlWarehouse.Enabled = true;
             txtReleasetoNesting.Text = String.Empty;
             txtProjectReleasedToShop.Text = String.Empty;
             txtSearchPName.Text = "";
