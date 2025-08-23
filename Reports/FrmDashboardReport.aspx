@@ -131,7 +131,8 @@
 
                             <asp:TemplateField HeaderText="Current Stock" HeaderStyle-Width="1%" SortExpression="StockInHand">
                                 <ItemTemplate>
-                                    <asp:Label ID="lblStockInHand" runat="server" Text='<%# Eval("StockInHand") %>'></asp:Label>
+                                    <asp:LinkButton ID="lnkStockInHand" runat="server" Text='<%# Eval("StockInHand") %>' CommandName="InStockCommand" CommandArgument='<%# DataBinder.Eval(Container, "RowIndex") %>'></asp:LinkButton>
+                                    <asp:Label ID="lblInStock" runat="server" Text='<%# Eval("StockInHand") %>' Visible="false"></asp:Label>
                                 </ItemTemplate>
                                 <HeaderStyle HorizontalAlign="Right" />
                                 <ItemStyle HorizontalAlign="Right" />
@@ -395,6 +396,60 @@
                 </div>
             </asp:Panel>
             <asp:LinkButton ID="LinkButton3" runat="server"></asp:LinkButton>
+
+            <asp:ModalPopupExtender ID="ModalPopupStockIn" runat="server" TargetControlID="LinkButton4"
+                PopupControlID="PanelStockIn" BackgroundCssClass="modalBackground" CancelControlID="btnClose">
+            </asp:ModalPopupExtender>
+            <asp:Panel ID="PanelStockIn" runat="server" CssClass="ReportsModalPopup" Style="display: none;" Width="80%" Height="60%">
+                <div class="position-relative h-100">
+                    <asp:ImageButton CssClass="position-absolute crossCloseBtn" ID="ImageButton3" runat="server" ImageUrl="../images/closebtnCircle.png"
+                        AlternateText="Close Popup" ToolTip="Close Popup" />
+                    <div class="overflow-y: hidden;">
+                        <div class="row justify-content-center">
+                            <div class="col-sm-6 col-md-6 col-lg-4 col-xl-4">
+                                <div class="row">
+                                    <div class="col-sm-3 col-md-auto mb-3 modal-title text-center">
+                                        <h4>
+                                            <label class="mb-0 title-hyphen position-relative">Part Number:</label></h4>
+                                    </div>
+                                    <div class="col-sm-9 col-md mb-3 chosenFullWidth ">
+                                        <h4>
+                                            <asp:Label ID="lblInStockPartNumber" runat="server"></asp:Label></h4>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <table class="table mainGridTable table-sm">
+                            <asp:GridView CssClass="table mainGridTable table-sm mb-0" ID="gvInsTock" runat="server" AutoGenerateColumns="false"
+                                EnableModelValidation="True">
+                                <Columns>
+                                    <asp:TemplateField HeaderText="WareHouse Name" HeaderStyle-Width="10%">
+                                        <ItemTemplate>
+                                            <asp:Label ID="lblWareHouseName" runat="server" Text='<%# Eval("WarehouseName") %>'>
+                                            </asp:Label>
+                                        </ItemTemplate>
+                                        <ItemStyle />
+                                        <HeaderStyle Width="10%" />
+                                    </asp:TemplateField>
+                                    <asp:TemplateField HeaderText="Stock In Hand" HeaderStyle-Width="10%">
+                                        <ItemTemplate>
+                                            <asp:Label ID="lblStockInHand" runat="server" Text='<%# Eval("StockInHand") %>'>
+                                            </asp:Label>
+                                        </ItemTemplate>
+                                        <ItemStyle />
+                                        <HeaderStyle Width="10%" />
+                                        <ItemStyle HorizontalAlign="Right" />
+                                    </asp:TemplateField>
+                                </Columns>
+                            </asp:GridView>
+                        </table>
+                    </div>
+                </div>
+
+            </asp:Panel>
+
+
+            <asp:LinkButton ID="LinkButton4" runat="server"></asp:LinkButton>
 
             <asp:GridView CssClass="table mainGridTable table-sm" ID="gvInventoryReportExcel" runat="server" Visible="false" AutoGenerateColumns="false"></asp:GridView>
         </ContentTemplate>

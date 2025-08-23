@@ -31,6 +31,7 @@ public partial class Reports_FrmDashboardReport : System.Web.UI.Page
                 BindControls();
                 if (ddlReportType.SelectedValue == "1")
                 {
+                    BindVendorOnInventory(ddlReportType.SelectedValue);
                     EnabledButton();
                 }
             }
@@ -50,8 +51,8 @@ public partial class Reports_FrmDashboardReport : System.Web.UI.Page
             ds = ObjBLL.Return_DataSet(ObjBOL);
             if (ds.Tables[0].Rows.Count > 0)
             {
-                Utility.BindDropDownListAll(ddlVendor, ds.Tables[0]);
-                ddlVendor.SelectedIndex = 0;
+                //Utility.BindDropDownListAll(ddlVendor, ds.Tables[0]);
+                //ddlVendor.SelectedIndex = 0;
             }
 
             if (ds.Tables[1].Rows.Count > 0)
@@ -126,7 +127,7 @@ public partial class Reports_FrmDashboardReport : System.Web.UI.Page
         {
             string Qstr = string.Empty;
             DataSet ds = new DataSet();
-            ObjBOL.Operation = 9;
+            ObjBOL.Operation = 8;
             if (txtFromDate.Text != "" && txtToDate.Text != "")
             {
                 Qstr += " AND Inv_Container.ReceivedDate Between '" + txtFromDate.Text + "' AND '" + txtToDate.Text + "' ";
@@ -134,7 +135,7 @@ public partial class Reports_FrmDashboardReport : System.Web.UI.Page
 
             if (ddlVendor.SelectedIndex > 0)
             {
-                Qstr += " AND WarehouseName= '" + ddlVendor.SelectedItem.Text + "' ";
+                Qstr += " AND Inv_Parts.SourceId= '" + ddlVendor.SelectedValue + "' ";
             }
 
             if (ddlProductCode.SelectedIndex > 0)
@@ -243,6 +244,36 @@ public partial class Reports_FrmDashboardReport : System.Web.UI.Page
         }
     }
 
+
+    private void BindVendorOnInventory(string ReportTypeID)
+    {
+        try
+        {
+            if (ReportTypeID != "")
+            {
+                DataSet ds = new DataSet();
+                ObjBOL.Operation = 9;
+                ObjBOL.ReportTypeID = Convert.ToInt32(ReportTypeID);
+                ds = ObjBLL.Return_DataSet(ObjBOL);
+                if (ds.Tables[0].Rows.Count > 0)
+                {
+                    Utility.BindDropDownListAll(ddlVendor, ds.Tables[0]);
+                    if (ddlVendor.Items.Count > 0)
+                    {
+                        ddlVendor.SelectedIndex = 0;
+                    }
+                }
+            }
+
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+    }
+
+
+
     private void CheckReportType()
     {
         try
@@ -279,7 +310,7 @@ public partial class Reports_FrmDashboardReport : System.Web.UI.Page
             }
             if (ddlVendor.SelectedIndex > 0)
             {
-                Qstr += " And Inv_Warehouse.[WarehouseName] = '" + ddlVendor.SelectedItem.Text + "' ";
+                Qstr += " And Inv_Source.[WarehouseName] = '" + ddlVendor.SelectedItem.Text + "' ";
             }
             Qstr += " Group By Inv_Container.id ";
             Qstr += " Order by MIN(InvoiceNo),MIN(Inv_Container.ArrivalInAerowerks) DESC ";
@@ -372,7 +403,7 @@ public partial class Reports_FrmDashboardReport : System.Web.UI.Page
 
             if (ddlVendor.SelectedIndex > 0)
             {
-                Qstr += " AND WarehouseName= '" + ddlVendor.SelectedItem.Text + "' ";
+                Qstr += " AND Inv_Parts.SourceId= '" + ddlVendor.SelectedValue + "' ";
             }
 
             if (ddlProductCode.SelectedIndex > 0)
@@ -464,8 +495,9 @@ public partial class Reports_FrmDashboardReport : System.Web.UI.Page
     private void Reset()
     {
         try
-        {            
+        {
             ddlReportType.SelectedValue = "1";
+            BindVendorOnInventory(ddlReportType.SelectedValue);
             txtFromDate.Text = String.Empty;
             txtToDate.Text = String.Empty;
             ddlVendor.SelectedIndex = 0;
@@ -489,6 +521,10 @@ public partial class Reports_FrmDashboardReport : System.Web.UI.Page
     {
         try
         {
+            if (ddlReportType.SelectedIndex > 0)
+            {
+                BindVendorOnInventory(ddlReportType.SelectedValue);
+            }
             EnabledButton();
             EnabledOrDisabledPartNo();
             ResetGrid();
@@ -679,6 +715,8 @@ public partial class Reports_FrmDashboardReport : System.Web.UI.Page
                 LinkButton lnkInProduction = (LinkButton)row.FindControl("lnkInProduction");
                 Label lblInProduction = (Label)row.FindControl("lblInProduction");
                 LinkButton lnkInForcast = (LinkButton)row.FindControl("lnkInForcast");
+                Label lblInStock = (Label)row.FindControl("lblInStock");
+                LinkButton lnkInStock = (LinkButton)row.FindControl("lnkStockInHand");
                 Label lblInForcast = (Label)row.FindControl("lblInForcast");
                 if (lnkInTransit != null)
                 {
@@ -706,12 +744,22 @@ public partial class Reports_FrmDashboardReport : System.Web.UI.Page
                         lnkInForcast.Enabled = false;
                     }
                 }
+                if(lnkInStock !=  null)
+                {
+                    if (lnkInStock.Text != "0")
+                    {
+                        lnkInStock.Attributes.Remove("href");
+                        lnkInStock.Enabled = false;
+                    }
+                }
                 lblInTransit.Visible = true;
                 lblInProduction.Visible = true;
                 lblInForcast.Visible = true;
                 lnkInTransit.Visible = false;
                 lnkInProduction.Visible = false;
                 lnkInForcast.Visible = false;
+                lblInStock.Visible = true;
+                lnkInStock.Visible = false;
             }
 
             Response.AddHeader("content-disposition", "attachment;filename=" + FileName);
@@ -778,6 +826,7 @@ public partial class Reports_FrmDashboardReport : System.Web.UI.Page
         {
             LinkButton lnkInTransit = (LinkButton)e.Row.FindControl("lnkInTransit");
             LinkButton lnkInProduction = (LinkButton)e.Row.FindControl("lnkInProduction");
+            LinkButton lnkInStock = (LinkButton)e.Row.FindControl("lnkStockInHand");
             if (lnkInTransit != null)
             {
                 if (lnkInTransit.Text == "0")
@@ -798,6 +847,18 @@ public partial class Reports_FrmDashboardReport : System.Web.UI.Page
                     if (lnkInProduction.Enabled != false)
                     {
                         lnkInProduction.Enabled = false;
+                    }
+                }
+            }
+
+            if (lnkInStock != null)
+            {
+                if (lnkInStock.Text == "0")
+                {
+                    lnkInStock.Attributes.Remove("href");
+                    if (lnkInStock.Enabled != false)
+                    {
+                        lnkInStock.Enabled = false;
                     }
                 }
             }
@@ -892,6 +953,35 @@ public partial class Reports_FrmDashboardReport : System.Web.UI.Page
                     gvInForcast.DataBind();
                     lblTitle.Text = ds.Tables[1].Rows[0][1].ToString();
                     ModalPopupExtender3.Show();
+                }
+            }
+            else if (e.CommandName == "InStockCommand")
+            {
+                DataSet ds = new DataSet();
+                GridViewRow clickedRow = ((LinkButton)e.CommandSource).NamingContainer as GridViewRow;
+                LinkButton lnkInStock = (LinkButton)clickedRow.FindControl("lnkStockInHand");
+                if (lnkInStock.Text == "0")
+                {
+                    return;
+                }
+                int rowIndex = int.Parse(e.CommandArgument.ToString());
+                int id = (int)gvInventoryReport.DataKeys[rowIndex]["id"];
+                ObjBOL_1.PartId = id;
+                ObjBOL_1.Operation = 1;
+                ds = ObjBLL_1.GetInStockData(ObjBOL_1);
+                if (ds.Tables[0].Rows.Count > 0)
+                {
+                    gvInsTock.DataSource = ds.Tables[1];
+                    gvInsTock.DataBind();
+                    lblInStockPartNumber.Text = ds.Tables[0].Rows[0]["PartNumber"].ToString();
+                    ModalPopupStockIn.Show();
+                }
+                else
+                {
+                    gvInsTock.DataSource = "";
+                    gvInsTock.DataBind();
+                    lblInStockPartNumber.Text = String.Empty;
+                    ModalPopupStockIn.Hide();
                 }
             }
         }

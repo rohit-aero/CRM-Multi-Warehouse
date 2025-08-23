@@ -144,8 +144,8 @@
                                         </asp:Label>
                                     </td>
                                     <td>
-                                        <asp:Label ID="lblInStock" runat="server">
-                                        </asp:Label>
+                                        <asp:LinkButton ID="lnkInStock" runat="server">
+                                        </asp:LinkButton>
                                     </td>
                                     <td>
                                         <asp:LinkButton ID="lnkInTransit" runat="server" OnClick="lnkInTransit_Click">
@@ -233,7 +233,7 @@
 
                                                                 <asp:TemplateField HeaderText="In Stock" HeaderStyle-Width="5%">
                                                                     <ItemTemplate>
-                                                                        <asp:Label ID="lblInStock" runat="server" Text='<%# Eval("InStock") %>'></asp:Label>
+                                                                        <asp:LinkButton ID="lnkInStock" runat="server" CommandName="InStock" Text='<%# Eval("InStock") %>'></asp:LinkButton>
                                                                     </ItemTemplate>
                                                                     <HeaderStyle HorizontalAlign="Right" />
                                                                     <ItemStyle HorizontalAlign="Right" />
@@ -508,6 +508,62 @@
 
 
             <asp:LinkButton ID="LinkButton2" runat="server"></asp:LinkButton>
+
+                        <asp:ModalPopupExtender ID="ModalPopupExtender3" runat="server" TargetControlID="LinkButton3"
+                PopupControlID="Panel3" BackgroundCssClass="modalBackground" CancelControlID="btnClose">
+            </asp:ModalPopupExtender>
+            <asp:Panel ID="Panel3" runat="server" CssClass="ReportsModalPopup" Style="display: none;" Width="80%" Height="60%">
+                <div class="position-relative h-100">
+                    <asp:ImageButton CssClass="position-absolute crossCloseBtn" ID="ImageButton2" runat="server" ImageUrl="../images/closebtnCircle.png"
+                        AlternateText="Close Popup" ToolTip="Close Popup" />
+                    <div class="overflow-y: hidden;">
+                        <div class="row justify-content-center">
+                            <div class="col-sm-6 col-md-6 col-lg-4 col-xl-4">
+                                <div class="row">
+                                    <div class="col-sm-3 col-md-auto mb-3 modal-title text-center">
+                                        <h4>
+                                            <label class="mb-0 title-hyphen position-relative">Part Number:</label></h4>
+                                    </div>
+                                    <div class="col-sm-9 col-md mb-3 chosenFullWidth ">
+                                        <h4>
+                                            <asp:Label ID="lblInStockPartNumber" runat="server"></asp:Label></h4>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <table class="table mainGridTable table-sm">
+                            <asp:GridView CssClass="table mainGridTable table-sm mb-0" ID="gvInsTock" runat="server" AutoGenerateColumns="false"
+                                EnableModelValidation="True">
+                                <Columns>
+                                    <asp:TemplateField HeaderText="WareHouse Name" HeaderStyle-Width="10%">
+                                        <ItemTemplate>
+                                            <asp:Label ID="lblWareHouseName" runat="server" Text='<%# Eval("WarehouseName") %>'>
+                                            </asp:Label>
+                                        </ItemTemplate>
+                                        <ItemStyle />
+                                        <HeaderStyle Width="10%" />
+                                    </asp:TemplateField>
+                                    <asp:TemplateField HeaderText="Stock In Hand" HeaderStyle-Width="10%">
+                                        <ItemTemplate>
+                                            <asp:Label ID="lblStockInHand" runat="server" Text='<%# Eval("StockInHand") %>'>
+                                            </asp:Label>
+                                        </ItemTemplate>
+                                        <ItemStyle />
+                                        <HeaderStyle Width="10%" />
+                                        <ItemStyle HorizontalAlign="Right" />
+                                    </asp:TemplateField>
+                                </Columns>
+                            </asp:GridView>
+                        </table>
+                    </div>
+                </div>
+
+            </asp:Panel>
+
+
+            <asp:LinkButton ID="LinkButton3" runat="server"></asp:LinkButton>
+
+
             </div>
             <script type="text/javascript">
                 $(document).ready(function () {

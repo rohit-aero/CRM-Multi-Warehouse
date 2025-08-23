@@ -137,7 +137,7 @@ public partial class InventoryManagement_frmPurchaseOrderManual : System.Web.UI.
             if (ds.Tables[0].Rows.Count > 0)
             {
                 lblReqOrderQty.Text = ds.Tables[0].Rows[0]["ReqQty"].ToString();
-                lblInStock.Text = ds.Tables[0].Rows[0]["InStock"].ToString();
+                lnkInTransit.Text = ds.Tables[0].Rows[0]["InStock"].ToString();
                 lnkInTransit.Text = ds.Tables[0].Rows[0]["InTransit"].ToString();
                 lblReqDetailID.Text = ds.Tables[0].Rows[0]["ReqDetailId"].ToString();
                 lblReqNumber.Text = ds.Tables[0].Rows[0]["ReqNumber"].ToString();
@@ -449,7 +449,7 @@ public partial class InventoryManagement_frmPurchaseOrderManual : System.Web.UI.
                             Label Partid = ((Label)PurchaseOrderrow.FindControl("lblItemPartid"));
                             Label lblRequestor = ((Label)PurchaseOrderrow.FindControl("lblGvRequestor"));
                             Label ReqQty = ((Label)PurchaseOrderrow.FindControl("lblReqQty"));
-                            Label InStock = ((Label)PurchaseOrderrow.FindControl("lblInStock"));
+                            LinkButton InStock = ((LinkButton)PurchaseOrderrow.FindControl("lnkInTransit"));
                             LinkButton InTransit = ((LinkButton)PurchaseOrderrow.FindControl("lnkInTransit"));
                             LinkButton InShop = ((LinkButton)PurchaseOrderrow.FindControl("lnkInShop"));
                             TextBox POOrderQty = ((TextBox)PurchaseOrderrow.FindControl("txtPOOrderQty"));
@@ -606,9 +606,9 @@ public partial class InventoryManagement_frmPurchaseOrderManual : System.Web.UI.
                 ReqQty = Convert.ToInt32(lblReqOrderQty.Text);
             }
             int InStock = 0;
-            if (lblInStock.Text != "")
+            if (lnkInStock.Text != "")
             {
-                InStock = Convert.ToInt32(lblInStock.Text);
+                InStock = Convert.ToInt32(lnkInStock.Text);
             }
             int InTransit = 0;
             if (lnkInTransit.Text != "")
@@ -969,7 +969,7 @@ public partial class InventoryManagement_frmPurchaseOrderManual : System.Web.UI.
         {
             lblReqOrderQty.Text = String.Empty;
             lblRequestor.Text = String.Empty;
-            lblInStock.Text = String.Empty;
+            lnkInStock.Text = String.Empty;
             lnkInTransit.Text = String.Empty;
             txtPOOrder.Text = String.Empty;
             chkPriority.Checked = false;
@@ -1089,6 +1089,27 @@ public partial class InventoryManagement_frmPurchaseOrderManual : System.Web.UI.
                     gvInShop.DataBind();
                     lblInShopPartNumber.Text = ds.Tables[0].Rows[0]["Partnumber"].ToString();
                     ModalPopupExtender2.Show();
+                }
+            }
+            if(e.CommandName == "InStock")
+            {
+                DataSet ds = new DataSet();
+                GridViewRow clickedRow = ((LinkButton)e.CommandSource).NamingContainer as GridViewRow;
+                Label lblID = (Label)clickedRow.FindControl("lblItemPartid");
+                LinkButton InStock = (LinkButton)clickedRow.FindControl("lnkInStock");
+                if (InStock.Text == "0")
+                {
+                    return;
+                }
+                ObjBOL.PartId = Convert.ToInt32(lblID.Text);
+                ObjBOL.Operation = 1;
+                ds = ObjBLL.GetInStockData(ObjBOL);
+                if (ds.Tables[0].Rows.Count > 0)
+                {
+                    gvInsTock.DataSource = ds.Tables[1];
+                    gvInsTock.DataBind();
+                    lblInStockPartNumber.Text = ds.Tables[0].Rows[0]["PartNumber"].ToString();
+                    ModalPopupExtender3.Show();
                 }
             }
         }

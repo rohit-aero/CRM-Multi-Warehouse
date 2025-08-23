@@ -1055,6 +1055,7 @@ public partial class INVManagement_frmRequisitionNew : System.Web.UI.Page
             btnShowParts.Enabled = true;
             InTransit.Visible = false;
             DivInShop.Visible = false;
+            DivInStock.Visible = false;
             btnSubmit.Visible = false;
             btnGenerate.Enabled = false;
         }
@@ -1213,6 +1214,14 @@ public partial class INVManagement_frmRequisitionNew : System.Web.UI.Page
                     lblInTransit.Enabled = false;
                 }
             }
+            else if(lnkInStock.Text == "" || lnkInStock.Text == "0")
+            {
+                lnkInStock.Attributes.Remove("href");
+                if (lnkInStock.Enabled != false)
+                {
+                    lnkInStock.Enabled = false;
+                }
+            }
         }
         catch (Exception ex)
         {
@@ -1248,7 +1257,21 @@ public partial class INVManagement_frmRequisitionNew : System.Web.UI.Page
                     { "ProductCode", d=> lblProductCode.Text=Convert.ToString(d["ProductCode"])},
                     { "UM", d=> lblUm.Text=Convert.ToString(d["UM"])},
                     { "Department", d=> lblDepartment.Text=Convert.ToString(d["Department"])},
-                    { "stockinhand", d=> lblInStock.Text=Convert.ToString(d["stockinhand"])},
+                    { "stockinhand", d=>
+                        {
+                            lnkInStock.Text=Convert.ToString(d["stockinhand"]);
+                            if(lnkInStock.Text != "")
+                            {
+                                DivInStock.Visible=true;
+                            }
+                            else
+                            {
+                                DivInStock.Visible=false;
+                            }
+                        }
+                        
+
+                    },
                     { "reorder", d=> lblReOrder.Text=Convert.ToString(d["reorder"]) },
                     { "InTransit", d=>
                         {
@@ -1336,6 +1359,41 @@ public partial class INVManagement_frmRequisitionNew : System.Web.UI.Page
                     gvInTransit.DataBind();
                     lblPartNumber.Text = String.Empty;
                     ModalPopupExtender1.Hide();
+                }
+            }
+            BindStatus();
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+    }
+
+    protected void lnkInStock_Click(object sender, EventArgs e)
+    {
+        try
+        {
+            if (ddlfooterpartno.SelectedIndex > 0)
+            {
+                DataSet ds = new DataSet();
+                if (ddlfooterpartno.Items.FindByValue(ddlfooterpartno.SelectedValue) != null)
+                {
+                    ObjBOL.partid = Convert.ToInt32(ddlfooterpartno.SelectedValue);
+                }                
+                ds = ObjBLL.GetInStockData(ObjBOL);
+                if (ds.Tables[0].Rows.Count > 0)
+                {
+                    gvInsTock.DataSource = ds.Tables[1];
+                    gvInsTock.DataBind();
+                    lblInStockPartNumber.Text = ds.Tables[0].Rows[0]["PartNumber"].ToString();
+                    ModalPopupStockIn.Show();
+                }
+                else
+                {
+                    gvInsTock.DataSource = "";
+                    gvInsTock.DataBind();
+                    lblInStockPartNumber.Text = String.Empty;
+                    ModalPopupStockIn.Hide();
                 }
             }
             BindStatus();
@@ -1585,6 +1643,7 @@ public partial class INVManagement_frmRequisitionNew : System.Web.UI.Page
             lblReOrder.Text = String.Empty;
             lnkInShop.Text = String.Empty;
             lblInTransit.Text = String.Empty;
+            lnkInStock.Text = String.Empty;
         }
         catch (Exception ex)
         {
@@ -1740,12 +1799,13 @@ public partial class INVManagement_frmRequisitionNew : System.Web.UI.Page
             lblProductCode.Text = String.Empty;
             lblUm.Text = String.Empty;
             lblDepartment.Text = String.Empty;
-            lblInStock.Text = String.Empty;
+            lnkInStock.Text = String.Empty;
             lnkInShop.Text = String.Empty;
             lblInTransit.Text = String.Empty;
             lblReOrder.Text = String.Empty;
             InTransit.Visible = false;
             DivInShop.Visible = false;
+            DivInStock.Visible = false;
             ddlOrderType.SelectedValue = "1";
             ddlShipBy.SelectedValue = "1";
             txtfooterqty.Text = string.Empty;
@@ -1883,6 +1943,31 @@ public partial class INVManagement_frmRequisitionNew : System.Web.UI.Page
                 }
                 BindStatus();
             }
+            if(e.CommandName == "InStock")
+            {
+                DataSet ds = new DataSet();
+                GridViewRow clickedRow = ((LinkButton)e.CommandSource).NamingContainer as GridViewRow;
+                Label lblID = (Label)clickedRow.FindControl("lblpartid");
+                LinkButton lnStock = (LinkButton)clickedRow.FindControl("lnkInStock");
+                ObjBOL.partid = Convert.ToInt32(lblID.Text);
+                ObjBOL.Operation = 1;
+                ds = ObjBLL.GetInStockData(ObjBOL);
+                if (ds.Tables[0].Rows.Count > 0)
+                {
+                    gvInsTock.DataSource = ds.Tables[1];
+                    gvInsTock.DataBind();
+                    lblInStockPartNumber.Text = ds.Tables[0].Rows[0]["PartNumber"].ToString();
+                    ModalPopupStockIn.Show();
+                }
+                else
+                {
+                    gvInsTock.DataSource = "";
+                    gvInsTock.DataBind();
+                    lblInStockPartNumber.Text = String.Empty;
+                    ModalPopupStockIn.Hide();
+                }
+                BindStatus();
+            }
         }
         catch (Exception ex)
         {
@@ -2014,7 +2099,15 @@ public partial class INVManagement_frmRequisitionNew : System.Web.UI.Page
                 {
                     ddlShipBy.SelectedValue = ds.Tables[0].Rows[0]["ShipmentBy"].ToString();
                 }
-                lblInStock.Text = ds.Tables[0].Rows[0]["stockinhand"].ToString();
+                lnkInStock.Text = ds.Tables[0].Rows[0]["stockinhand"].ToString();
+                if(lnkInStock.Text != "")
+                {
+                    DivInStock.Visible = true;
+                }
+                else
+                {
+                    DivInStock.Visible = false;
+                }
                 lblInTransit.Text = ds.Tables[0].Rows[0]["InTransit"].ToString();
                 if (lblInTransit.Text != "")
                 {

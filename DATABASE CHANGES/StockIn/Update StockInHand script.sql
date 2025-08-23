@@ -3,7 +3,7 @@ DECLARE @TempTable as TABLE(
 	StockInHand int
 	)
 INSERT INTO @TempTable
-SELECT id,stockinhand FROM Inv_Parts
+SELECT id,stockinhand FROM Inv_Parts WHERE (stockinhand IS NOT NULL AND stockinhand <> 0)
 
 			DECLARE @PartID_Cur INT
 			DECLARE @StockInHand_Cur INT
@@ -24,6 +24,3 @@ SELECT id,stockinhand FROM Inv_Parts
 				END
 			CLOSE [CURSOR_NAME]
 			DEALLOCATE [CURSOR_NAME]
-
-
-		SELECT * FROM Inv_Parts_StockInHand

@@ -1374,6 +1374,13 @@ namespace BOLAERO
             get { return _ProductLine; }
             set { _ProductLine = value; }
         }
+
+        Int32 _ReportTypeID;
+        public Int32 ReportTypeID
+        {
+            get { return _ReportTypeID; }
+            set { _ReportTypeID = value; }
+        }
     }
 
     public class BOLStockInHandAdjustment

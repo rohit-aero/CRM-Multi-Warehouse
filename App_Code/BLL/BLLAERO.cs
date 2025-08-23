@@ -2793,6 +2793,12 @@ namespace BLLAERO
             ds = ObjDAL.GetInShopData(ObjBOL);
             return ds;
         }
+        public DataSet GetInStockData(BOLRequisition ObjBOL)
+        {
+            DataSet ds = new DataSet();
+            ds = ObjDAL.GetInStockData(ObjBOL);
+            return ds;
+        }
         public DataSet GetRequisitionPartno(BOLRequisition ObjBOL)
         {
             DataSet ds = new DataSet();

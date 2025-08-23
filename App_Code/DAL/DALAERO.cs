@@ -758,10 +758,11 @@ namespace DALAERO
     {
         public DataSet Return_DataSet(BOLReportDashboard ObjBOL)
         {
-            SqlParameter[] param = new SqlParameter[3];
+            SqlParameter[] param = new SqlParameter[4];
             param[0] = new SqlParameter("@Operation", ObjBOL.Operation);
             param[1] = new SqlParameter("@searchvar", ObjBOL.searchvar);
             param[2] = new SqlParameter("@ProductLine", ObjBOL.ProductLine);
+            param[3] = new SqlParameter("@ReportTypeID", ObjBOL.ReportTypeID);
             DataSet ds = SqlHelper1.ExecuteDataset(con, CommandType.StoredProcedure, "[IV].[Inv_RT_ReportDashboard]", param);
             return ds;
         }
@@ -6329,6 +6330,14 @@ namespace DALAERO
             DataSet ds = SqlHelper1.ExecuteDataset(con, CommandType.StoredProcedure, "[IV].[Inv_Requisition_PopupInShop]", param);
             return ds;
         }
+        //GetInStockData
+        public DataSet GetInStockData(BOLRequisition ObjBOL)
+        {
+            SqlParameter[] param = new SqlParameter[1];
+            param[0] = new SqlParameter("@partid", ObjBOL.partid);            
+            DataSet ds = SqlHelper1.ExecuteDataset(con, CommandType.StoredProcedure, "[IV].[Get_PopupStockInHand]", param);
+            return ds;
+        }
         public string GetRequisitionNumber(BOLRequisition ObjBOL)
         {
             SqlParameter[] param = new SqlParameter[4];
@@ -7892,9 +7901,8 @@ namespace DALAERO
         {
             DataSet ds = new DataSet();
             SqlParameter[] param = new SqlParameter[2];
-            param[0] = new SqlParameter("@Operation", ObjBOL.Operation);
             param[1] = new SqlParameter("@partid", ObjBOL.PartId);
-            ds = SqlHelper1.ExecuteDataset(con, CommandType.StoredProcedure, "[dbo].[Inv_PurchaseOrderDetail_PopupInStock]", param);
+            ds = SqlHelper1.ExecuteDataset(con, CommandType.StoredProcedure, "[IV].[Get_PopupStockInHand]", param);
             return ds;
         }
         public DataSet GetInShopData(BOLPurchaseOrder ObjBOL)
