@@ -24,7 +24,7 @@
                     </div>
                     <div class="col-sm-2 col-md-3 col-lg-1">
                         <div class="form-group">
-                            <label>By Vendor</label>
+                            <label>By Source</label>
                             <asp:DropDownList CssClass="form-control form-control-sm" ID="ddlVendor" runat="server" DataTextField="Source" DataValueField="SourceID" AutoPostBack="true" OnSelectedIndexChanged="ddlVendor_SelectedIndexChanged">
                             </asp:DropDownList>
                         </div>

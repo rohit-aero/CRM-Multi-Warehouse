@@ -770,6 +770,7 @@ public partial class InventoryManagement_FrmStockIn_New : System.Web.UI.Page
             Utility.AddEditException(ex);
         }
     }
+
     protected void btnExportNegativeStock_Click(object sender, EventArgs e)
     {
         try
@@ -781,5 +782,4 @@ public partial class InventoryManagement_FrmStockIn_New : System.Web.UI.Page
             Utility.AddEditException(ex);
         }
     }
-
 }

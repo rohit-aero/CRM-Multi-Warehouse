@@ -17,7 +17,7 @@
                 <div class="row">
                     <div class="col-6 col-sm-4 col-md-3 col-lg-2">
                         <div class="form-group">
-                            <label>By Vendor</label>
+                            <label>By Source</label>
                             <asp:DropDownList CssClass="form-control form-control-sm" ID="ddlVendor" runat="server" DataTextField="Source" DataValueField="SourceId" OnSelectedIndexChanged="ddlVendor_SelectedIndexChanged" AutoPostBack="true"></asp:DropDownList>
                         </div>
                     </div>

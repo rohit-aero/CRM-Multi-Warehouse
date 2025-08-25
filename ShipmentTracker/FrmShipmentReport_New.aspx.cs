@@ -42,7 +42,6 @@ public partial class InventoryManagement_FrmShipmentReport_New : System.Web.UI.P
     }
 
     private void Bind_Controls()
-
     {
         try
         {
@@ -90,6 +89,7 @@ public partial class InventoryManagement_FrmShipmentReport_New : System.Web.UI.P
             Qstr += " order by InvoiceNo ASC";
             ObjBOL.SearchVar = Qstr;
             ds = ObjBLL.Return_DS(ObjBOL);
+            Int32 test = ds.Tables[0].Rows.Count;
             if (ds.Tables[0].Rows.Count > 0)
             {
                 gvShipmentTracker.DataSource = ds.Tables[0];
@@ -176,7 +176,7 @@ public partial class InventoryManagement_FrmShipmentReport_New : System.Web.UI.P
         DataTable dt = new DataTable();
         try
         {
-            clscon.Return_DT(dt, "EXEC [dbo].[Get_PackingDetails] '" + hfContainerID.Value + "'");
+            clscon.Return_DT(dt, "EXEC [IV].[Get_PackingDetails_V1] '" + hfContainerID.Value + "'");
         }
         catch (Exception ex)
         {
@@ -190,7 +190,7 @@ public partial class InventoryManagement_FrmShipmentReport_New : System.Web.UI.P
         DataTable dt = new DataTable();
         try
         {
-            clscon.Return_DT(dt, "EXEC [dbo].[Get_PackingDetails_Jobs] '" + hfContainerID.Value + "'");
+            clscon.Return_DT(dt, "EXEC [IV].[Get_PackingDetails_Jobs] '" + hfContainerID.Value + "'");
         }
         catch (Exception ex)
         {

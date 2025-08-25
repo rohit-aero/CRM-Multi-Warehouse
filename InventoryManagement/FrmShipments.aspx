@@ -16,7 +16,7 @@
                 </div>
                 <div class="row pb-2">
                     <div class="col-2">
-                        <label>Look Up Vendor</label>
+                        <label>Look Up Source</label>
                         <asp:DropDownList CssClass="form-control form-control-sm" ID="ddlVendorLookup" runat="server" DataTextField="Source" DataValueField="id" AutoPostBack="True" OnSelectedIndexChanged="ddlVendorLookup_SelectedIndexChanged"></asp:DropDownList>
                     </div>
 
