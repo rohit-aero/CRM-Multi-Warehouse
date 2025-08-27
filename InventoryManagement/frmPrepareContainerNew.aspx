@@ -247,6 +247,11 @@
                                                     </ItemTemplate>
                                                     <ItemStyle Width="22%" />
                                                 </asp:TemplateField>
+                                                <asp:TemplateField HeaderText="UM" HeaderStyle-Width="10%">
+                                                    <ItemTemplate>
+                                                          <asp:Label ID="lblUM" runat="server" Text='<%# Eval("UM") %>'></asp:Label>
+                                                    </ItemTemplate>
+                                                </asp:TemplateField>
                                                 <asp:TemplateField HeaderStyle-Width="80%" HeaderText="Purchase Order Details">
                                                     <ItemTemplate>
                                                         <asp:Panel ID="pnlPartsDetail" runat="server">

@@ -154,12 +154,11 @@
                         </div>
                     </div>
 
-                </div>
-                <div class="col-12">
-                    <div class="table-responsive">
+                </div>            
+                <div class="col-12" style="overflow-x: auto; max-height: 400px; overflow-y: auto;">                
                         <asp:GridView CssClass="table mainGridTable table-sm" ID="gvSearchProject" runat="server" AutoGenerateColumns="False" BackColor="White" BorderColor="#999999"
                             BorderStyle="Solid" BorderWidth="1px" CellPadding="3" DataKeyNames="JobID" AllowSorting="true"
-                            EnableModelValidation="True" ForeColor="Black" GridLines="Vertical"
+                            EnableModelValidation="True" ForeColor="Black" GridLines="Vertical" Style="font-size: small"
                             Width="100%" OnRowDataBound="gvSearchProject_RowDataBound" OnRowCommand="gvSearchProject_RowCommand" OnSorting="gvSearchProject_Sorting" OnPageIndexChanging="gvSearchProject_PageIndexChanging">
                             <AlternatingRowStyle BackColor="#CCCCCC" />
                             <Columns>
@@ -230,10 +229,8 @@
                             <HeaderStyle BackColor="Black" Font-Bold="True" ForeColor="White" />
                             <PagerStyle BackColor="#999999" ForeColor="Black" HorizontalAlign="Center" />
                             <SelectedRowStyle BackColor="#000099" Font-Bold="True" ForeColor="White" />
-                        </asp:GridView>
-                    </div>
-                </div>
-            </div>
+                        </asp:GridView>                    
+                </div>               
             </div>
         </ContentTemplate>
         <Triggers>
