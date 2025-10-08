@@ -185,6 +185,13 @@ ALTER PROCEDURE [dbo].[aero_ManageProjectsEng]
 @FabDrawingPercentage INT = NULL,
 @ExpectedSubmissionDate DATETIME = NULL,
 @ActualSubmissionDate DATETIME = NULL,
+@ProjectQuality VARCHAR(1) = NULL,
+@CorrectedBy_ProjectFeedback INT = NULL,
+@CorrectedByEngineer INT = NULL,
+@QCReportSentDate DATETIME = NULL,
+@QCReportReceivedDate DATETIME = NULL,
+@AssignedDate DATETIME = NULL,
+@ExpectedSubmissionDate_FabCanada DATETIME = NULL,
 @WareHouseId INT = NULL,
 @Msg VARCHAR(500) = '' OUTPUT
 AS
@@ -220,17 +227,22 @@ BEGIN
 		FROM dbo.tblEmployees
 		WHERE 
 		--(Department = 'EI' OR Department = 'EC' OR Department = 'I') AND 
-		(Active = 1) AND (CountryId=13)
+		(Active = 1) AND (CountryId = 13)
 		AND Department = 'EC'
 		ORDER BY Abbrivation;
 
 		--Table 5
-		SELECT EmployeeID, isnull(FirstName,'') + ' ' + isnull(LastName, '') + ' (' + Abbrivation +')' AS Abbrivation
+		SELECT EmployeeID, ISNULL(FirstName, '') + ' ' + ISNULL(LastName, '') + ' (' + Abbrivation + ')' AS Abbrivation
 		FROM dbo.tblEmployees
 		WHERE (Department = 'EI' OR Department = 'EC' OR Department = 'I') 
-		AND (Active = 1) AND  (EmployeeID IN (212, 197, 161,  277, 311, 312, 332,292))
+		AND (Active = 1) AND (EmployeeID IN (212, 197, 161, 277, 311, 312, 332, 292))
 		ORDER BY Abbrivation;
 
+		SELECT CountryID AS [id], Country AS [text]
+		FROM tblCountries
+		WHERE CountryID IN (13, 19)
+		ORDER BY Country
+		
 		SELECT id, WarehouseName AS [text]
 		FROM Inv_Warehouse
 		ORDER BY WarehouseName
@@ -250,7 +262,10 @@ BEGIN
 		ISNULL(tblEmployees.FirstName + ', ' + tblEmployees.LastName, '') AS ProjectManager, ISNULL(tblProjects.ExpectedSubmissionDate, NULL) AS ExpectedSubmissionDate, ISNULL(tblProjects.ActualSubmissionDate, NULL) AS ActualSubmissionDate, 
 		ISNULL(TRIM(dbo.tblHobartListing.FirstName) + ' ' + TRIM(dbo.tblHobartListing.LastName), '') AS DestinationRep, ISNULL(tblProjects.WarehouseId, 0) AS WarehouseId,
 		ISNULL(tblConsultants.CompanyName, '') AS Consultant, ISNULL(tblProjects.PurchasedItemsCAD, '0') AS PurchasedItemsCAD, ISNULL(tblProjects.ShipDateFromChina, NULL) AS 	ShipDateFromChina,
-		ISNULL(tblProjects.ContainerNo, NULL) AS ContainerNo,ISNULL(tblProjects.CorrectedBy,0) AS CorrectedBy, ISNULL(ProductionStatus, '') AS ProductionStatus, ISNULL(ProductionRemarks, '') AS ProductionRemarks
+		ISNULL(tblProjects.ContainerNo, NULL) AS ContainerNo,ISNULL(tblProjects.CorrectedBy, 0) AS CorrectedBy, ISNULL(ProductionStatus, '') AS ProductionStatus, ISNULL(ProductionRemarks, '') AS ProductionRemarks,
+		ISNULL(tblProjects.ProjectQuality, '') AS ProjectQuality, ISNULL(tblProjects.CorrectedBy_ProjectFeedback, 0) AS CorrectedBy_ProjectFeedback, ISNULL(tblProjects.CorrectedByEngineer, 0) AS CorrectedByEngineer,
+		ISNULL(tblProjects.QCReportSentDate, NULL) AS QCReportSentDate, ISNULL(tblProjects.QCReportReceivedDate, NULL) AS QCReportReceivedDate, 
+		ISNULL(tblProjects.AssignedDate, NULL) AS AssignedDate, ISNULL(tblProjects.ExpectedSubmissionDate_FabCanada, NULL) AS ExpectedSubmissionDate_FabCanada 
 		FROM tblStates 
 		RIGHT JOIN ((
 		(tblProjects INNER JOIN tblPFiles ON tblProjects.ProposalID = tblPFiles.PNumber)
@@ -283,7 +298,7 @@ BEGIN
 		ORDER BY tblShpDrgs.sDrgNum
 	END
 
-	ELSE IF (@Operation = 3)
+	ELSE IF(@Operation = 3)
 	BEGIN
 		SELECT tblShpDrgs.sDrgNum, ISNULL(tblShpDrgs.sDrgJID, '') AS sDrgJID,  
 		ISNULL(CONVERT(NVARCHAR, tblShpDrgs.sDrgSentToRCD, 101), '') AS sDrgSentToRCD,
@@ -326,7 +341,7 @@ BEGIN
 		sDrgExpecApprovalDate = @sDrgExpecApprovalDate, sDrgSentToRCD = @sDrgSentToRCD, sDrgAppDate = @sDrgAppDate,
 		sNextFolowupDate = @sNextFolowupDate, sDrgComment = @sDrgComment, sDateFollowedUp = @sDateFollowedUp,
 		sDateReleasedToFab = @sDateReleasedToFab,sReleasedTo=@sReleasedTo,
-		sReleasedToFabDate=@sReleasedToFabDate,sReleasedToShopDate=@sReleasedToShopDate
+		sReleasedToFabDate=@sReleasedToFabDate,sReleasedToShopDate=@sReleasedToShopDate		
 		WHERE sDrgNum = @sDrgNum
 
 		SET @msg = 'Records Updated Successfully !!'
@@ -342,13 +357,15 @@ BEGIN
 		BEGIN					
 			UPDATE tblProjects
 			SET ReleaseDate = @ReleaseDate,	ReleaseDateChina = @ReleaseDateChina, ExpectedArrivalDatefromChina = @ExpectedArrivalDatefromChina, ReviewedBy = @ReviewedBy, 
-			CorrectedBy=@CorrectedBy,
+			CorrectedBy = @CorrectedBy,
 			[Status] = @Status,	PurchasedItems = @PurchasedItems, DateAssigned = @DateAssigned, DateAssignedChina = @DateAssignedChina, ProjectDesignerID = @ProjectDesignerID,
 			ProjectDesignerChinaID = @ProjectDesignerChinaID, FabProjectReviewerChinaID = @ProjectReviewerChinaID, FabDrawingPercentage = @FabDrawingPercentage,
 			MfgFacilityID = @MfgFacilityID, Issued = @Issued, DueDateCanada = @DueDateCanada, FabSentToCanada = @FabSentToCanada, FabSentToCanada_China = @FabSentToCanada_China,
 			ReleasedToNesting = @ReleasedToNesting, ReleasedToShop = @ReleasedToShop, NestingStatus = @NestingStatus,
-			filepath=@filepath, ShipDateFromChina = @ShipDateFromChina, ContainerNo = @ContainerNo, ProductionStatus = @ProductionStatus, ProductionRemarks = @ProductionRemarks,
-			ExpectedSubmissionDate = @ExpectedSubmissionDate, ActualSubmissionDate = @ActualSubmissionDate, WarehouseId = @WareHouseId
+			filepath = @filepath, ShipDateFromChina = @ShipDateFromChina, ContainerNo = @ContainerNo, ProductionStatus = @ProductionStatus, ProductionRemarks = @ProductionRemarks,
+			ExpectedSubmissionDate = @ExpectedSubmissionDate, ActualSubmissionDate = @ActualSubmissionDate, ProjectQuality = @ProjectQuality, 
+			CorrectedBy_ProjectFeedback = @CorrectedBy_ProjectFeedback, CorrectedByEngineer = @CorrectedByEngineer, QCReportSentDate = @QCReportSentDate,
+			QCReportReceivedDate = @QCReportReceivedDate, AssignedDate = @AssignedDate, ExpectedSubmissionDate_FabCanada = @ExpectedSubmissionDate_FabCanada, WarehouseId = @WareHouseId
 			WHERE JobID = @JobID		
 					
 			SET @Msg = '1'			
@@ -403,7 +420,7 @@ BEGIN
 
 	ELSE IF(@Operation = 11)
 	BEGIN
-		IF(@UserID IN (96,263))
+		IF(@UserID IN (96, 263))
 		BEGIN
 			SET @Msg = '1'
 		END
@@ -415,12 +432,15 @@ BEGIN
 
 	ELSE IF(@Operation = 12)
 	BEGIN
-		SELECT filepath FROM tblProjects WHERE JobID = @JobID
+		SELECT filepath 
+		FROM tblProjects 
+		WHERE JobID = @JobID
 	END
 
 	ELSE IF(@Operation = 13)
 	BEGIN
-		UPDATE tblProjects set filepath = NULL WHERE JobID = @JobID
+		UPDATE tblProjects SET filepath = NULL 
+		WHERE JobID = @JobID
 
 		SET @Msg = 'Plan View Deleted Successfully !!'
 	END
@@ -428,7 +448,7 @@ BEGIN
 	ELSE IF(@Operation = 14)
 	BEGIN
 		DECLARE @CheckFabProjectDesignerID AS INT = NULL
-		SET @CheckFabProjectDesignerID=(SELECT CountryId FROM tblEmployees WHERE EmployeeID = @UserID)
+		SET @CheckFabProjectDesignerID = (SELECT CountryId FROM tblEmployees WHERE EmployeeID = @UserID)
 		IF(@CheckFabProjectDesignerID = 13)
 		BEGIN
 			SET @Msg = 1;
@@ -450,4 +470,26 @@ BEGIN
 			SET @Msg = 'E'
 		END
 	END
+
+	ELSE IF(@Operation = 16)
+	BEGIN
+		IF(ISNULL(@ConsultantID, 0) = 13)
+		BEGIN
+			SELECT EmployeeID AS [id], ISNULL(FirstName, '') + ' ' + ISNULL(LastName, '') AS [text]
+			FROM dbo.tblEmployees
+			WHERE (Active = 1) AND (CountryId = 13)
+			AND Department = 'EC'
+			ORDER BY Abbrivation;
+		END
+
+		ELSE IF(ISNULL(@ConsultantID, 0) = 19)
+		BEGIN
+			SELECT EmployeeID AS [id], ISNULL(FirstName, '') + ' ' + ISNULL(LastName, '') + ' (' + Abbrivation + ')' AS [text]
+			FROM dbo.tblEmployees
+			WHERE (Department = 'EI' OR Department = 'EC' OR Department = 'I') 
+				AND (Active = 1) AND (EmployeeID IN (212, 197, 161, 277, 311, 312, 332, 292))
+			ORDER BY Abbrivation;
+		END
+	END
 END
+GO

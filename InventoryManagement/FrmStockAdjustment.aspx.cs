@@ -38,13 +38,20 @@ public partial class INVManagement_FrmStockAdjustment : System.Web.UI.Page
             {
                 Utility.BindDropDownList(ddlPartNumber, ds.Tables[2]);
             }
+
             if (ds.Tables[3].Rows.Count > 0)
             {
                 Utility.BindDropDownList(ddlReason, ds.Tables[3]);
             }
+
             if (ds.Tables[4].Rows.Count > 0)
             {
                 Utility.BindDropDownList(ddlWarehouse, ds.Tables[4]);
+            }
+
+            if (ds.Tables[5].Rows.Count > 0)
+            {
+                Utility.BindDropDownList(ddlProductCode, ds.Tables[5]);
             }
             //ddlReason
         }
@@ -84,12 +91,27 @@ public partial class INVManagement_FrmStockAdjustment : System.Web.UI.Page
     {
         try
         {
+            ddlProductCode.SelectedIndex = 0;
+            ddlProductCode_SelectedIndexChanged();
             ddlPartNumber.SelectedIndex = 0;
             ddlType.SelectedIndex = 0;
             ddlReason.SelectedIndex = 0;
             ddlWarehouse.SelectedIndex = 0;
             txtQty.Text = string.Empty;
             txtSummary.Text = string.Empty;
+            gvSearch.DataSource = "";
+            gvSearch.DataBind();
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+    }
+
+    private void ResetGrid()
+    {
+        try
+        {
             gvSearch.DataSource = "";
             gvSearch.DataBind();
         }
@@ -236,12 +258,46 @@ public partial class INVManagement_FrmStockAdjustment : System.Web.UI.Page
             {
                 ObjBOL.PartId = Convert.ToInt32(PartID);
                 ds = ObjBLL.GetStockAdjustment(ObjBOL);
-                if (ds.Tables[0].Rows.Count > 0)
+                if (ds.Tables[2].Rows.Count > 0)
                 {
                     Utility.BindDropDownList(ddlPartNumber, ds.Tables[2]);
                     ddlPartNumber.SelectedValue = PartID;
                 }
             }  
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+    }
+
+    protected void ddlProductCode_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        ddlProductCode_SelectedIndexChanged();
+    }
+
+    protected void ddlProductCode_SelectedIndexChanged()
+    {
+        try
+        {
+            ResetGrid();
+            if (ddlProductCode.SelectedIndex > 0)
+            {
+                ObjBOL.userid = Int32.Parse(ddlProductCode.SelectedValue);
+            }
+
+            ObjBOL.operation = 7;
+            DataSet ds = new DataSet();
+            ds = ObjBLL.GetJobs(ObjBOL);
+
+            if (ds.Tables[0].Rows.Count > 0)
+            {
+                Utility.BindDropDownList(ddlPartNumber, ds.Tables[0]);
+            }
+            else
+            {
+                ddlPartNumber.Items.Clear();
+            }
         }
         catch (Exception ex)
         {

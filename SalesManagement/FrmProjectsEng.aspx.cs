@@ -116,7 +116,6 @@ public partial class SalesManagement_FrmProjectsEng : System.Web.UI.Page
         }
     }
 
-
     private int GetCountryForUser()
     {
         int CountryId = 0;
@@ -164,11 +163,13 @@ public partial class SalesManagement_FrmProjectsEng : System.Web.UI.Page
             if (GetCountryForUser() == 13)
             {
                 ddlIssued.Enabled = false;
+                ddlProjectQuality.Enabled = false;
                 txtFabReleasedDateChina.Enabled = false;
             }
             else
             {
                 ddlIssued.Enabled = true;
+                ddlProjectQuality.Enabled = true;
                 txtFabReleasedDateChina.Enabled = true;
             }
 
@@ -287,6 +288,7 @@ public partial class SalesManagement_FrmProjectsEng : System.Web.UI.Page
             {
                 Utility.BindDropDownList(ddlProjectDesigner, ds.Tables[1]);
                 Utility.BindDropDownList(ddlProjectDesigner_Grid, ds.Tables[1]);
+                Utility.BindDropDownList(ddlAssistedBy_Grid, ds.Tables[1]);
             }
 
             if (ds.Tables[2].Rows.Count > 0)
@@ -305,13 +307,20 @@ public partial class SalesManagement_FrmProjectsEng : System.Web.UI.Page
                 Utility.BindDropDownList(ddlProjectDesignerChina, ds.Tables[4]);
                 Utility.BindDropDownList(ddlProjectReviewerChina, ds.Tables[4]);
             }
+
             if (ds.Tables[5].Rows.Count > 0)
             {
                 Utility.BindDropDownList(ddlFabChinaCorrectedBy, ds.Tables[5]);
             }
+
             if (ds.Tables[6].Rows.Count > 0)
             {
-                Utility.BindDropDownList(ddlWarehouse, ds.Tables[6]);
+                Utility.BindDropDownList(ddlCorrectedBy_ProjectFeedback, ds.Tables[6]);
+            }
+
+            if (ds.Tables[7].Rows.Count > 0)
+            {
+                Utility.BindDropDownList(ddlWarehouse, ds.Tables[7]);
             }
         }
         catch (Exception ex)
@@ -482,7 +491,6 @@ public partial class SalesManagement_FrmProjectsEng : System.Web.UI.Page
         }
     }
 
-
     protected void txtSearchPNum_TextChanged(object sender, EventArgs e)
     {
         try
@@ -515,7 +523,6 @@ public partial class SalesManagement_FrmProjectsEng : System.Web.UI.Page
             Utility.AddEditException(ex);
         }
     }
-
 
     private void SyncTextbox(string type, string text)
     {
@@ -780,6 +787,46 @@ public partial class SalesManagement_FrmProjectsEng : System.Web.UI.Page
                         }
                     }
                 },
+                { "ProjectQuality", d=>
+                    {
+                       if (ddlProjectQuality.Items.FindByValue(Convert.ToString(d["ProjectQuality"])) != null)
+                        {
+                            ddlProjectQuality.SelectedValue = Convert.ToString(d["ProjectQuality"]);
+                        }
+                       else if(ddlProjectQuality.Items.Count > 0)
+                        {
+                            ddlProjectQuality.SelectedIndex = 0;
+                        }
+                    }
+                },
+                { "CorrectedBy_ProjectFeedback", d=>
+                    {
+                       if (ddlCorrectedBy_ProjectFeedback.Items.FindByValue(Convert.ToString(d["CorrectedBy_ProjectFeedback"])) != null)
+                        {
+                            ddlCorrectedBy_ProjectFeedback.SelectedValue = Convert.ToString(d["CorrectedBy_ProjectFeedback"]);
+                        }
+                       else if(ddlCorrectedBy_ProjectFeedback.Items.Count > 0)
+                        {
+                            ddlCorrectedBy_ProjectFeedback.SelectedIndex = 0;
+                        }
+
+                        ddlCorrectedBy_ProjectFeedback_SelectedIndexChanged();
+                    }
+                },
+                { "CorrectedByEngineer", d=>
+                    {
+                       if (ddlCorrectedByEngineer.Items.FindByValue(Convert.ToString(d["CorrectedByEngineer"])) != null)
+                        {
+                            ddlCorrectedByEngineer.SelectedValue = Convert.ToString(d["CorrectedByEngineer"]);
+                        }
+                       else if(ddlCorrectedByEngineer.Items.Count > 0)
+                        {
+                            ddlCorrectedByEngineer.SelectedIndex = 0;
+                        }
+                    }
+                },
+                { "QCReportSentDate", d => txtQCReportSentDate.Text = cls.Converter(Convert.ToString(d["QCReportSentDate"])) },
+                { "QCReportReceivedDate", d => txtQCReportReceivedDate.Text = cls.Converter(Convert.ToString(d["QCReportReceivedDate"])) },
                 { "DateAssigned", d => txtFabStartDate.Text = cls.Converter(Convert.ToString(d["DateAssigned"])) },
                 { "DateAssignedChina", d => txtFabStartDateChina.Text = cls.Converter(Convert.ToString(d["DateAssignedChina"])) },
                 { "Status", d=>
@@ -871,6 +918,8 @@ public partial class SalesManagement_FrmProjectsEng : System.Web.UI.Page
                 { "DueDateCanada", d => txtDueToCanda.Text = cls.Converter(Convert.ToString(d["DueDateCanada"])) },
                 { "FabSentToCanada", d => txtFabtrication.Text = cls.Converter(Convert.ToString(d["FabSentToCanada"])) },
                 { "FabSentToCanada_China", d => txtFabEndDateChina.Text = cls.Converter(Convert.ToString(d["FabSentToCanada_China"])) },
+                { "AssignedDate", d => txtAssignedDate.Text = cls.Converter(Convert.ToString(d["AssignedDate"])) },
+                { "ExpectedSubmissionDate_FabCanada", d => txtExpectedSubmissionDate_FabCanada.Text = cls.Converter(Convert.ToString(d["ExpectedSubmissionDate_FabCanada"])) },
                 { "MfgFacilityID", d=>
                     {
                        if (ddlManuFac.Items.FindByValue(d["MfgFacilityID"].ToString()) != null)
@@ -1164,6 +1213,24 @@ public partial class SalesManagement_FrmProjectsEng : System.Web.UI.Page
                 ObjBOL.MfgFacilityID = Convert.ToInt32(ddlManuFac.SelectedValue);
             }
 
+            if (ddlProjectQuality.SelectedIndex > 0)
+            {
+                ObjBOL.ProjectQuality = ddlProjectQuality.SelectedValue;
+            }
+
+            if (ddlCorrectedBy_ProjectFeedback.SelectedIndex > 0)
+            {
+                ObjBOL.CorrectedBy_ProjectFeedback = Convert.ToInt32(ddlCorrectedBy_ProjectFeedback.SelectedValue);
+            }
+
+            if (ddlCorrectedByEngineer.SelectedIndex > 0)
+            {
+                ObjBOL.CorrectedByEngineer = Convert.ToInt32(ddlCorrectedByEngineer.SelectedValue);
+            }
+
+            ObjBOL.QCReportSentDate = Utility.ConvertDate(txtQCReportSentDate.Text);
+            ObjBOL.QCReportReceivedDate = Utility.ConvertDate(txtQCReportReceivedDate.Text);
+
             if (ddlWarehouse.SelectedIndex > 0)
             {
                 ObjBOL.WarehouseId = Convert.ToInt32(ddlWarehouse.SelectedValue);
@@ -1172,6 +1239,8 @@ public partial class SalesManagement_FrmProjectsEng : System.Web.UI.Page
             ObjBOL.DueDateCanada = Utility.ConvertDate(txtDueToCanda.Text);
             ObjBOL.FabSentToCanada = Utility.ConvertDate(txtFabtrication.Text);
             ObjBOL.FabSentToCanada_China = Utility.ConvertDate(txtFabEndDateChina.Text);
+            ObjBOL.AssignedDate = Utility.ConvertDate(txtAssignedDate.Text);
+            ObjBOL.ExpectedSubmissionDate_FabCanada = Utility.ConvertDate(txtExpectedSubmissionDate_FabCanada.Text);
             ObjBOL.ReleasedToNesting = Utility.ConvertDate(txtReleasetoNesting.Text);
             ObjBOL.ReleasedToShop = Utility.ConvertDate(txtProjectReleasedToShop.Text);
             ObjBOL.NestingStatus = ddlNestingStatus.SelectedValue.ToString();
@@ -1733,13 +1802,6 @@ public partial class SalesManagement_FrmProjectsEng : System.Web.UI.Page
                 ObjBOLRel.projectid = HfJObID.Value;
                 ObjBOLRel.userid = Convert.ToInt32(Utility.GetCurrentUser());
                 msg = ObjBLLRel.ReleaseProject(ObjBOLRel);
-                if (msg.Trim() == "ER01")
-                {
-                    Utility.ShowMessage_Error(Page, "No Warehouse present for the Job !!");
-                    ScriptManager.RegisterStartupScript(this.Page, Page.GetType(), "text", "SetCSSFab()", true);
-                    return;
-                }
-
                 if (msg.Trim() == "S")
                 {
                     Utility.MaintainLogsSpecial("FrmProjectsEng", "Release", HfJObID.Value.ToString());
@@ -2067,12 +2129,15 @@ public partial class SalesManagement_FrmProjectsEng : System.Web.UI.Page
             txtFabStartDateChina.Text = String.Empty;
             ddlProjectDesigner.SelectedIndex = 0;
             ddlProjectDesigner_Grid.SelectedIndex = 0;
+            ddlAssistedBy_Grid.SelectedIndex = 0;
             ddlProjectDesignerChina.SelectedIndex = 0;
             ddlProjectReviewerChina.SelectedIndex = 0;
             ddlFabDrawingPercentage.SelectedIndex = 0;
             txtDueToCanda.Text = String.Empty;
             txtFabtrication.Text = String.Empty;
             txtFabEndDateChina.Text = String.Empty;
+            txtAssignedDate.Text = string.Empty;
+            txtExpectedSubmissionDate_FabCanada.Text = string.Empty;
             ddlProjectDesCanada.SelectedIndex = 0;
             ddlManuFac.SelectedIndex = 0;
             ddlManuFacChina.SelectedIndex = 0;
@@ -2098,6 +2163,14 @@ public partial class SalesManagement_FrmProjectsEng : System.Web.UI.Page
             lnkDowload.Text = String.Empty;
             lnkDowload.Visible = false;
             btnDelete.Visible = false;
+            ddlProjectQuality.SelectedIndex = 0;
+            ddlCorrectedBy_ProjectFeedback.SelectedIndex = 0;
+            if (ddlCorrectedByEngineer.Items.Count > 0)
+            {
+                ddlCorrectedByEngineer.SelectedIndex = 0;
+            }
+            txtQCReportSentDate.Text = string.Empty;
+            txtQCReportReceivedDate.Text = string.Empty;
             ResetFabricationCanada();
             ResetNestingTaskGrid();
         }
@@ -2272,6 +2345,7 @@ public partial class SalesManagement_FrmProjectsEng : System.Web.UI.Page
             if (ddlNatureOfTask_Grid.SelectedIndex > 0)
             {
                 ddlNatureOfTask_Grid.SelectedIndex = 0;
+                ddlNatureOfTask_Grid.Enabled = true;
             }
 
             if (ddlReleaseType_Grid.SelectedIndex > 0)
@@ -2282,6 +2356,11 @@ public partial class SalesManagement_FrmProjectsEng : System.Web.UI.Page
             if (ddlProjectDesigner_Grid.SelectedIndex > 0)
             {
                 ddlProjectDesigner_Grid.SelectedIndex = 0;
+            }
+
+            if (ddlAssistedBy_Grid.SelectedIndex > 0)
+            {
+                ddlAssistedBy_Grid.SelectedIndex = 0;
             }
 
             txtFabStartDate_Grid.Text = string.Empty;
@@ -2385,6 +2464,11 @@ public partial class SalesManagement_FrmProjectsEng : System.Web.UI.Page
                     ObjBOL_FabricationAndNestingTasks.ProjectDesigner = Int32.Parse(ddlProjectDesigner_Grid.SelectedValue);
                 }
 
+                if (ddlAssistedBy_Grid.SelectedIndex > 0)
+                {
+                    ObjBOL_FabricationAndNestingTasks.AssistedBy = Int32.Parse(ddlAssistedBy_Grid.SelectedValue);
+                }
+
                 ObjBOL_FabricationAndNestingTasks.StartDate = Utility.ConvertDate(txtFabStartDate_Grid.Text);
                 ObjBOL_FabricationAndNestingTasks.EndDate = Utility.ConvertDate(txtFabEndDate_Grid.Text);
                 if (ddlReviewedBy_Grid.SelectedIndex > 0)
@@ -2436,8 +2520,14 @@ public partial class SalesManagement_FrmProjectsEng : System.Web.UI.Page
                 DataRow row = ds.Tables[0].Rows[0];
                 if (Boolean.Parse(row["SentToNesting"].ToString()))
                 {
-                    Utility.ShowMessage_Error(Page, "Task already sent to Nesting !!");
-                    return;
+                    //Utility.ShowMessage_Error(Page, "Task already sent to Nesting !!");
+                    //return;
+
+                    ddlNatureOfTask_Grid.Enabled = false;
+                }
+                else
+                {
+                    ddlNatureOfTask_Grid.Enabled = true;
                 }
                 txtTaskNumber_Grid.Text = row["TaskNumber"].ToString();
 
@@ -2474,6 +2564,18 @@ public partial class SalesManagement_FrmProjectsEng : System.Web.UI.Page
                     if (ddlProjectDesigner_Grid.Items.Count > 0)
                     {
                         ddlProjectDesigner_Grid.SelectedIndex = 0;
+                    }
+                }
+
+                if (ddlAssistedBy_Grid.Items.FindByValue(row["AssistedBy"].ToString()) != null)
+                {
+                    ddlAssistedBy_Grid.SelectedValue = row["AssistedBy"].ToString();
+                }
+                else
+                {
+                    if (ddlAssistedBy_Grid.Items.Count > 0)
+                    {
+                        ddlAssistedBy_Grid.SelectedIndex = 0;
                     }
                 }
 
@@ -2529,6 +2631,7 @@ public partial class SalesManagement_FrmProjectsEng : System.Web.UI.Page
 
             ResetFabricationCanada();
             GetFabricationTasks();
+            GetNestingTasks();
         }
         catch (Exception ex)
         {
@@ -2781,13 +2884,13 @@ public partial class SalesManagement_FrmProjectsEng : System.Web.UI.Page
             {
 
                 DataRow row = ds.Tables[0].Rows[0];
-                if (Boolean.Parse(row["SentToProduction"].ToString()))
-                {
-                    Utility.ShowMessage_Error(Page, "Task already sent to Production !!");
-                    gvNestingTasks.EditIndex = -1;
-                    GetNestingTasks();
-                    return;
-                }
+                //if (Boolean.Parse(row["SentToProduction"].ToString()))
+                //{
+                //    Utility.ShowMessage_Error(Page, "Task already sent to Production !!");
+                //    gvNestingTasks.EditIndex = -1;
+                //    GetNestingTasks();
+                //    return;
+                //}
 
                 Label lblTaskNumber_EditNesting = gvNestingTasks.Rows[e.NewEditIndex].FindControl("lblTaskNumber_EditNesting") as Label;
                 lblTaskNumber_EditNesting.Text = row["TaskNumber"].ToString();
@@ -3076,6 +3179,87 @@ public partial class SalesManagement_FrmProjectsEng : System.Web.UI.Page
 
             string strMethodNameNew = "SetCSSNesting();";
             ScriptManager.RegisterStartupScript(Page, Page.GetType(), Guid.NewGuid().ToString(), strMethodNameNew, true);
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+    }
+
+    protected void ddlCorrectedBy_ProjectFeedback_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        ScriptManager.RegisterStartupScript(this.Page, Page.GetType(), "text", "SetCSSFabChina()", true);
+        ddlCorrectedBy_ProjectFeedback_SelectedIndexChanged();
+    }
+
+    private void ddlCorrectedBy_ProjectFeedback_SelectedIndexChanged()
+    {
+        try
+        {
+
+            if (ddlCorrectedBy_ProjectFeedback.SelectedIndex > 0)
+            {
+                ObjBOL.Operation = 16;
+                ObjBOL.ConsultantID = Int32.Parse(ddlCorrectedBy_ProjectFeedback.SelectedValue);
+                DataSet ds = ObjBLL.GetProjects(ObjBOL);
+
+                if (ds.Tables[0].Rows.Count > 0)
+                {
+                    Utility.BindDropDownList(ddlCorrectedByEngineer, ds.Tables[0]);
+                }
+            }
+            else
+            {
+                ddlCorrectedByEngineer.Items.Clear();
+            }
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+    }
+
+    protected void ddlProjectDesigner_Grid_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        try
+        {
+            string strMethodNameNew = "SetCSSFab();";
+            ScriptManager.RegisterStartupScript(Page, Page.GetType(), Guid.NewGuid().ToString(), strMethodNameNew, true);
+            if (ddlProjectDesigner_Grid.SelectedValue == ddlAssistedBy_Grid.SelectedValue)
+            {
+                ddlProjectDesigner_Grid.SelectedIndex = 0;
+                Utility.ShowMessage_Error(Page, "Project Designer and Assisted by cannot be same !");
+            }
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+    }
+
+    protected void ddlAssistedBy_Grid_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        try
+        {
+            string strMethodNameNew = "SetCSSFab();";
+            ScriptManager.RegisterStartupScript(Page, Page.GetType(), Guid.NewGuid().ToString(), strMethodNameNew, true);
+            if (ddlProjectDesigner_Grid.SelectedValue == ddlAssistedBy_Grid.SelectedValue)
+            {
+                ddlAssistedBy_Grid.SelectedIndex = 0;
+                Utility.ShowMessage_Error(Page, "Project Designer and Assisted by cannot be same !");
+            }
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+    }
+
+    protected void btnRedirectKPIChina_Click(object sender, EventArgs e)
+    {
+        try
+        {
+            Response.Redirect("~/Reports/FrmKPIChina.aspx", false);
         }
         catch (Exception ex)
         {

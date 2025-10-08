@@ -10,9 +10,15 @@
                     <fieldset>
                         <legend>Inventory Transaction Adjustments</legend>
                         <div class="row customSelects">
+                            <label class="col-xl-2 mb-0">By Product Code</label>
+                            <div class="col-xl-10 mb-2">
+                                <asp:DropDownList ID="ddlProductCode" CssClass="form-control form-control-sm" runat="server" DataTextField="text" DataValueField="id" AutoPostBack="True" 
+                                    OnSelectedIndexChanged="ddlProductCode_SelectedIndexChanged"></asp:DropDownList>
+                            </div>
                             <label class="col-xl-2 mb-0">By Part Number</label>
                             <div class="col-xl-10 mb-2">
-                                <asp:DropDownList ID="ddlPartNumber" CssClass="form-control form-control-sm" runat="server" DataTextField="PartDetails" DataValueField="Partid" AutoPostBack="True" OnSelectedIndexChanged="ddlPartNumber_SelectedIndexChanged"></asp:DropDownList>
+                                <asp:DropDownList ID="ddlPartNumber" CssClass="form-control form-control-sm" runat="server" DataTextField="text" DataValueField="id" AutoPostBack="True" 
+                                    OnSelectedIndexChanged="ddlPartNumber_SelectedIndexChanged"></asp:DropDownList>
                             </div>
 
                             <label class="col-xl-2 mb-0">Warehouse</label>
@@ -115,6 +121,7 @@
                     $('#<%=ddlReason.ClientID%>').chosen();
                     $('#<%=ddlType.ClientID%>').chosen();
                     $('#<%=ddlWarehouse.ClientID%>').chosen();
+                    $('#<%=ddlProductCode.ClientID%>').chosen();
                 }
     </script>
         </ContentTemplate>

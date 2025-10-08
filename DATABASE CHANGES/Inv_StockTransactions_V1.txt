@@ -1,4 +1,4 @@
-ALTER PROCEDURE [dbo].[Inv_StockTransactions_V1]
+CREATE PROCEDURE [dbo].[Inv_StockTransactions_V1]
 	@JobID varchar(10) = NULL,
 	@Operation INT = NULL,
 	@userid INT = NULL,
@@ -14,43 +14,47 @@ BEGIN
   --BIND CONTROLS
 	IF(@Operation = 1)
 	BEGIN
-	--TBALE 0
-	SELECT tblProjects.JobID + ', ' + ISNULL(tblCustomers.CompanyName,'') +', '+ ISNULL(tblCustomers.City,'')
-	+', '+ ISNULL(tblStates.[State],'') +', '+ ISNULL(tblCountries.Country,'')
-	AS ProjectName,tblProjects.JobID
-	FROM tblProjects
-	INNER JOIN tblCustomers ON tblCustomers.CustomerID=tblProjects.CustomerID
-	LEFT JOIN tblCountries ON tblCustomers.CountryID=tblCountries.CountryID
-	LEFT JOIN tblStates ON tblCustomers.StateID=tblStates.StateID
-	WHERE tblProjects.ReleaseToShop=0
-	ORDER BY tblProjects.JobID
+		--TABLE 0
+		SELECT tblProjects.JobID + ', ' + ISNULL(tblCustomers.CompanyName,'') +', '+ ISNULL(tblCustomers.City,'')
+		+', '+ ISNULL(tblStates.[State],'') +', '+ ISNULL(tblCountries.Country,'')
+		AS ProjectName,tblProjects.JobID
+		FROM tblProjects
+		INNER JOIN tblCustomers ON tblCustomers.CustomerID=tblProjects.CustomerID
+		LEFT JOIN tblCountries ON tblCustomers.CountryID=tblCountries.CountryID
+		LEFT JOIN tblStates ON tblCustomers.StateID=tblStates.StateID
+		WHERE tblProjects.ReleaseToShop=0
+		ORDER BY tblProjects.JobID
 
-	--TBALE 1
-	SELECT tblProjects.JobID + ', ' + ISNULL(tblCustomers.CompanyName,'') +', '+ ISNULL(tblCustomers.City,'')
-	+', '+ ISNULL(tblStates.[State],'') +', '+ ISNULL(tblCountries.Country,'')
-	AS ProjectName,tblProjects.JobID
-	FROM tblProjects
-	INNER JOIN tblCustomers ON tblCustomers.CustomerID=tblProjects.CustomerID
-	LEFT JOIN tblCountries ON tblCustomers.CountryID=tblCountries.CountryID
-	LEFT JOIN tblStates ON tblCustomers.StateID=tblStates.StateID
-	WHERE tblProjects.ReleaseToShop=1
-	ORDER BY tblProjects.JobID
+		--TABLE 1
+		SELECT tblProjects.JobID + ', ' + ISNULL(tblCustomers.CompanyName,'') +', '+ ISNULL(tblCustomers.City,'')
+		+', '+ ISNULL(tblStates.[State],'') +', '+ ISNULL(tblCountries.Country,'')
+		AS ProjectName,tblProjects.JobID
+		FROM tblProjects
+		INNER JOIN tblCustomers ON tblCustomers.CustomerID=tblProjects.CustomerID
+		LEFT JOIN tblCountries ON tblCustomers.CountryID=tblCountries.CountryID
+		LEFT JOIN tblStates ON tblCustomers.StateID=tblStates.StateID
+		WHERE tblProjects.ReleaseToShop=1
+		ORDER BY tblProjects.JobID
 
-	--TBALE 2
-	SELECT Inv_Parts.id AS Partid, PartNumber + ', '  + MIN(ISNULL(PartDes,'')) + ' (Current Stock '+ CAST(ISNULL(SUM(S.stockinhand), 0.0) AS VARCHAR(20)) +')' AS PartDetails 
-	FROM Inv_Parts	
-	LEFT JOIN Inv_Parts_StockInHand S ON S.PartId = Inv_Parts.id
-	GROUP BY Inv_Parts.id,PartNumber
-	ORDER BY PartNumber
+		--TABLE 2
+		SELECT Inv_Parts.id AS id, PartNumber + ', '  + MIN(ISNULL(PartDes,'')) + ' (Current Stock '+ CAST(ISNULL(SUM(S.stockinhand), 0.0) AS VARCHAR(20)) +')' AS [text] 
+		FROM Inv_Parts	
+		LEFT JOIN Inv_Parts_StockInHand S ON S.PartId = Inv_Parts.id
+		GROUP BY Inv_Parts.id,PartNumber
+		ORDER BY PartNumber
 
-	--Table 3
-	SELECT ID,Reason 
-	FROM [dbo].[Inv_StockAdjustmentReasons]
-	ORDER BY Reason
+		--TABLE 3
+		SELECT ID,Reason 
+		FROM [dbo].[Inv_StockAdjustmentReasons]
+		ORDER BY Reason
 
-	SELECT id, WarehouseName AS [text]
-	FROM Inv_Warehouse
-	ORDER BY WarehouseName
+		SELECT id, WarehouseName AS [text]
+		FROM Inv_Warehouse
+		ORDER BY WarehouseName
+
+		SELECT id, [name] AS [text]
+		FROM Inv_ProductCode
+		ORDER BY sortorder 
 	END
 
 	ELSE IF(@Operation = 2)
@@ -106,8 +110,9 @@ BEGIN
 
 				UPDATE tblProjects SET ReleaseToShop=1 WHERE JobID=@projectid
 				UPDATE Inv_Parts SET stockinhand=(@OPENSTOCK-@partqty) WHERE ID=@partid
+
 				
-				FETCH NEXT FROM CUR_PART INTO @partid,@projectid,@partqty
+					FETCH NEXT FROM CUR_PART INTO @partid,@projectid,@partqty
 
 				END
 				END
@@ -316,5 +321,15 @@ BEGIN
 		LEFT JOIN Inv_Warehouse ON Inv_Warehouse.Id = Inv_StockTransactions.WarehouseId
 		WHERE partid = @PartIdS
 		--ORDER BY partnumber, WarehouseName, TransactionType
+	END
+
+	ELSE IF(@Operation = 7)
+	BEGIN
+		SELECT Inv_Parts.id AS id, PartNumber + ', '  + MIN(ISNULL(PartDes,'')) + ' (Current Stock '+ CAST(ISNULL(SUM(S.stockinhand), 0.0) AS VARCHAR(20)) +')' AS [text] 
+		FROM Inv_Parts	
+		LEFT JOIN Inv_Parts_StockInHand S ON S.PartId = Inv_Parts.id
+		WHERE (ISNULL(@userid, 0) = 0 OR (productcode = @userid))
+		GROUP BY Inv_Parts.id,PartNumber
+		ORDER BY PartNumber
 	END
 END

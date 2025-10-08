@@ -56,6 +56,13 @@ namespace BOLAERO
             set { _ProjectDesigner = value; }
         }
 
+        Int32 _AssistedBy;
+        public Int32 AssistedBy
+        {
+            get { return _AssistedBy; }
+            set { _AssistedBy = value; }
+        }
+
         DateTime? _StartDate;
         public DateTime? StartDate
         {
@@ -4553,6 +4560,69 @@ namespace BOLAERO
         {
             get { return _WarehouseId; }
             set { _WarehouseId = value; }
+        }
+
+        DateTime? _AssignedDate;
+        public DateTime? AssignedDate
+        {
+            get { return _AssignedDate; }
+            set { _AssignedDate = value; }
+        }
+
+        DateTime? _ExpectedSubmissionDate_FabCanada;
+        public DateTime? ExpectedSubmissionDate_FabCanada
+        {
+            get { return _ExpectedSubmissionDate_FabCanada; }
+            set { _ExpectedSubmissionDate_FabCanada = value; }
+        }
+
+        String _ProjectQuality;
+        public String ProjectQuality
+        {
+            get { return _ProjectQuality; }
+            set { _ProjectQuality = value; }
+        }
+
+        Int32 _CorrectedBy_ProjectFeedback;
+        public Int32 CorrectedBy_ProjectFeedback
+        {
+            get { return _CorrectedBy_ProjectFeedback; }
+            set { _CorrectedBy_ProjectFeedback = value; }
+        }
+
+        Int32 _CorrectedByEngineer;
+        public Int32 CorrectedByEngineer
+        {
+            get { return _CorrectedByEngineer; }
+            set { _CorrectedByEngineer = value; }
+        }
+
+        DateTime? _QCReportSentDate;
+        public DateTime? QCReportSentDate
+        {
+            get { return _QCReportSentDate; }
+            set { _QCReportSentDate = value; }
+        }
+
+        DateTime? _QCReportReceivedDate;
+        public DateTime? QCReportReceivedDate
+        {
+            get { return _QCReportReceivedDate; }
+            set { _QCReportReceivedDate = value; }
+        }
+
+        Decimal _InstallationAmount;
+        public Decimal InstallationAmount
+        {
+            get { return _InstallationAmount; }
+            set { _InstallationAmount = value; }
+        }
+
+        Int32 _ThirdPartyInstaller;
+        public Int32 ThirdPartyInstaller
+        {
+            get { return _ThirdPartyInstaller; }
+            set { _ThirdPartyInstaller = value; }
         }
 
         DateTime? _ExpectedSalesDate;
@@ -9525,6 +9595,34 @@ namespace BOLAERO
 
     public class BOLPartMaintainanace
     {
+        Int32 _MOQ;
+        public Int32 MOQ
+        {
+            get { return _MOQ; }
+            set { _MOQ = value; }
+        }
+
+        Int32 _EAU;
+        public Int32 EAU
+        {
+            get { return _EAU; }
+            set { _EAU = value; }
+        }
+
+        Int32 _Batch;
+        public Int32 Batch
+        {
+            get { return _Batch; }
+            set { _Batch = value; }
+        }
+
+        Int32 _CompanyID;
+        public Int32 CompanyID
+        {
+            get { return _CompanyID; }
+            set { _CompanyID = value; }
+        }
+
         Int32 _Operation;
         public Int32 Operation
         {
@@ -9573,108 +9671,126 @@ namespace BOLAERO
             get { return _Partid; }
             set { _Partid = value; }
         }
+
         String _PartNumber;
         public String PartNumber
         {
             get { return _PartNumber; }
             set { _PartNumber = value; }
         }
+
         String _CustomerPartNumber;
         public String CustomerPartNumber
         {
             get { return _CustomerPartNumber; }
             set { _CustomerPartNumber = value; }
         }
+
         String _PartInfo;
         public String PartInfo
         {
             get { return _PartInfo; }
             set { _PartInfo = value; }
         }
+
         String _PartDes;
         public String PartDes
         {
             get { return _PartDes; }
             set { _PartDes = value; }
         }
+
         Int32 _ProductLineId;
         public Int32 ProductLineId
         {
             get { return _ProductLineId; }
             set { _ProductLineId = value; }
         }
+
         Int32 _ProductLineSubId;
         public Int32 ProductLineSubId
         {
             get { return _ProductLineSubId; }
             set { _ProductLineSubId = value; }
         }
+
         Int32 _ProductId;
         public Int32 ProductId
         {
             get { return _ProductId; }
             set { _ProductId = value; }
         }
+
         Int32 _SourceId;
         public Int32 SourceId
         {
             get { return _SourceId; }
             set { _SourceId = value; }
         }
+
         Int32 _LoginUserId;
         public Int32 LoginUserId
         {
             get { return _LoginUserId; }
             set { _LoginUserId = value; }
         }
+
         Int32 _DepartmentId;
         public Int32 DepartmentId
         {
             get { return _DepartmentId; }
             set { _DepartmentId = value; }
         }
+
         Int32 _Typeid;
         public Int32 Typeid
         {
             get { return _Typeid; }
             set { _Typeid = value; }
         }
+
         Int32 _stockinhand;
         public Int32 stockinhand
         {
             get { return _stockinhand; }
             set { _stockinhand = value; }
         }
+
         string _RevisionNo;
         public string RevisionNo
         {
             get { return _RevisionNo; }
             set { _RevisionNo = value; }
         }
+
         Int32 _min;
         public Int32 min
         {
             get { return _min; }
             set { _min = value; }
         }
+
         Int32 _max;
         public Int32 max
         {
             get { return _max; }
             set { _max = value; }
         }
+
         Int32 _reorderpoint;
         public Int32 reorderpoint
         {
             get { return _reorderpoint; }
             set { _reorderpoint = value; }
         }
+
         Int32 _reorderqty;
         public Int32 reorderqty
         {
             get { return _reorderqty; }
             set { _reorderqty = value; }
         }
+
         Int32 _leadtime;
         public Int32 leadtime
         {
@@ -9682,26 +9798,27 @@ namespace BOLAERO
             set { _leadtime = value; }
         }
 
-
-
         Int32 _PartStatus;
         public Int32 PartStatus
         {
             get { return _PartStatus; }
             set { _PartStatus = value; }
         }
+
         Int32 _UMId;
         public Int32 UMId
         {
             get { return _UMId; }
             set { _UMId = value; }
         }
+
         String _PathImage;
         public String PathImage
         {
             get { return _PathImage; }
             set { _PathImage = value; }
         }
+
         String _PathShopDrawing;
         public String PathShopDrawing
         {
@@ -9714,24 +9831,28 @@ namespace BOLAERO
             get { return _ShopDrawingName; }
             set { _ShopDrawingName = value; }
         }
+
         Boolean _StockItem;
         public Boolean StockItem
         {
             get { return _StockItem; }
             set { _StockItem = value; }
         }
+
         Boolean _ForecastItem;
         public Boolean ForecastItem
         {
             get { return _ForecastItem; }
             set { _ForecastItem = value; }
         }
+
         Boolean _LineStopper;
         public Boolean LineStopper
         {
             get { return _LineStopper; }
             set { _LineStopper = value; }
         }
+
         Int32 _ProductCode;
         public Int32 ProductCode
         {

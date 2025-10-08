@@ -63,8 +63,22 @@
                     <div class="col-12">
                         <h5 class="text-uppercase">Add New Record</h5>
                     </div>
+
+                    <div class="col-sm-6 col-md-3 col-lg-2">
+                        <div class="form-group">
+                            <label style="color: red">Product Code*</label>
+                            <asp:DropDownList CssClass="form-control form-control-sm control-access" ID="ddlProductCode" DataTextField="productcode" DataValueField="productcodeid" runat="server" OnSelectedIndexChanged="ddlProductCode_SelectedIndexChanged" AutoPostBack="true"></asp:DropDownList>
+                        </div>
+                    </div>
+
                     <div runat="server" id="ITWDiv" class="row col-8">
-                        <div class="col-3">
+                        <div class="col-2">
+                            <label>Company</label>
+                            <asp:DropDownList CssClass="form-control form-control-sm" ID="ddlCompany" runat="server" DataTextField="text" DataValueField="id">
+                            </asp:DropDownList>
+                        </div>
+
+                        <div class="col-2">
                             <div class="form-group">
                                 <label>Category</label>
                                 <asp:DropDownList ID="ddlCategory" runat="server" AutoPostBack="true" DataTextField="name" DataValueField="id" CssClass="form-control form-control-sm control-access" OnSelectedIndexChanged="ddlCategory_SelectedIndexChanged">
@@ -88,7 +102,7 @@
                                 </asp:DropDownList>
                             </div>
                         </div>
-                        <div class="col-3">
+                        <div class="col-2">
                             <label>Option</label>
                             <asp:DropDownList ID="ddlOption" runat="server" CssClass="form-control form-control-sm control-access">
                                 <asp:ListItem Value="0">Select</asp:ListItem>
@@ -97,12 +111,7 @@
                             </asp:DropDownList>
                         </div>
                     </div>
-                    <div class="col-sm-6 col-md-3 col-lg-2">
-                        <div class="form-group">
-                            <label style="color: red">Product Code*</label>
-                            <asp:DropDownList CssClass="form-control form-control-sm control-access" ID="ddlProductCode" DataTextField="productcode" DataValueField="productcodeid" runat="server" OnSelectedIndexChanged="ddlProductCode_SelectedIndexChanged" AutoPostBack="true"></asp:DropDownList>
-                        </div>
-                    </div>
+
                     <div class="col-sm-6 col-md-3 col-lg-2">
                         <div class="form-group">
                             <label style="color: red">Part No.*</label>
@@ -204,12 +213,35 @@
                             <asp:TextBox CssClass="form-control form-control-sm text-right control-access-enabled" ID="txtReOrderQty" MaxLength="6" runat="server" autocomplete="off" onkeypress="return onlyDotsAndNumbers(this,event);"></asp:TextBox>
                         </div>
                     </div>
+
+                    <div class="col-sm-8 col-md-4 col-lg-2">
+                        <div class="form-group">
+                            <label>MOQ</label>
+                            <asp:TextBox CssClass="form-control form-control-sm text-right control-access-enabled" ID="txtMOQ" MaxLength="5" runat="server" autocomplete="off" onkeypress="return onlyDotsAndNumbers(this,event);"></asp:TextBox>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-8 col-md-4 col-lg-2">
+                        <div class="form-group">
+                            <label>EAU</label>
+                            <asp:TextBox CssClass="form-control form-control-sm text-right control-access-enabled" ID="txtEAU" MaxLength="5" runat="server" autocomplete="off" onkeypress="return onlyDotsAndNumbers(this,event);"></asp:TextBox>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-8 col-md-4 col-lg-2">
+                        <div class="form-group">
+                            <label>Batch</label>
+                            <asp:TextBox CssClass="form-control form-control-sm text-right control-access-enabled" ID="txtBatch" MaxLength="5" runat="server" autocomplete="off" onkeypress="return onlyDotsAndNumbers(this,event);"></asp:TextBox>
+                        </div>
+                    </div>
+
                     <div class="col-sm-8 col-md-4 col-lg-2">
                         <div class="form-group">
                             <label>Lead Time Weeks</label>
                             <asp:TextBox CssClass="form-control form-control-sm text-right control-access-enabled" ID="txtLeadTime" MaxLength="2" runat="server" autocomplete="off" onkeypress="return onlyDotsAndNumbers(this,event);"></asp:TextBox>
                         </div>
                     </div>
+
                     <div class="col-sm-8 col-md-4 col-lg-2">
                         <div class="form-group">
                             <label>Status</label>
@@ -391,6 +423,7 @@
             $('#<%=ddlSize.ClientID%>').chosen();
             $('#<%=ddlDirection.ClientID%>').chosen();
             $('#<%=ddlLineStopperPriority.ClientID%>').chosen();
+            $('#<%=ddlCompany.ClientID%>').chosen();
         }
 
     </script>

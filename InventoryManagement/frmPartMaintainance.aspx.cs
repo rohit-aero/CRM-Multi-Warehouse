@@ -146,6 +146,9 @@ public partial class INVManagement_frmPartMaintainance : System.Web.UI.Page
                 txtReOrderPoint.Enabled = true;
                 txtReOrderQty.Enabled = true;
                 txtLeadTime.Enabled = true;
+                txtMOQ.Enabled = true;
+                txtEAU.Enabled = true;
+                txtBatch.Enabled = true;
             }
             else
             {
@@ -154,6 +157,9 @@ public partial class INVManagement_frmPartMaintainance : System.Web.UI.Page
                 txtReOrderPoint.Enabled = false;
                 txtReOrderQty.Enabled = false;
                 txtLeadTime.Enabled = false;
+                txtMOQ.Enabled = false;
+                txtEAU.Enabled = false;
+                txtBatch.Enabled = false;
             }
         }
         catch (Exception ex)
@@ -175,21 +181,30 @@ public partial class INVManagement_frmPartMaintainance : System.Web.UI.Page
                 Utility.BindDropDownList(ddlProductCodeLookUp, ds.Tables[0]);
                 Utility.BindDropDownList(ddlProductCode, ds.Tables[0]);
             }
+
             if (ds.Tables[1].Rows.Count > 0)
             {
                 Utility.BindDropDownList(ddlDepartment, ds.Tables[1]);
             }
+
             if (ds.Tables[2].Rows.Count > 0)
             {
                 Utility.BindDropDownList(ddlSource, ds.Tables[2]);
             }
+
             if (ds.Tables[3].Rows.Count > 0)
             {
                 Utility.BindDropDownList(ddlUM, ds.Tables[3]);
             }
+
             if (ds.Tables[5].Rows.Count > 0)
             {
                 Utility.BindDropDownList(ddlCategory, ds.Tables[5]);
+            }
+
+            if (ds.Tables[6].Rows.Count > 0)
+            {
+                Utility.BindDropDownList(ddlCompany, ds.Tables[6]);
             }
         }
         catch (Exception ex)
@@ -432,6 +447,9 @@ public partial class INVManagement_frmPartMaintainance : System.Web.UI.Page
                     txtReOrderPoint.Text = dr["reorderpoint"].ToString();
                     txtReOrderQty.Text = dr["reorderqty"].ToString();
                     txtLeadTime.Text = dr["leadtime"].ToString();
+                    txtMOQ.Text = dr["MOQ"].ToString();
+                    txtEAU.Text = dr["EAU"].ToString();
+                    txtBatch.Text = dr["Batch"].ToString();
 
                     if (ddlPartStatus.Items.FindByValue(dr["PartStatus"].ToString()) != null)
                     {
@@ -455,6 +473,15 @@ public partial class INVManagement_frmPartMaintainance : System.Web.UI.Page
                         {
                             ddlUM.SelectedIndex = 0;
                         }
+                    }
+
+                    if (ddlCompany.Items.FindByValue(dr["CompanyId"].ToString()) != null)
+                    {
+                        ddlCompany.SelectedValue = dr["CompanyId"].ToString();
+                    }
+                    else
+                    {
+                        ddlCompany.SelectedIndex = 0;
                     }
 
                     if (ddlCategory.Items.FindByValue(dr["CategoryId"].ToString()) != null)
@@ -580,6 +607,10 @@ public partial class INVManagement_frmPartMaintainance : System.Web.UI.Page
             txtReOrderPoint.Text = String.Empty;
             txtReOrderQty.Text = String.Empty;
             txtLeadTime.Text = String.Empty;
+            txtMOQ.Text = string.Empty;
+            txtEAU.Text = string.Empty;
+            txtBatch.Text = string.Empty;
+
             if (ddlRevisionNo.Items.Count > 0)
             {
                 ddlRevisionNo.SelectedIndex = 0;
@@ -644,6 +675,9 @@ public partial class INVManagement_frmPartMaintainance : System.Web.UI.Page
             txtReOrderPoint.Text = String.Empty;
             txtReOrderQty.Text = String.Empty;
             txtLeadTime.Text = String.Empty;
+            txtMOQ.Text = string.Empty;
+            txtEAU.Text = string.Empty;
+            txtBatch.Text = string.Empty;
             if (ddlRevisionNo.Items.Count > 0)
             {
                 ddlRevisionNo.SelectedIndex = 0;
@@ -854,9 +888,6 @@ public partial class INVManagement_frmPartMaintainance : System.Web.UI.Page
             //ResetPartInfo();
             gvShopDwg.DataSource = "";
             gvShopDwg.DataBind();
-
-            gvWarehouseStock.DataSource = string.Empty;
-            gvWarehouseStock.DataBind();
         }
         catch (Exception ex)
         {
@@ -916,6 +947,11 @@ public partial class INVManagement_frmPartMaintainance : System.Web.UI.Page
                     ObjBOL.DepartmentId = Convert.ToInt32(ddlDepartment.SelectedValue);
                 }
 
+                if (ddlCompany.SelectedIndex > 0)
+                {
+                    ObjBOL.CompanyID = Int32.Parse(ddlCompany.SelectedValue);
+                }
+
                 if (ddlCategory.SelectedIndex > 0)
                 {
                     ObjBOL.CategoryID = Convert.ToInt32(ddlCategory.SelectedValue);
@@ -961,6 +997,21 @@ public partial class INVManagement_frmPartMaintainance : System.Web.UI.Page
                 if (txtReOrderQty.Text != "")
                 {
                     ObjBOL.reorderqty = Convert.ToInt32(txtReOrderQty.Text);
+                }
+
+                if (txtMOQ.Text != "")
+                {
+                    ObjBOL.MOQ = Int32.Parse(txtMOQ.Text);
+                }
+
+                if (txtEAU.Text != "")
+                {
+                    ObjBOL.EAU = Int32.Parse(txtEAU.Text);
+                }
+
+                if (txtBatch.Text != "")
+                {
+                    ObjBOL.Batch = Int32.Parse(txtBatch.Text);
                 }
 
                 if (txtLeadTime.Text != "")
@@ -1253,6 +1304,7 @@ public partial class INVManagement_frmPartMaintainance : System.Web.UI.Page
             gvShopDwg.DataSource = "";
             gvShopDwg.DataBind();
             pangvShopdwg.Visible = false;
+            Reset_ITWSpecificFields();
         }
         catch (Exception ex)
         {
@@ -1391,13 +1443,13 @@ public partial class INVManagement_frmPartMaintainance : System.Web.UI.Page
             ITWSwitch();
             if (ddlProductCode.SelectedIndex > 0)
             {
-                ResetProductCode();
+                //ResetProductCode();
                 BindProduct(ddlProductCode.SelectedValue);
             }
             else
             {
                 ddlPartInfo.SelectedIndex = 0;
-                ResetProductCode();
+                //ResetProductCode();
             }
         }
         catch (Exception ex)
@@ -1460,6 +1512,7 @@ public partial class INVManagement_frmPartMaintainance : System.Web.UI.Page
         try
         {
             ITWDiv.Visible = true;
+            ddlCompany.Enabled = true;
             ddlCategory.Enabled = true;
             ddlSize.Enabled = true;
             ddlDirection.Enabled = true;
@@ -1475,7 +1528,8 @@ public partial class INVManagement_frmPartMaintainance : System.Web.UI.Page
     {
         try
         {
-            Reset_ITWSpecificFields();
+            //Reset_ITWSpecificFields();
+            ddlCompany.Enabled = false;
             ddlCategory.Enabled = false;
             ddlSize.Enabled = false;
             ddlDirection.Enabled = false;
@@ -1511,6 +1565,11 @@ public partial class INVManagement_frmPartMaintainance : System.Web.UI.Page
     {
         try
         {
+            if (ddlCompany.Items.Count > 0)
+            {
+                ddlCompany.SelectedIndex = 0;
+            }
+
             if (ddlCategory.Items.Count > 0)
             {
                 ddlCategory.SelectedIndex = 0;

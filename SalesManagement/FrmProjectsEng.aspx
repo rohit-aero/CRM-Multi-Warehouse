@@ -11,7 +11,6 @@
                         <div class="d-flex align-items-center mb-2">
                             <button type="button" class="btn btn-info btn-sm mr-3" onclick="previousPage()"><i class="fas fa-chevron-left fa-sm"></i>Back</button>
                             <h4 class="title-hyphen position-relative mr-3">Project Information                            
-                               
                                 <asp:Label ID="lblPM" Visible="false" CssClass="btn btn-primary btn-sm" Style="cursor: no-drop;" runat="server" Text=""></asp:Label>
                                 <asp:Label ID="lblDesRep" Visible="false" CssClass="btn btn-success btn-sm" Style="cursor: no-drop;" runat="server" Text=""></asp:Label>
                                 <asp:Label ID="lblConsultant" Visible="false" CssClass="btn btn-info btn-sm" Style="cursor: no-drop;" runat="server" Text=""></asp:Label>
@@ -423,8 +422,7 @@
                                         <ItemTemplate>
                                             <asp:LinkButton CssClass="btn btn-info btn-sm" ID="LinkButton1" runat="server" CommandName="edit"><i class="far fa-edit" title="Edit"></i></asp:LinkButton>
                                             &nbsp;&nbsp;
-                                       
-                                            <asp:LinkButton CssClass="btn btn-info btn-danger" ID="LinkButton4" OnClientClick="return confirm('Are you sure to delete. ?');" runat="server" CommandName="delete"><i class="fas fa-times" title="Delete"></i></asp:LinkButton>
+                                        <asp:LinkButton CssClass="btn btn-info btn-danger" ID="LinkButton4" OnClientClick="return confirm('Are you sure to delete. ?');" runat="server" CommandName="delete"><i class="fas fa-times" title="Delete"></i></asp:LinkButton>
                                         </ItemTemplate>
                                         <ItemStyle HorizontalAlign="Center" VerticalAlign="Middle" />
                                     </asp:TemplateField>
@@ -470,6 +468,27 @@
                                     <asp:DropDownList CssClass="form-control form-control-sm" ID="ddlProjectDesCanada" DataTextField="Name" DataValueField="Name" runat="server"></asp:DropDownList>
                                 </div>
                             </div>
+
+
+                            <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+                                <div class="form-group chosenFullWidth">
+                                    <label>Reviewed By</label>
+                                    <asp:DropDownList CssClass="form-control form-control-sm" ID="ddlReviewedBy" runat="server" DataTextField="Name" DataValueField="EmployeeID" AutoPostBack="true" Enabled="false"
+                                        OnSelectedIndexChanged="ddlReviewedBy_SelectedIndexChanged">
+                                    </asp:DropDownList>
+                                </div>
+                            </div>
+
+                            <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+                                <div class="form-group chosenFullWidth">
+                                    <label>Purchased Items</label>
+                                    <asp:DropDownList CssClass="form-control form-control-sm" ID="ddlPurchasedItems" runat="server">
+                                        <asp:ListItem Value="0">Select</asp:ListItem>
+                                        <asp:ListItem Value="O">Ordered</asp:ListItem>
+                                        <asp:ListItem Value="R">Received</asp:ListItem>
+                                    </asp:DropDownList>
+                                </div>
+                            </div>
                             <div class="col-6 col-sm-4 col-md-3 col-lg-2">
                                 <div class="form-group chosenFullWidth">
                                     <label>Manufacturing Facility</label>
@@ -492,31 +511,17 @@
                                     <asp:CalendarExtender ID="CalendarExtender32" runat="server" Format="MM/dd/yyyy" PopupButtonID="txtFabReleasedDate" TargetControlID="txtFabReleasedDate"></asp:CalendarExtender>
                                 </div>
                             </div>
-
-                            <div class="col-6 col-sm-4 col-md-3 col-lg-2">
-                                <div class="form-group chosenFullWidth">
-                                    <label>Reviewed By</label>
-                                    <asp:DropDownList CssClass="form-control form-control-sm" ID="ddlReviewedBy" runat="server" DataTextField="Name" DataValueField="EmployeeID" AutoPostBack="true" Enabled="false"
-                                        OnSelectedIndexChanged="ddlReviewedBy_SelectedIndexChanged">
-                                    </asp:DropDownList>
-                                </div>
-                            </div>
-
-                            <div class="col-6 col-sm-4 col-md-3 col-lg-2">
-                                <div class="form-group chosenFullWidth">
-                                    <label>Purchased Items</label>
-                                    <asp:DropDownList CssClass="form-control form-control-sm" ID="ddlPurchasedItems" runat="server">
-                                        <asp:ListItem Value="0">Select</asp:ListItem>
-                                        <asp:ListItem Value="O">Ordered</asp:ListItem>
-                                        <asp:ListItem Value="R">Received</asp:ListItem>
-                                    </asp:DropDownList>
-                                </div>
-                            </div>
-                            <div class="col-6 col-sm-4 col-md-3 col-lg-3">
+                            <div class="col-2">
                                 <div class="form-group">
                                     <%--<label>Release</label>--%>
                                     <asp:Button runat="server" ID="btnRelease" CssClass="btn btn-primary btn-sm mb-3" Text="Release" Enabled="false" OnClientClick="return confirm('Are you sure to Release.?');" OnClick="btnRelease_Click" />
                                     <asp:Button runat="server" ID="btnRollback" CssClass="btn btn-danger btn-sm mb-3" Text="Rollback" Enabled="false" OnClientClick="return confirm('Are you sure to Rollback.?');" OnClick="btnRollback_Click" />
+                                </div>
+                            </div>
+
+                            <div class="col-2">
+                                <div class="form-group">
+                                    <asp:Button runat="server" ID="btnRedirectKPIChina" CssClass="btn btn-primary btn-sm mb-3" Text="KPI China" OnClick="btnRedirectKPIChina_Click" />
                                 </div>
                             </div>
                         </div>
@@ -562,7 +567,18 @@
                             <div class="col-6 col-sm-4 col-md-3 col-lg-2">
                                 <div class="form-group chosenFullWidth">
                                     <label>FAB Project Designer</label>
-                                    <asp:DropDownList CssClass="form-control form-control-sm" ID="ddlProjectDesigner_Grid" DataValueField="EmployeeID" DataTextField="Abbrivation" runat="server"></asp:DropDownList>
+                                    <asp:DropDownList CssClass="form-control form-control-sm" ID="ddlProjectDesigner_Grid" DataValueField="EmployeeID" DataTextField="Abbrivation" runat="server"
+                                        AutoPostBack="true" OnSelectedIndexChanged="ddlProjectDesigner_Grid_SelectedIndexChanged">
+                                    </asp:DropDownList>
+                                </div>
+                            </div>
+
+                            <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+                                <div class="form-group chosenFullWidth">
+                                    <label>Assisted By</label>
+                                    <asp:DropDownList CssClass="form-control form-control-sm" ID="ddlAssistedBy_Grid" DataValueField="EmployeeID" DataTextField="Abbrivation" runat="server"
+                                        AutoPostBack="true" OnSelectedIndexChanged="ddlAssistedBy_Grid_SelectedIndexChanged">
+                                    </asp:DropDownList>
                                 </div>
                             </div>
 
@@ -629,6 +645,12 @@
                                             <asp:TemplateField HeaderText="Project Designer" SortExpression="ProjectDesigner">
                                                 <ItemTemplate>
                                                     <asp:Label ID="lblProjectDesigner" runat="server" Text='<%# Eval("ProjectDesigner") %>'></asp:Label>
+                                                </ItemTemplate>
+                                            </asp:TemplateField>
+
+                                            <asp:TemplateField HeaderText="Assisted By" SortExpression="AssistedBy">
+                                                <ItemTemplate>
+                                                    <asp:Label ID="lblAssistedBy" runat="server" Text='<%# Eval("AssistedBy") %>'></asp:Label>
                                                 </ItemTemplate>
                                             </asp:TemplateField>
 
@@ -717,19 +739,14 @@
                                     <asp:CalendarExtender ID="CalendarExtender10" runat="server" Format="MM/dd/yyyy" PopupButtonID="txtFabStartDateChina" TargetControlID="txtFabStartDateChina"></asp:CalendarExtender>
                                 </div>
                             </div>
-                            <div class="col-6 col-sm-4 col-md-3 col-lg-2">
-                                <div class="form-group">
-                                    <label>Fabrication End Date</label>
-                                    <asp:TextBox CssClass="form-control form-control-sm" ID="txtFabEndDateChina" AutoComplete="off" runat="server" OnBlur="validateDate(this)"></asp:TextBox>
-                                    <asp:CalendarExtender ID="CalendarExtender16" runat="server" Format="MM/dd/yyyy" PopupButtonID="txtFabEndDateChina" TargetControlID="txtFabEndDateChina"></asp:CalendarExtender>
-                                </div>
-                            </div>
+
                             <div class="col-6 col-sm-4 col-md-3 col-lg-2">
                                 <div class="form-group chosenFullWidth">
                                     <label>Manufacturing Facility</label>
                                     <asp:DropDownList CssClass="form-control form-control-sm" ID="ddlManuFacChina" DataTextField="FacilityName" DataValueField="ID" runat="server" Enabled="false"></asp:DropDownList>
                                 </div>
                             </div>
+
                             <div class="col-6 col-sm-4 col-md-3 col-lg-2">
                                 <div class="form-group chosenFullWidth">
                                     <label>Issued For</label>
@@ -742,29 +759,33 @@
                                     </asp:DropDownList>
                                 </div>
                             </div>
+
                             <div class="col-6 col-sm-4 col-md-3 col-lg-2">
                                 <div class="form-group">
-                                    <label>Release to China</label>
-                                    <asp:TextBox CssClass="form-control form-control-sm" ID="txtFabReleasedDateChina" AutoComplete="off" runat="server" OnBlur="validateDate(this)"></asp:TextBox>
-                                    <asp:CalendarExtender ID="CalendarExtender14" runat="server" Format="MM/dd/yyyy" PopupButtonID="txtFabReleasedDateChina" TargetControlID="txtFabReleasedDateChina"></asp:CalendarExtender>
+                                    <label>Assigned Date</label>
+                                    <asp:TextBox CssClass="form-control form-control-sm" ID="txtAssignedDate" AutoComplete="off" runat="server" OnBlur="validateDate(this)"></asp:TextBox>
+                                    <asp:CalendarExtender ID="txtAssignedDate_Extender" runat="server" Format="MM/dd/yyyy" PopupButtonID="txtAssignedDate" TargetControlID="txtAssignedDate"></asp:CalendarExtender>
                                 </div>
                             </div>
 
                             <div class="col-6 col-sm-4 col-md-3 col-lg-2">
                                 <div class="form-group">
                                     <label>Expected Submission Date</label>
-                                    <asp:TextBox CssClass="form-control form-control-sm" ID="txtExpectedSubmissionDate" AutoComplete="off" runat="server" OnBlur="validateDate(this)"></asp:TextBox>
-                                    <asp:CalendarExtender ID="txtExpectedSubmissionDate_Extender" runat="server" Format="MM/dd/yyyy" PopupButtonID="txtExpectedSubmissionDate" TargetControlID="txtExpectedSubmissionDate"></asp:CalendarExtender>
+                                    <asp:TextBox CssClass="form-control form-control-sm" ID="txtExpectedSubmissionDate_FabCanada" AutoComplete="off" runat="server" OnBlur="validateDate(this)"></asp:TextBox>
+                                    <asp:CalendarExtender ID="txtExpectedSubmissionDate_FabCanada_Extender" runat="server" Format="MM/dd/yyyy"
+                                        PopupButtonID="txtExpectedSubmissionDate_FabCanada" TargetControlID="txtExpectedSubmissionDate_FabCanada">
+                                    </asp:CalendarExtender>
                                 </div>
                             </div>
 
                             <div class="col-6 col-sm-4 col-md-3 col-lg-2">
                                 <div class="form-group">
                                     <label>Actual Submission Date</label>
-                                    <asp:TextBox CssClass="form-control form-control-sm" ID="txtActualSubmissionDate" AutoComplete="off" runat="server" OnBlur="validateDate(this)"></asp:TextBox>
-                                    <asp:CalendarExtender ID="txtActualSubmissionDate_Extender" runat="server" Format="MM/dd/yyyy" PopupButtonID="txtActualSubmissionDate" TargetControlID="txtActualSubmissionDate"></asp:CalendarExtender>
+                                    <asp:TextBox CssClass="form-control form-control-sm" ID="txtFabEndDateChina" AutoComplete="off" runat="server" OnBlur="validateDate(this)"></asp:TextBox>
+                                    <asp:CalendarExtender ID="CalendarExtender16" runat="server" Format="MM/dd/yyyy" PopupButtonID="txtFabEndDateChina" TargetControlID="txtFabEndDateChina"></asp:CalendarExtender>
                                 </div>
                             </div>
+
                             <div class="col-6 col-sm-4 col-md-3 col-lg-2">
                                 <div class="form-group chosenFullWidth">
                                     <label class="text-danger">Status*</label>
@@ -780,18 +801,21 @@
                                     </asp:DropDownList>
                                 </div>
                             </div>
-                            <div class="col-6 col-sm-4 col-md-3 col-lg-2">
-                                <div class="form-group chosenFullWidth">
-                                    <label>Reviewed By</label>
-                                    <asp:DropDownList CssClass="form-control form-control-sm" ID="ddlReviewedByChina" runat="server" DataTextField="Name" DataValueField="EmployeeID" Enabled="false"></asp:DropDownList>
-                                </div>
-                            </div>
-                            <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+
+                            <div class="col-6 col-sm-4 col-md-3 col-lg-2" style="display: none;">
                                 <div class="form-group chosenFullWidth">
                                     <label>Corrected By</label>
                                     <asp:DropDownList CssClass="form-control form-control-sm" ID="ddlFabChinaCorrectedBy" runat="server" DataTextField="Abbrivation" DataValueField="EmployeeID"></asp:DropDownList>
                                 </div>
                             </div>
+
+                        </div>
+
+                        <div class="row border-top pt-2">
+                            <div class="col-sm-12">
+                                <h5 class="text-uppercase">Container Information</h5>
+                            </div>
+
                             <div class="col-6 col-sm-4 col-md-3 col-lg-2">
                                 <div class="form-group">
                                     <label>Ship Date From China</label>
@@ -836,10 +860,97 @@
                             </div>
 
                             <div class="col-sm-4">
-                                <label>&nbsp;</label>
+                                <%--<label>&nbsp;</label>--%>
                                 <div class="form-group">
                                     <asp:Button ID="btnFabChinaDailyReport" runat="server" CssClass="btn btn-primary btn-sm mb-3" CausesValidation="false"
                                         Text="Daily Report" OnClick="btnFabChinaDailyReport_Click" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row border-top pt-2">
+                            <div class="col-sm-12">
+                                <h5 class="text-uppercase">Project Feedback Information</h5>
+                            </div>
+
+                            <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+                                <div class="form-group chosenFullWidth">
+                                    <label>Reviewed By</label>
+                                    <asp:DropDownList CssClass="form-control form-control-sm" ID="ddlReviewedByChina" runat="server" DataTextField="Name" DataValueField="EmployeeID" Enabled="false"></asp:DropDownList>
+                                </div>
+                            </div>
+
+                            <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+                                <div class="form-group chosenFullWidth">
+                                    <label>Accuracy Level</label>
+                                    <asp:DropDownList CssClass="form-control form-control-sm" ID="ddlProjectQuality" runat="server">
+                                        <asp:ListItem>Select</asp:ListItem>
+                                        <asp:ListItem Value="L">Low</asp:ListItem>
+                                        <asp:ListItem Value="M">Medium</asp:ListItem>
+                                        <asp:ListItem Value="H">High</asp:ListItem>
+                                    </asp:DropDownList>
+                                </div>
+                            </div>
+
+                            <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+                                <div class="form-group chosenFullWidth">
+                                    <label>Correcting Facility</label>
+                                    <asp:DropDownList CssClass="form-control form-control-sm" ID="ddlCorrectedBy_ProjectFeedback" runat="server" DataTextField="text" DataValueField="id"
+                                        AutoPostBack="true" OnSelectedIndexChanged="ddlCorrectedBy_ProjectFeedback_SelectedIndexChanged">
+                                    </asp:DropDownList>
+                                </div>
+                            </div>
+
+                            <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+                                <div class="form-group chosenFullWidth">
+                                    <label>Corrected Engineer</label>
+                                    <asp:DropDownList CssClass="form-control form-control-sm" ID="ddlCorrectedByEngineer" runat="server" DataTextField="text" DataValueField="id"></asp:DropDownList>
+                                </div>
+                            </div>
+
+                            <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+                                <div class="form-group">
+                                    <label>Release to China</label>
+                                    <asp:TextBox CssClass="form-control form-control-sm" ID="txtFabReleasedDateChina" AutoComplete="off" runat="server" OnBlur="validateDate(this)"></asp:TextBox>
+                                    <asp:CalendarExtender ID="CalendarExtender14" runat="server" Format="MM/dd/yyyy" PopupButtonID="txtFabReleasedDateChina" TargetControlID="txtFabReleasedDateChina"></asp:CalendarExtender>
+                                </div>
+                            </div>
+
+                            <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+                                <div class="form-group">
+                                    <label>Expected Submission Date</label>
+                                    <asp:TextBox CssClass="form-control form-control-sm" ID="txtExpectedSubmissionDate" AutoComplete="off" runat="server" OnBlur="validateDate(this)"></asp:TextBox>
+                                    <asp:CalendarExtender ID="txtExpectedSubmissionDate_Extender" runat="server" Format="MM/dd/yyyy" PopupButtonID="txtExpectedSubmissionDate" TargetControlID="txtExpectedSubmissionDate"></asp:CalendarExtender>
+                                </div>
+                            </div>
+
+                            <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+                                <div class="form-group">
+                                    <label>Actual Submission Date</label>
+                                    <asp:TextBox CssClass="form-control form-control-sm" ID="txtActualSubmissionDate" AutoComplete="off" runat="server" OnBlur="validateDate(this)"></asp:TextBox>
+                                    <asp:CalendarExtender ID="txtActualSubmissionDate_Extender" runat="server" Format="MM/dd/yyyy" PopupButtonID="txtActualSubmissionDate" TargetControlID="txtActualSubmissionDate"></asp:CalendarExtender>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row border-top pt-2">
+                            <div class="col-sm-12">
+                                <h5 class="text-uppercase">QC Information</h5>
+                            </div>
+
+                            <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+                                <div class="form-group">
+                                    <label>QC Report Sent Date</label>
+                                    <asp:TextBox CssClass="form-control form-control-sm" ID="txtQCReportSentDate" AutoComplete="off" runat="server" OnBlur="validateDate(this)"></asp:TextBox>
+                                    <asp:CalendarExtender ID="txtQCReportSentDate_Extender" runat="server" Format="MM/dd/yyyy" PopupButtonID="txtQCReportSentDate" TargetControlID="txtQCReportSentDate"></asp:CalendarExtender>
+                                </div>
+                            </div>
+
+                            <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+                                <div class="form-group">
+                                    <label>QC Report Received Date</label>
+                                    <asp:TextBox CssClass="form-control form-control-sm" ID="txtQCReportReceivedDate" AutoComplete="off" runat="server" OnBlur="validateDate(this)"></asp:TextBox>
+                                    <asp:CalendarExtender ID="txtQCReportReceivedDate_Extender" runat="server" Format="MM/dd/yyyy" PopupButtonID="txtQCReportReceivedDate" TargetControlID="txtQCReportReceivedDate"></asp:CalendarExtender>
                                 </div>
                             </div>
                         </div>
@@ -871,6 +982,7 @@
                                         <asp:ListItem Value="8">Select</asp:ListItem>
                                         <asp:ListItem Value="0">Not started</asp:ListItem>
                                         <asp:ListItem Value="1">In Progress</asp:ListItem>
+                                        <asp:ListItem Value="9">Cancelled</asp:ListItem>
                                         <asp:ListItem Value="2">Completed</asp:ListItem>
                                         <asp:ListItem Value="3">Shipment within 4 weeks</asp:ListItem>
                                         <asp:ListItem Value="4">(P.O / Drawings) Not Received</asp:ListItem>
@@ -897,6 +1009,8 @@
                                                 <EditItemTemplate>
                                                     <asp:Label ID="lblTaskNumber_EditNesting" runat="server" Text='<%#Eval("TaskNumber") %>'></asp:Label>
                                                 </EditItemTemplate>
+
+                                                <ItemStyle Width="140px" />
                                             </asp:TemplateField>
 
                                             <asp:TemplateField HeaderText="Nature of Task" SortExpression="NatureOfTask">
@@ -1058,6 +1172,7 @@
                                                         <asp:ListItem Value="">Select</asp:ListItem>
                                                         <asp:ListItem Value="0">Not started</asp:ListItem>
                                                         <asp:ListItem Value="1">In Progress</asp:ListItem>
+                                                        <asp:ListItem Value="9">Cancelled</asp:ListItem>
                                                         <asp:ListItem Value="2">Completed</asp:ListItem>
                                                         <asp:ListItem Value="3">Shipment within 4 weeks</asp:ListItem>
                                                         <asp:ListItem Value="4">(P.O / Drawings) Not Received</asp:ListItem>
@@ -1072,6 +1187,7 @@
                                                         <asp:ListItem Value="">Select</asp:ListItem>
                                                         <asp:ListItem Value="0">Not started</asp:ListItem>
                                                         <asp:ListItem Value="1">In Progress</asp:ListItem>
+                                                        <asp:ListItem Value="9">Cancelled</asp:ListItem>
                                                         <asp:ListItem Value="2">Completed</asp:ListItem>
                                                         <asp:ListItem Value="3">Shipment within 4 weeks</asp:ListItem>
                                                         <asp:ListItem Value="4">(P.O / Drawings) Not Received</asp:ListItem>
@@ -1129,7 +1245,6 @@
                         <div class="input-group-prepend p-1">
                             <button runat="server" data-toggle="modal" data-target="#dialog6" class="btn btn-primary btn-sm" data-backdrop="static" data-keyboard="false" href="#" type="button">
                                 Show Model Info
-                           
                             </button>
                         </div>
                         <!-- Modal -->
@@ -1321,6 +1436,10 @@
             $('#<%=ddlReleaseType_Grid.ClientID%>').chosen();
             $('#<%=ddlProjectDesigner_Grid.ClientID%>').chosen();
             $('#<%=ddlReviewedBy_Grid.ClientID%>').chosen();
+            $('#<%=ddlProjectQuality.ClientID%>').chosen();
+            $('#<%=ddlCorrectedBy_ProjectFeedback.ClientID%>').chosen();
+            $('#<%=ddlCorrectedByEngineer.ClientID%>').chosen();
+            $('#<%=ddlAssistedBy_Grid.ClientID%>').chosen();
             $('#<%=ddlWarehouse.ClientID%>').chosen();
         }
 

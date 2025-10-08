@@ -17,7 +17,7 @@ namespace DALAERO
     {
         public DataSet Return_DataSet(BOLProjectsFabricationAndNestingTasks ObjBOL)
         {
-            SqlParameter[] param = new SqlParameter[15];
+            SqlParameter[] param = new SqlParameter[16];
             param[0] = new SqlParameter("@Operation", ObjBOL.Operation);
             param[1] = new SqlParameter("@JobId", ObjBOL.JobId);
             param[2] = new SqlParameter("@TaskNumber", ObjBOL.TaskNumber);
@@ -33,13 +33,14 @@ namespace DALAERO
             param[12] = new SqlParameter("@SentDate", ObjBOL.SentDate);
             param[13] = new SqlParameter("@Status", ObjBOL.Status);
             param[14] = new SqlParameter("@Id", ObjBOL.ID);
+            param[15] = new SqlParameter("@AssistedBy", ObjBOL.AssistedBy);
             DataSet ds = SqlHelper1.ExecuteDataset(con, CommandType.StoredProcedure, "[dbo].[aero_ForecastingAndNestingTasks]", param);
             return ds;
         }
 
         public string Return_String(BOLProjectsFabricationAndNestingTasks ObjBOL)
         {
-            SqlParameter[] param = new SqlParameter[16];
+            SqlParameter[] param = new SqlParameter[17];
             param[0] = new SqlParameter("@msg", SqlDbType.VarChar, 50);
             param[0].Direction = ParameterDirection.Output;
             param[1] = new SqlParameter("@Operation", ObjBOL.Operation);
@@ -57,6 +58,7 @@ namespace DALAERO
             param[13] = new SqlParameter("@SentDate", ObjBOL.SentDate);
             param[14] = new SqlParameter("@Status", ObjBOL.Status);
             param[15] = new SqlParameter("@Id", ObjBOL.ID);
+            param[16] = new SqlParameter("@AssistedBy", ObjBOL.AssistedBy);
             SqlHelper1.ExecuteNonQuery(con, CommandType.StoredProcedure, "[dbo].[aero_ForecastingAndNestingTasks]", param);
             string msg = param[0].Value.ToString();
             return msg;
@@ -1492,7 +1494,7 @@ namespace DALAERO
     {
         public string SaveProject(BOLManageProjects ObjBOL)
         {
-            SqlParameter[] param = new SqlParameter[167];
+            SqlParameter[] param = new SqlParameter[174];
             param[0] = new SqlParameter("@msg", SqlDbType.VarChar, 500);
             param[0].Direction = ParameterDirection.Output;
             param[1] = new SqlParameter("@JobID", ObjBOL.JobID);
@@ -1663,7 +1665,14 @@ namespace DALAERO
             param[163] = new SqlParameter("@FabDrawingPercentage", ObjBOL.FabDrawingPercentage);
             param[164] = new SqlParameter("@ExpectedSubmissionDate", ObjBOL.ExpectedSubmissionDate);
             param[165] = new SqlParameter("@ActualSubmissionDate", ObjBOL.ActualSubmissionDate);
-            param[166] = new SqlParameter("@WarehouseId", ObjBOL.WarehouseId);
+            param[166] = new SqlParameter("@ProjectQuality", ObjBOL.ProjectQuality);
+            param[167] = new SqlParameter("@CorrectedBy_ProjectFeedback", ObjBOL.CorrectedBy_ProjectFeedback);
+            param[168] = new SqlParameter("@CorrectedByEngineer", ObjBOL.CorrectedByEngineer);
+            param[169] = new SqlParameter("@QCReportSentDate", ObjBOL.QCReportSentDate);
+            param[170] = new SqlParameter("@QCReportReceivedDate", ObjBOL.QCReportReceivedDate);
+            param[171] = new SqlParameter("@AssignedDate", ObjBOL.AssignedDate);
+            param[172] = new SqlParameter("@ExpectedSubmissionDate_FabCanada", ObjBOL.ExpectedSubmissionDate_FabCanada);
+            param[173] = new SqlParameter("@WarehouseId", ObjBOL.WarehouseId);
             //ProjectStatus
             SqlHelper1.ExecuteNonQuery(con, CommandType.StoredProcedure, "[aero_ManageProjectsEng]", param);
             string msg = param[0].Value.ToString();
@@ -5928,11 +5937,12 @@ namespace DALAERO
         //GetJobs
         public DataSet GetJobs(BOLINVPartsInfo ObjBOL)
         {
-            SqlParameter[] param = new SqlParameter[3];
+            SqlParameter[] param = new SqlParameter[4];
             param[0] = new SqlParameter("@msg", SqlDbType.Char, 50);
             param[0].Direction = ParameterDirection.Output;
             param[1] = new SqlParameter("@JobID", ObjBOL.projectid);
             param[2] = new SqlParameter("@Operation", ObjBOL.operation);
+            param[3] = new SqlParameter("@userid", ObjBOL.userid);
             DataSet ds = SqlHelper1.ExecuteDataset(con, CommandType.StoredProcedure, "Inv_StockTransactions_V1", param);
             return ds;
         }
@@ -6020,7 +6030,7 @@ namespace DALAERO
         }
         public String SaveINVPartsDetail(BOLPartMaintainanace ObjBOL)
         {
-            SqlParameter[] param = new SqlParameter[30];
+            SqlParameter[] param = new SqlParameter[34];
             param[0] = new SqlParameter("@msg", SqlDbType.VarChar, 500);
             param[0].Direction = ParameterDirection.Output;
             param[1] = new SqlParameter("@PartNumber", ObjBOL.PartNumber);
@@ -6052,6 +6062,10 @@ namespace DALAERO
             param[27] = new SqlParameter("@OptionID", ObjBOL.OptionID);
             param[28] = new SqlParameter("@CategoryID", ObjBOL.CategoryID);
             param[29] = new SqlParameter("@LineStopperPriority", ObjBOL.LineStopperPriority);
+            param[30] = new SqlParameter("@CompanyId", ObjBOL.CompanyID);
+            param[31] = new SqlParameter("@MOQ", ObjBOL.MOQ);
+            param[32] = new SqlParameter("@EAU", ObjBOL.EAU);
+            param[33] = new SqlParameter("@Batch", ObjBOL.Batch);
             SqlHelper1.ExecuteNonQuery(con, CommandType.StoredProcedure, "INV_PartsMaintainance", param);
             string msg = param[0].Value.ToString();
             return msg;

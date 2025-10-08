@@ -1,4 +1,3 @@
-
 ALTER PROCEDURE [dbo].[INV_PartsMaintainance]
 @Operation INT = NULL,
 @msg VARCHAR(50) = '' OUTPUT,
@@ -32,7 +31,11 @@ ALTER PROCEDURE [dbo].[INV_PartsMaintainance]
 @Size INT = NULL,
 @Direction VARCHAR(5) = NULL,	
 @OptionID INT = NULL,
-@LineStopperPriority VARCHAR(1) = NULL
+@LineStopperPriority VARCHAR(1) = NULL,
+@CompanyId INT = NULL,
+@MOQ INT = NULL,
+@EAU INT = NULL,
+@Batch INT = NULL
 AS
 BEGIN
 
@@ -73,11 +76,15 @@ BEGIN
 	SELECT [id], [name]
 	FROM TW_Category
 	ORDER BY [name]
+
+	SELECT id, Company AS [text]
+	FROM TW_Company
+	ORDER BY Company
 END
 
 ELSE IF(@Operation = 2)
 BEGIN
-	IF NOT EXISTS(SELECT PartNumber FROM Inv_Parts WHERE Inv_Parts.PartNumber = @PartNumber)
+	IF NOT EXISTS(SELECT PartNumber FROM Inv_Parts WHERE LOWER(TRIM(Inv_Parts.PartNumber)) = LOWER(TRIM(@PartNumber)))
 		BEGIN
 			BEGIN TRY
 			BEGIN TRANSACTION
@@ -85,11 +92,11 @@ BEGIN
 			INSERT INTO Inv_Parts
 			(productcode,PartNumber,CustomerPartNumber,ProductId,PartDes,DepartmentId,Typeid,
 			revisionno,SourceId,[min],[max],reorderpoint,reorderqty,leadtime,PartStatus,UMId,Partimage,StockItem,ForecastItem,LineStopper,
-			CategoryId, SizeID, Direction, OptionID, LineStopperPriority)
+			CategoryId, SizeID, Direction, OptionID, LineStopperPriority, CompanyId, MOQ, EAU, Batch)
 			VALUES
-			(@productcode, @PartNumber, @customerpartnumber, @ProductID, dbo.ProperCase(@PartDes), @DepartmentId, @Typeid,
+			(@productcode, TRIM(@PartNumber), @customerpartnumber, @ProductID, dbo.ProperCase(@PartDes), @DepartmentId, @Typeid,
 			@revisionnum, @sourceid, @min, @max, @reorderpoint, @reorderqty, @leadtime, @PartStatus, @UMId, @partimage, @StockItem, @ForecastItem, @LineStopper, 
-			@CategoryID, @Size, @Direction, @OptionID, @LineStopperPriority)
+			@CategoryID, @Size, @Direction, @OptionID, @LineStopperPriority, @CompanyId, @MOQ, @EAU, @Batch)
 
 			SET @msg = SCOPE_IDENTITY()
 
@@ -146,7 +153,8 @@ BEGIN
 	WHEN Inv_Parts.LineStopper = 1 THEN '1' END AS LineStopper,
 	Inv_Parts.productcode AS productcode,
 	Inv_Parts.ProductId AS ProductLineID, Inv_Parts.CategoryId, Inv_Parts.SizeID, Inv_Parts.OptionID, Inv_Parts.Direction,
-	ISNULL(Inv_Parts.LineStopperPriority, '') AS LineStopperPriority
+	ISNULL(Inv_Parts.LineStopperPriority, '') AS LineStopperPriority, ISNULL(Inv_Parts.CompanyId, 0) AS CompanyId,
+	ISNULL(Inv_Parts.MOQ, 0) AS MOQ, ISNULL(Inv_Parts.EAU, 0) AS EAU, ISNULL(Inv_Parts.Batch, 0) AS Batch
 	FROM Inv_Parts 
 	LEFT JOIN Inv_ProductCode ON Inv_ProductCode.id = Inv_Parts.productcode
 	LEFT JOIN Inv_Department ON Inv_Department.id = Inv_Parts.DepartmentId
@@ -162,18 +170,18 @@ END
 
 ELSE IF(@Operation = 5)
 BEGIN
-	IF NOT EXISTS(sELECT PartNumber FROM Inv_Parts WHERE Inv_Parts.PartNumber=@PartNumber AND id != @partid)
+	IF NOT EXISTS(SELECT PartNumber FROM Inv_Parts WHERE LOWER(TRIM(Inv_Parts.PartNumber)) = LOWER(TRIM(@PartNumber)) AND id != @partid)
 	BEGIN
 		BEGIN TRY
 		BEGIN TRANSACTION
 
-		UPDATE Inv_Parts SET productcode = @productcode, PartNumber = @PartNumber, CustomerPartNumber = dbo.ProperCase(@customerpartnumber), ProductId = @ProductID, PartDes = dbo.ProperCase(@PartDes),
+		UPDATE Inv_Parts SET productcode = @productcode, PartNumber = TRIM(@PartNumber), CustomerPartNumber = dbo.ProperCase(@customerpartnumber), ProductId = @ProductID, PartDes = dbo.ProperCase(@PartDes),
 		DepartmentId = @DepartmentId, Typeid = @Typeid, revisionno = @revisionnum,
 		SourceId = @sourceid,
 		[min] = @min, [max] = @max, reorderpoint = @reorderpoint, reorderqty = @reorderqty,
 		leadtime = @leadtime, PartStatus = @PartStatus, UMId = @UMId, Partimage = @partimage, StockItem = @StockItem,
 		ForecastItem = @ForecastItem, LineStopper = @LineStopper, CategoryId = @CategoryID, SizeID = @Size, OptionID = @OptionID, Direction = @Direction,
-		LineStopperPriority = @LineStopperPriority
+		LineStopperPriority = @LineStopperPriority, CompanyId = @CompanyId, MOQ = @MOQ, EAU = @EAU, Batch = @Batch
 		WHERE id = @partid
  
 		IF(@shopdrawing IS NOT NULL)
@@ -327,3 +335,4 @@ BEGIN
 	END
 END
 END
+GO
