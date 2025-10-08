@@ -43,11 +43,14 @@
                         <label>Part No</label>
                         <asp:DropDownList ID="ddlPartLookupList" runat="server" AutoPostBack="true" DataTextField="PartNo" DataValueField="id" OnSelectedIndexChanged="ddlPartLookupList_SelectedIndexChanged" CssClass="form-control form-control-sm"></asp:DropDownList>
                     </div>
-                    <div class="col-3 mt-5">
-                        <asp:Button ID="btnSave" runat="server" OnClick="btnSave_Click" Text="Save" CssClass="btn btn-success btn-sm" CausesValidation="false" />
-                        <%--<asp:Button ID="btnExportToPDF" runat="server" OnClick="btnExportToPDF_Click" Text="Report" Enabled="true" OnClientClick="window.document.forms[0].target='_blank';" CausesValidation="false" CssClass="btn btn-info btn-sm" />--%>
-                        <asp:Button ID="btnReport" runat="server" OnClick="btnReport_Click" Text="Report" CausesValidation="false" CssClass="btn btn-secondary btn-sm" />
-                        <asp:Button ID="btnCancel" runat="server" OnClick="btnCancel_Click" Text="Cancel" CssClass="btn btn-danger btn-sm" />
+                    <div class="col-3 mt-4">
+                        <label>&nbsp;</label>
+                        <div class="col-12">
+                            <asp:Button ID="btnSave" runat="server" OnClick="btnSave_Click" Text="Save" CssClass="btn btn-success btn-sm" CausesValidation="false" />
+                            <%--<asp:Button ID="btnExportToPDF" runat="server" OnClick="btnExportToPDF_Click" Text="Report" Enabled="true" OnClientClick="window.document.forms[0].target='_blank';" CausesValidation="false" CssClass="btn btn-info btn-sm" />--%>
+                            <asp:Button ID="btnReport" runat="server" OnClick="btnReport_Click" Text="Report" CausesValidation="false" CssClass="btn btn-secondary btn-sm" />
+                            <asp:Button ID="btnCancel" runat="server" OnClick="btnCancel_Click" Text="Cancel" CssClass="btn btn-danger btn-sm" />
+                        </div>
                     </div>
                 </div>
             </div>
@@ -58,14 +61,23 @@
                     </div>
                     <div class="col-2">
                         <div class="form-group">
-                            <label>Category*</label>
+                            <label>Category</label>
                             <asp:DropDownList ID="ddlCategory" runat="server" AutoPostBack="true" DataTextField="name" DataValueField="id" CssClass="form-control form-control-sm" OnSelectedIndexChanged="ddlCategory_SelectedIndexChanged">
                             </asp:DropDownList>
                         </div>
                     </div>
+
                     <div class="col-2">
                         <div class="form-group">
-                            <label>Size (In Inches)*</label>
+                            <label>Company</label>
+                            <asp:DropDownList ID="ddlCompany" runat="server" DataTextField="text" DataValueField="id" CssClass="form-control form-control-sm">
+                            </asp:DropDownList>
+                        </div>
+                    </div>
+
+                    <div class="col-2">
+                        <div class="form-group">
+                            <label>Size (In Inches)</label>
                             <asp:DropDownList ID="ddlSize" runat="server" DataTextField="SizeName" DataValueField="id" CssClass="form-control form-control-sm">
                             </asp:DropDownList>
                         </div>
@@ -90,8 +102,16 @@
                     </div>
                     <div class="col-2">
                         <div class="form-group">
-                            <label>Part No*</label>
-                            <asp:TextBox ID="txtPartNo" runat="server" MaxLength="20" CssClass="form-control form-control-sm">
+                            <label class="text-danger">Part No*</label>
+                            <asp:TextBox ID="txtPartNo" runat="server" MaxLength="50" CssClass="form-control form-control-sm">
+                            </asp:TextBox>
+                        </div>
+                    </div>
+
+                    <div class="col-4">
+                        <div class="form-group">
+                            <label>Part Description</label>
+                            <asp:TextBox ID="txtPartDescription" runat="server" MaxLength="1000" CssClass="form-control form-control-sm">
                             </asp:TextBox>
                         </div>
                     </div>
@@ -134,6 +154,7 @@
             $('#<%=ddlSize.ClientID%>').chosen();
             $('#<%=ddlSizeLookupList.ClientID%>').chosen();
             $('#<%=ddlDirection.ClientID%>').chosen();
+            $('#<%=ddlCompany.ClientID%>').chosen();
         }
     </script>
 </asp:Content>

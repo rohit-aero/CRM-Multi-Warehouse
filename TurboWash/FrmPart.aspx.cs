@@ -28,7 +28,7 @@ public partial class TurboWash_FrmPart : System.Web.UI.Page
         {
             Utility.AddEditException(ex);
         }
-        
+
     }
 
     protected void btnReport_Click(object sender, EventArgs e)
@@ -41,7 +41,7 @@ public partial class TurboWash_FrmPart : System.Web.UI.Page
         {
             Utility.AddEditException(ex);
         }
-        
+
     }
 
     #region Bind
@@ -66,6 +66,12 @@ public partial class TurboWash_FrmPart : System.Web.UI.Page
                 Utility.BindDropDownList(ddlPartLookupList, ds.Tables[1]);
                 ddlPartLookupList.SelectedIndex = 0;
             }
+
+            if (ds.Tables[3].Rows.Count > 0)
+            {
+                Utility.BindDropDownList(ddlCompany, ds.Tables[3]);
+                ddlCompany.SelectedIndex = 0;
+            }
         }
         catch (Exception ex)
         {
@@ -81,13 +87,13 @@ public partial class TurboWash_FrmPart : System.Web.UI.Page
     {
         try
         {
-            if (ddlCategory.SelectedIndex == 0)
-            {
-                //ScriptManager.RegisterClientScriptBlock(this, this.GetType(), "window", "alert('Please Select Category. !');", true);
-                Utility.ShowMessage_Error(Page, "Please Select Category. !");
-                ddlCategory.Focus();
-                return false;
-            }
+            //if (ddlCategory.SelectedIndex == 0)
+            //{
+            //    //ScriptManager.RegisterClientScriptBlock(this, this.GetType(), "window", "alert('Please Select Category. !');", true);
+            //    Utility.ShowMessage_Error(Page, "Please Select Category. !");
+            //    ddlCategory.Focus();
+            //    return false;
+            //}
 
             if (txtPartNo.Text == "")
             {
@@ -97,13 +103,13 @@ public partial class TurboWash_FrmPart : System.Web.UI.Page
                 return false;
             }
 
-            if (ddlSize.SelectedIndex == 0)
-            {
-                //ScriptManager.RegisterClientScriptBlock(this, this.GetType(), "window", "alert('Please Select Size !');", true);
-                Utility.ShowMessage_Error(Page, "Please Select Size !");
-                ddlSize.Focus();
-                return false;
-            }
+            //if (ddlSize.SelectedIndex == 0)
+            //{
+            //    //ScriptManager.RegisterClientScriptBlock(this, this.GetType(), "window", "alert('Please Select Size !');", true);
+            //    Utility.ShowMessage_Error(Page, "Please Select Size !");
+            //    ddlSize.Focus();
+            //    return false;
+            //}
         }
         catch (Exception ex)
         {
@@ -125,7 +131,7 @@ public partial class TurboWash_FrmPart : System.Web.UI.Page
         catch (Exception ex)
         {
             Utility.AddEditException(ex);
-        }        
+        }
     }
 
     protected void ddlPartLookupList_SelectedIndexChanged(object sender, EventArgs e)
@@ -137,7 +143,7 @@ public partial class TurboWash_FrmPart : System.Web.UI.Page
         catch (Exception ex)
         {
             Utility.AddEditException(ex);
-        }        
+        }
     }
 
     protected void ddlOptionLookupList_SelectedIndexChanged(object sender, EventArgs e)
@@ -150,7 +156,7 @@ public partial class TurboWash_FrmPart : System.Web.UI.Page
         {
             Utility.AddEditException(ex);
         }
-        
+
     }
 
     protected void ddlOrientationLookupList_SelectedIndexChanged(object sender, EventArgs e)
@@ -234,7 +240,7 @@ public partial class TurboWash_FrmPart : System.Web.UI.Page
         catch (Exception ex)
         {
             Utility.AddEditException(ex);
-        }        
+        }
     }
 
     private void ddlPartLookupList_SelectedIndexChanged_Event()
@@ -261,7 +267,7 @@ public partial class TurboWash_FrmPart : System.Web.UI.Page
         catch (Exception ex)
         {
             Utility.AddEditException(ex);
-        }        
+        }
     }
 
     private void ddlCategory_SelectedIndexChanged_Event()
@@ -299,14 +305,37 @@ public partial class TurboWash_FrmPart : System.Web.UI.Page
                 DataTable dt = ObjBLL.GetDataSet(ObjBOL).Tables[0];
                 if (dt.Rows.Count > 0)
                 {
-                    ddlCategory.SelectedValue = dt.Rows[0]["CategoryID"].ToString();
                     txtPartNo.Text = dt.Rows[0]["PartNo"].ToString();
-                    ddlCategory_SelectedIndexChanged_Event();
-                    ddlSize.SelectedValue = dt.Rows[0]["SizeID"].ToString();
-                    ddlDirection.SelectedValue = dt.Rows[0]["Direction"].ToString();
-                    ddlOption.SelectedValue = dt.Rows[0]["OptionID"].ToString();
+                    if (ddlCategory.Items.FindByValue(dt.Rows[0]["CategoryID"].ToString()) != null)
+                    {
+                        ddlCategory.SelectedValue = dt.Rows[0]["CategoryID"].ToString();
+                        ddlCategory_SelectedIndexChanged_Event();
+                    }
+
+                    if (ddlSize.Items.FindByValue(dt.Rows[0]["SizeID"].ToString()) != null)
+                    {
+                        ddlSize.SelectedValue = dt.Rows[0]["SizeID"].ToString();
+                    }
+
+                    if (ddlDirection.Items.FindByValue(dt.Rows[0]["Direction"].ToString()) != null)
+                    {
+                        ddlDirection.SelectedValue = dt.Rows[0]["Direction"].ToString();
+                    }
+
+                    if (ddlOption.Items.FindByValue(dt.Rows[0]["OptionID"].ToString()) != null)
+                    {
+                        ddlOption.SelectedValue = dt.Rows[0]["OptionID"].ToString();
+                    }
+
                     txtStockInHand.Text = dt.Rows[0]["StockInHand"].ToString();
+                    if (ddlCompany.Items.FindByValue(dt.Rows[0]["CompanyId"].ToString()) != null)
+                    {
+                        ddlCompany.SelectedValue = dt.Rows[0]["CompanyId"].ToString();
+                    }
+
                     hfId.Value = dt.Rows[0]["ID"].ToString();
+                    txtPartDescription.Text = dt.Rows[0]["PartDescription"].ToString();
+
                 }
             }
             else
@@ -339,14 +368,30 @@ public partial class TurboWash_FrmPart : System.Web.UI.Page
                     ObjBOL.Operation = 7;
                     ObjBOL.ID = Int32.Parse(hfId.Value);
                 }
-                ObjBOL.CategoryID = Int32.Parse(ddlCategory.SelectedValue);
+
+                if (ddlCompany.SelectedIndex > 0)
+                {
+                    ObjBOL.CompanyID = Int32.Parse(ddlCompany.SelectedValue);
+                }
+
+                if (ddlCategory.SelectedIndex > 0)
+                {
+                    ObjBOL.CategoryID = Int32.Parse(ddlCategory.SelectedValue);
+                }
                 ObjBOL.PartNo = txtPartNo.Text;
+                ObjBOL.PartDescription = txtPartDescription.Text;
                 ObjBOL.Direction = ddlDirection.SelectedValue;
-                ObjBOL.Size = Int32.Parse(ddlSize.SelectedValue);
+
+                if (ddlSize.SelectedIndex > 0)
+                {
+                    ObjBOL.Size = Int32.Parse(ddlSize.SelectedValue);
+                }
+
                 if (ddlOption.SelectedIndex > 0)
                 {
                     ObjBOL.OptionID = Int32.Parse(ddlOption.SelectedValue);
                 }
+
                 string returnStatus = ObjBLL.GetString(ObjBOL);
                 if (returnStatus.Trim() == "ER01")
                 {
@@ -397,7 +442,7 @@ public partial class TurboWash_FrmPart : System.Web.UI.Page
         catch (Exception ex)
         {
             Utility.AddEditException(ex);
-        }        
+        }
     }
 
     private void PopulatePartLookup()
@@ -463,7 +508,7 @@ public partial class TurboWash_FrmPart : System.Web.UI.Page
         catch (Exception ex)
         {
             Utility.AddEditException(ex);
-        }        
+        }
     }
 
     private void SelectCategory(string categoryID)
@@ -502,7 +547,7 @@ public partial class TurboWash_FrmPart : System.Web.UI.Page
         catch (Exception ex)
         {
             Utility.AddEditException(ex);
-        }        
+        }
     }
 
     private void SelectDirection(string directionID)
@@ -521,7 +566,7 @@ public partial class TurboWash_FrmPart : System.Web.UI.Page
         catch (Exception ex)
         {
             Utility.AddEditException(ex);
-        }        
+        }
     }
 
     private void SelectOption(string optionID)
@@ -540,7 +585,7 @@ public partial class TurboWash_FrmPart : System.Web.UI.Page
         catch (Exception ex)
         {
             Utility.AddEditException(ex);
-        }        
+        }
     }
 
     #endregion
@@ -566,7 +611,7 @@ public partial class TurboWash_FrmPart : System.Web.UI.Page
         catch (Exception ex)
         {
             Utility.AddEditException(ex);
-        }        
+        }
     }
 
     private void ResetPart()
@@ -584,7 +629,7 @@ public partial class TurboWash_FrmPart : System.Web.UI.Page
         catch (Exception ex)
         {
             Utility.AddEditException(ex);
-        }        
+        }
     }
 
     private void ResetPartInfo()
@@ -601,13 +646,14 @@ public partial class TurboWash_FrmPart : System.Web.UI.Page
             ddlDirection.SelectedIndex = 0;
 
             txtPartNo.Text = string.Empty;
+            txtPartDescription.Text = string.Empty;
             txtStockInHand.Text = string.Empty;
             hfId.Value = string.Empty;
         }
         catch (Exception ex)
         {
             Utility.AddEditException(ex);
-        }        
+        }
     }
 
     private void ClearSizeLookup()
@@ -619,7 +665,7 @@ public partial class TurboWash_FrmPart : System.Web.UI.Page
         catch (Exception ex)
         {
             Utility.AddEditException(ex);
-        }        
+        }
     }
 
     private void ClearPartLookup()
@@ -631,7 +677,7 @@ public partial class TurboWash_FrmPart : System.Web.UI.Page
         catch (Exception ex)
         {
             Utility.AddEditException(ex);
-        }        
+        }
     }
     #endregion     
 }

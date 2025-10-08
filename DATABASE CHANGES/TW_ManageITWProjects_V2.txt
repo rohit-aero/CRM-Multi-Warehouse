@@ -1,0 +1,773 @@
+
+--ALTER TW_Projects ADD WarehouseId INT NULL
+ALTER PROCEDURE [dbo].[TW_ManageITWProjects_V2] 
+	@Operation INT = 0,
+	@RefId VARCHAR(20) = NULL,
+	@JobID NVARCHAR(50) = NULL,
+	@HobartDrawingNumber NVARCHAR(50) = NULL,
+	@ProjectName NVARCHAR(200) = NULL,
+	@POReceivedDate DATE = NULL,
+	@ReqShipDate DATE = NULL,
+	@ShipDate DATE = NULL,
+	@EqPrice MONEY = NULL,
+	@Release BIT = NULL,
+	@DrawingReleaseDate DATE = NULL,
+	@LoginUserID INT = NULL,
+	@Company INT = NULL,
+	@HobartDrawingRevisionNo VARCHAR(20) = NULL,
+	@PONumber VARCHAR(50) = NULL,
+	@POType INT = NULL,
+	@CI VARCHAR(50) = NULL,
+	@Id INT = NULL,
+	@PartId INT = NULL,
+	@Comments VARCHAR(500) = NULL,
+	@Qty INT = NULL,
+	@ShipQty INT = NULL,
+	@NestingStartDate DATETIME = NULL,
+	@NestingEndDate DATETIME = NULL,
+	@SentDate DATETIME = NULL,
+	@NestingStatusId INT = NULL,
+	@SendToProduction BIT = NULL,
+	@WarehouseId INT = NULL,
+	@msg VARCHAR(50) = '' OUTPUT
+AS
+BEGIN
+	IF (@Operation = 1)--AUTOCOMPLETE JOBID
+	BEGIN
+		SELECT DISTINCT JobID, 
+		CASE 
+			WHEN ISNULL(JobID, '') = '' THEN PONumber
+			ELSE JobID 
+		END AS ProjectName
+		FROM TW_Projects
+		WHERE (JobID LIKE TRIM(@JobID) + '%' OR PONumber LIKE TRIM(@JobID) + '%')
+		ORDER BY JobID
+	END
+
+	ELSE IF (@Operation = 2)--AUTOCOMPLETE PROJECTNAME
+	BEGIN
+		SELECT JobID, ProjectName AS ProjectName
+		FROM TW_Projects
+		WHERE ProjectName LIKE TRIM(@ProjectName) + '%'
+		ORDER BY JobID
+	END
+
+	ELSE IF (@Operation = 3)--BIND CONTROLS
+	BEGIN
+		SELECT id, Company AS [text]
+		FROM TW_Company
+		ORDER BY [Company]
+
+		SELECT id, [Type] AS [text]
+		FROM TW_POType
+		ORDER BY [Type]
+
+		SELECT id, [name] AS [text]
+		FROM Inv_ProductCode
+		ORDER BY SortOrder
+
+		SELECT ID, WarehouseName AS [text]
+		FROM Inv_Warehouse
+		ORDER BY WarehouseName
+	END
+
+	ELSE IF (@Operation = 4)--NEW PROJECT
+	BEGIN
+		DECLARE @Year VARCHAR(2) = RIGHT(YEAR(GETDATE()), 2)
+		DECLARE @Count INT = (SELECT COUNT(*) FROM TW_Projects) + 1;
+		DECLARE @CountPadded VARCHAR(3) = RIGHT('000' + CAST(@Count AS VARCHAR(3)), 3);			
+		SET @ProjectName = LEFT((SELECT Company FROM TW_Company WHERE id = @Company), 2)
+		SET @msg = CONCAT('ITW', UPPER(@ProjectName), @Year, @CountPadded)
+	END
+
+	ELSE IF (@Operation = 5)--INSERT MAIN
+	BEGIN
+		IF EXISTS(SELECT 1 FROM TW_Projects WHERE LOWER(TRIM(RefId)) = LOWER(TRIM(@RefId)))
+		BEGIN
+			SET @msg = 'ER01'
+			RETURN;
+		END
+
+		IF EXISTS(SELECT 1 FROM TW_Projects WHERE LOWER(TRIM(JobID)) = LOWER(TRIM(@JobID)) AND TRIM(@JobID) <> '')
+		BEGIN
+			SET @msg = 'ER03'
+			RETURN;
+		END		
+
+		IF EXISTS(SELECT 1 FROM TW_Projects WHERE LOWER(TRIM(PONumber)) = LOWER(TRIM(@PONumber)) AND TRIM(PONumber) <> '')
+		BEGIN
+			SET @msg = 'ER04'
+			RETURN;
+		END
+		
+		INSERT INTO TW_Projects(RefId, CompanyId, JobID, ProjectName, HobartDrawingNumber, HobartDrawingRevisionNo, PONumber, POType, POReceivedDate, ReqShipDate, ShipDate, EqPrice, DrawingReleaseDate, CI,
+		NestingStartDate, NestingEndDate, SentDate, NestingStatusId, SentToProduction, WarehouseId)
+		VALUES(TRIM(@RefId), @Company, TRIM(@JobID), @ProjectName, @HobartDrawingNumber, @HobartDrawingRevisionNo, TRIM(@PONumber), @POType, @POReceivedDate, @ReqShipDate, @ShipDate, @EqPrice, @DrawingReleaseDate, @CI,
+		@NestingStartDate, @NestingEndDate, @SentDate, @NestingStatusId, @SendToProduction, @WarehouseId)
+		
+		SET @msg = 'S'
+	END
+
+	ELSE IF (@Operation = 6)--UPDATE MAIN
+	BEGIN
+		IF NOT EXISTS(SELECT 1 FROM TW_Projects WHERE LOWER(TRIM(RefId)) = LOWER(TRIM(@RefId)))
+		BEGIN
+			SET @msg = 'ER02'
+			RETURN;
+		END
+
+		IF EXISTS(SELECT 1 FROM TW_Projects WHERE LOWER(TRIM(JobID)) = LOWER(TRIM(@JobID)) AND TRIM(@JobID) <> '' AND LOWER(TRIM(RefId)) <> LOWER(TRIM(@RefId)))
+		BEGIN
+			SET @msg = 'ER03'
+			RETURN;
+		END
+
+		IF EXISTS(SELECT 1 FROM TW_Projects WHERE LOWER(TRIM(PONumber)) = LOWER(TRIM(@PONumber)) AND TRIM(PONumber) <> '' AND LOWER(TRIM(RefId)) <> LOWER(TRIM(@RefId)))
+		BEGIN
+			SET @msg = 'ER04'
+			RETURN;
+		END		
+		
+		BEGIN TRY
+		BEGIN TRANSACTION
+
+		UPDATE TW_Projects SET CompanyId = @Company, JobID = TRIM(@JobID), ProjectName = @ProjectName, HobartDrawingNumber = @HobartDrawingNumber, HobartDrawingRevisionNo = @HobartDrawingRevisionNo, 
+		PONumber = TRIM(@PONumber), POReceivedDate = @POReceivedDate, ReqShipDate = @ReqShipDate, ShipDate = @ShipDate, EqPrice = @EqPrice, DrawingReleaseDate = @DrawingReleaseDate,
+		CI = @CI, NestingStartDate = @NestingStartDate, NestingEndDate = @NestingEndDate, SentDate = @SentDate, NestingStatusId = @NestingStatusId, SentToProduction = @SendToProduction,
+		WarehouseId = @WarehouseId
+		WHERE RefId = @RefId
+
+		SET @Release = 
+		(
+			SELECT CASE 
+			 WHEN EXISTS (
+				 SELECT 1
+				 FROM TW_ShipmentHistory sh
+				 INNER JOIN TW_ProjectParts pp ON pp.ID = sh.ProjectPartId
+				 WHERE sh.Release = 1 AND pp.RefId = @RefId
+         )
+         THEN 1 ELSE 0 
+		END AS HasRelease
+		)
+
+		IF EXISTS(SELECT 1 FROM TW_Projects WHERE POType <> @POType AND LOWER(TRIM(RefId)) = LOWER(TRIM(@RefId)))
+		BEGIN
+			IF NOT EXISTS(SELECT 1 FROM TW_Projects WHERE RefId = @RefId AND ISNULL(Release, 0) = 0 AND ISNULL(@Release, 0) = 0)
+			BEGIN
+				SET @msg = 'S02'
+				IF @@TRANCOUNT > 0
+					COMMIT
+				RETURN;
+			END
+
+			UPDATE TW_Projects SET POType = @POType
+			WHERE RefId = @RefId
+			
+			DELETE FROM TW_ShipmentHistory
+			WHERE ProjectPartId IN 
+			(
+				SELECT ID
+				FROM TW_ProjectParts
+				WHERE RefId = @RefId	
+			)
+
+			DELETE FROM TW_ProjectParts
+			WHERE RefId = @RefId
+
+			SET @msg = 'S01'
+			IF @@TRANCOUNT > 0
+			 COMMIT
+			RETURN;
+		END
+
+		IF @@TRANCOUNT > 0
+			 COMMIT
+			SET @msg = 'S'
+		END TRY
+
+		BEGIN CATCH 
+		IF @@TRANCOUNT > 0
+			 ROLLBACK
+		END CATCH		
+	END
+
+	ELSE IF (@Operation = 7)-- REF ID INFO MAIN
+	BEGIN
+		IF(TRIM(@JobID) <> '')
+		BEGIN
+			SELECT RefId, JobID, HobartDrawingNumber, ProjectName, CONVERT(VARCHAR, POReceivedDate, 101) AS POReceivedDate, CONVERT(VARCHAR, ReqShipDate, 101) AS ReqShipDate,
+			CONVERT(VARCHAR, ShipDate, 101) AS ShipDate, ROUND(EqPrice, 2) AS EqPrice, CONVERT(VARCHAR, DrawingReleaseDate, 101) AS DrawingReleaseDate,
+			CompanyId, HobartDrawingRevisionNo, PONumber, POType, CI, CASE WHEN Release = 1 THEN 'true' ELSE 'false' END AS Release,
+			CONVERT(VARCHAR, NestingStartDate, 101) AS NestingStartDate, CONVERT(VARCHAR, NestingEndDate, 101) AS NestingEndDate, CONVERT(VARCHAR, SentDate, 101) AS SentDate,
+			ISNULL(NestingStatusId, 0) AS NestingStatusId, ISNULL(SentToProduction, 0) AS SentToProduction, ISNULL(WarehouseId, 0) AS WarehouseId
+			FROM TW_Projects
+			WHERE (JobID = @JobID OR PONumber = @JobID)
+		END
+
+		ELSE IF(@ProjectName IS NOT NULL)
+		BEGIN
+			SELECT RefId, JobID, HobartDrawingNumber, ProjectName, CONVERT(VARCHAR, POReceivedDate, 101) AS POReceivedDate, CONVERT(VARCHAR, ReqShipDate, 101) AS ReqShipDate,
+			CONVERT(VARCHAR, ShipDate, 101) AS ShipDate, ROUND(EqPrice, 2) AS EqPrice, CONVERT(VARCHAR, DrawingReleaseDate, 101) AS DrawingReleaseDate,
+			CompanyId, HobartDrawingRevisionNo, PONumber, POType, CI, CASE WHEN Release = 1 THEN 'true' ELSE 'false' END AS Release,
+			CONVERT(VARCHAR, NestingStartDate, 101) AS NestingStartDate, CONVERT(VARCHAR, NestingEndDate, 101) AS NestingEndDate, CONVERT(VARCHAR, SentDate, 101) AS SentDate,
+			ISNULL(NestingStatusId, 0) AS NestingStatusId, ISNULL(SentToProduction, 0) AS SentToProduction, ISNULL(WarehouseId, 0) AS WarehouseId
+			FROM TW_Projects
+			WHERE ProjectName LIKE @ProjectName + '%'
+		END
+	END
+
+	ELSE IF (@Operation = 8)--PART LIST
+	BEGIN
+		SELECT Inv_Parts.id, PartNumber, PartDes, Inv_UM.[UM]
+		FROM Inv_Parts
+		LEFT JOIN Inv_UM ON Inv_UM.id = Inv_Parts.UMId
+		WHERE (
+			((Inv_Parts.productcode = @LoginUserID) OR (ISNULL(@LoginUserID, 0) = 0))
+			AND
+			((CompanyId = @Company) OR (ISNULL(@Company, 0) = 0) OR ISNULL(@LoginUserID, 0) = 1)
+			)
+		ORDER BY PartNumber
+	END
+
+	ELSE IF (@Operation = 9)--BIND GRID
+	BEGIN
+		SELECT 
+		ROW_NUMBER() OVER (ORDER BY TW_ProjectParts.ID) AS RowNum,
+		TW_ProjectParts.ID AS ProjectPartID, TW_Projects.JobID, 
+		Inv_Parts.PartNumber AS PartNo, CONCAT(Inv_Parts.PartDes, ', ' + TW_Size.SizeName) AS PartDesc,
+		Inv_UM.[UM] AS UM, CONVERT(VARCHAR, TW_ProjectParts.RequestedReceiveDate, 101) AS RequestedReceiveDate, Qty, 
+		   CASE 
+        WHEN TW_Projects.POType = 1 THEN ISNULL(TW_ProjectParts.Qty, 0) 
+        ELSE ISNULL((SELECT SUM(ShipQty) FROM TW_ShipmentHistory WHERE ProjectPartId = TW_ProjectParts.ID), 0)
+		END AS ShipQty, 
+		CASE 
+			WHEN TW_Projects.POType = 1 THEN 0
+			ELSE ISNULL(TW_ProjectParts.PendingQty, 0)
+		END AS PendingQty, 
+		ISNULL(Inv_Parts.MOQ, 0) AS MOQ, ISNULL(Inv_Parts.EAU, 0) AS EAU, ISNULL(Inv_Parts.Batch, 0) AS Batch, TW_ProjectParts.Comments
+		FROM TW_ProjectParts
+		INNER JOIN TW_Projects ON TW_Projects.RefId = TW_ProjectParts.RefId
+		INNER JOIN Inv_Parts ON Inv_Parts.ID = TW_ProjectParts.PartID
+		LEFT JOIN TW_Size ON TW_Size.ID = Inv_Parts.SizeID
+		LEFT JOIN TW_Category ON TW_Category.id = Inv_Parts.CategoryID
+		LEFT JOIN Inv_UM ON Inv_UM.id=Inv_Parts.UMId
+		WHERE TW_ProjectParts.RefId = @RefId
+		ORDER BY RowNum ASC
+	END
+
+	ELSE IF (@Operation = 10)--INSERT PROJECT PART
+	BEGIN
+		IF((SELECT ISNULL(Release, 0) FROM TW_Projects WHERE TRIM(RefId) = TRIM(@RefId)) = 1)
+		BEGIN
+			SET @msg = 'ER01'
+			RETURN;
+		END
+
+		IF NOT EXISTS(SELECT 1 FROM TW_ProjectParts WHERE PartID = @PartId AND TRIM(RefId) = TRIM(@RefId))
+		BEGIN
+			INSERT INTO TW_ProjectParts(PartID, RefId, Qty, PendingQty, Comments, RequestedReceiveDate)
+			VALUES(@PartId, @RefId, @Qty, @Qty, @Comments, @ReqShipDate)
+
+			SET @msg = SCOPE_IDENTITY()
+		END
+		ELSE
+		BEGIN
+			SET @Id = (SELECT ID FROM TW_ProjectParts WHERE PartID = @PartId AND TRIM(RefId) = TRIM(@RefId))
+
+			UPDATE TW_ProjectParts SET Qty = Qty + @Qty, PendingQty = (Qty + @Qty) - ISNULL((SELECT SUM(ShipQty) FROM TW_ShipmentHistory WHERE ProjectPartId = @Id), 0)
+			WHERE ID = @Id
+
+			SET @msg = @Id
+		END
+	END
+
+	ELSE IF (@Operation = 11)--UPDATE PROJECT PART
+	BEGIN
+		SET @RefId = (SELECT RefId FROM TW_ProjectParts WHERE id = @Id)
+		
+		IF((SELECT ISNULL(Release, 0) FROM TW_Projects WHERE TRIM(RefId) = TRIM(@RefId)) = 1)
+		BEGIN
+			SET @msg = 'ER01'
+			RETURN;
+		END
+
+		UPDATE TW_ProjectParts SET Qty = @Qty, PendingQty = @Qty - ISNULL((SELECT SUM(ShipQty) FROM TW_ShipmentHistory WHERE ProjectPartId = @Id), 0), Comments = @Comments,
+		RequestedReceiveDate = @ReqShipDate
+		WHERE ID = @Id
+
+		SET @msg = @Id
+	END
+
+	ELSE IF (@Operation = 12)--SINGLE PART INFO
+	BEGIN
+		SELECT TW_ProjectParts.ID AS ProjectPartID, TW_ProjectParts.PartID, Inv_Parts.CategoryID, TW_ProjectParts.Qty,
+		Inv_UM.[UM],TW_ProjectParts.Comments, CONVERT(VARCHAR, TW_ProjectParts.RequestedReceiveDate, 101) AS RequestedReceiveDate
+		FROM TW_ProjectParts
+		LEFT JOIN Inv_Parts ON Inv_Parts.ID = TW_ProjectParts.PartID
+		LEFT JOIN Inv_UM ON Inv_UM.id=Inv_Parts.[UMId]
+		WHERE TW_ProjectParts.ID = @PartID
+	END
+
+	ELSE IF (@Operation = 13)--DELETE PROJECT PART
+	BEGIN
+		SET @RefId = (SELECT RefId FROM TW_ProjectParts WHERE ID = @PartId)
+		
+		IF((SELECT ISNULL(Release, 0) FROM TW_Projects WHERE TRIM(RefId) = TRIM(@RefId)) = 1)
+		BEGIN
+			SET @msg = 'ER02'
+			RETURN;
+		END
+
+		IF EXISTS(SELECT 1 FROM TW_ShipmentHistory WHERE ProjectPartId = @PartId)
+		BEGIN
+			SET @msg = 'ER01'
+			RETURN;
+		END
+
+		DELETE FROM TW_ProjectParts
+		WHERE ID = @PartId
+
+		SET @msg = 'S'
+	END
+
+	ELSE IF (@Operation = 14)--INSERT SHIPMENT HISTORY
+	BEGIN
+		BEGIN TRY
+		BEGIN TRANSACTION
+
+		INSERT INTO TW_ShipmentHistory(ProjectPartId, ShipQty, ShipDate, Comments, Release, InsertedBy, InsertedDate, RequestedReceiveDate)
+		VALUES(@Id, @ShipQty, @ShipDate, @Comments, @Release, @LoginUserID, GETDATE(), @ReqShipDate)
+		
+		UPDATE TW_ProjectParts SET PendingQty = Qty - ISNULL((SELECT SUM(ShipQty) FROM TW_ShipmentHistory WHERE ProjectPartId = @Id), 0)
+		WHERE ID = @Id		
+
+		IF @@TRANCOUNT > 0
+			COMMIT
+			SET @msg = 'S'
+		END TRY
+
+		BEGIN CATCH 
+		IF @@TRANCOUNT > 0
+			 ROLLBACK
+		END CATCH
+	END
+
+	ELSE IF (@Operation = 15)--SHIPMENT HISTORY GRID
+	BEGIN
+		SELECT Id, ShipQty, CONVERT(VARCHAR, ShipDate, 101) AS ShipDate, Comments, CASE WHEN Release = 1 THEN 'Yes' ELSE 'No' END AS Release, CONVERT(VARCHAR, TW_ShipmentHistory.RequestedReceiveDate, 101) AS RequestedReceiveDate
+		FROM TW_ShipmentHistory
+		WHERE ProjectPartId = @Id
+		ORDER BY Release, ShipDate DESC, ShipQty DESC
+	END
+
+	ELSE IF (@Operation = 16)--DELETE SHIPMENT HISTORY
+	BEGIN
+		BEGIN TRY
+		BEGIN TRANSACTION
+
+		IF((SELECT ISNULL(Release, 0) FROM TW_ShipmentHistory WHERE id = @Id) = 1)
+		BEGIN
+			SET @msg = 'ER01'			
+		END
+		ELSE
+		BEGIN
+			SET @LoginUserID = (SELECT ProjectPartId FROM TW_ShipmentHistory WHERE ID = @Id)
+
+			DELETE FROM TW_ShipmentHistory
+			WHERE ID = @Id
+		
+			UPDATE TW_ProjectParts SET PendingQty = Qty - ISNULL((SELECT SUM(ShipQty) FROM TW_ShipmentHistory WHERE ProjectPartId = @LoginUserID), 0)
+			WHERE ID = @LoginUserID
+			
+			SET @msg = 'S'
+		END
+		IF @@TRANCOUNT > 0
+			COMMIT
+		END TRY
+
+		BEGIN CATCH 
+		IF @@TRANCOUNT > 0
+			 ROLLBACK
+		END CATCH
+	END
+
+	ELSE IF (@Operation = 17)--PROJECT RELEASE
+	BEGIN
+		BEGIN TRY
+		BEGIN TRANSACTION
+
+		SET @WarehouseId = (SELECT WarehouseId FROM TW_Projects WHERE RefId = @RefId)
+		
+		IF ISNULL(@WarehouseId, 0) = 0
+		BEGIN
+			SET @msg = 'ER01'
+			ROLLBACK
+			RETURN
+		END
+
+		UPDATE TW_Projects SET Release = 1
+		WHERE RefId = @RefId
+
+		DECLARE @TEMPTABLE TABLE (
+			PartID INT,
+			TransactQty INT,
+			WarehouseId INT
+		)
+
+		--PARTS WHICH WILL BE RELEASED
+		INSERT INTO @TEMPTABLE (PartID, TransactQty, WarehouseId)
+		SELECT TW_ProjectParts.PartID, TW_ProjectParts.Qty, @WarehouseId
+		FROM TW_ProjectParts
+		INNER JOIN Inv_Parts ON Inv_Parts.ID = TW_ProjectParts.PartID
+		WHERE RefId = @RefId
+
+		--INDIVIDUAL TRANSACTIONS FOR SAID PARTS
+		DECLARE @PartID_CUR INT, @OpeningStock_CUR INT, @TransactQty_CUR INT, @ClosingStock_CUR INT
+
+		IF(SELECT COUNT(*) FROM @TEMPTABLE) > 0
+		BEGIN
+			DECLARE [CURSOR_NAME] CURSOR	
+
+			STATIC FOR
+			SELECT PartID, TransactQty, WarehouseId FROM @TEMPTABLE 
+
+			OPEN [CURSOR_NAME]
+
+			IF @@CURSOR_ROWS > 0
+			BEGIN
+				FETCH NEXT FROM [CURSOR_NAME] INTO @PartID_CUR, @TransactQty_CUR, @WarehouseId
+
+				WHILE @@FETCH_STATUS = 0
+				BEGIN
+					DECLARE @OPENSTOCK INT = 0
+
+					IF EXISTS(SELECT Id FROM Inv_Parts_StockInHand WHERE PartId = @PartID_CUR AND WarehouseId = @WarehouseId)
+					BEGIN
+						SET @OPENSTOCK = (SELECT StockInHand FROM Inv_Parts_StockInHand WHERE PartId = @PartID_CUR AND WarehouseId = @WarehouseId)
+					END
+					ELSE
+					BEGIN
+						INSERT INTO Inv_Parts_StockInHand(PartId, WarehouseId, StockInHand, InsertedDate, InsertedByUser)
+						VALUES(@PartID_CUR, @WarehouseId, 0, GETDATE(), @LoginUserID)
+					END
+
+					SET @ClosingStock_CUR = (@OPENSTOCK - @TransactQty_CUR)
+
+					INSERT INTO [dbo].[Inv_StockTransactions]
+					([PartID], [ProjectId], [OpeningStock], [TransactQty], [ClosingStock], [TransactSummary], [TransactMode], [TransactDateTime], [TransactBy], WarehouseId)
+					VALUES(@PartID_CUR, @RefId, @OPENSTOCK, -@TransactQty_CUR, @ClosingStock_CUR, 'Release', 'A', GETDATE(), @LoginUserID, @WarehouseId)
+
+					--UPDATE Inv_Parts SET StockInHand = @ClosingStock_CUR WHERE ID = @PartID_CUR
+
+					UPDATE Inv_Parts_StockInHand SET StockInHand = @ClosingStock_CUR, UpdatedDate = GETDATE(), UpdatedByUser = @LoginUserID 
+					WHERE PartId = @PartID_CUR AND WarehouseId = @WarehouseId
+
+					FETCH NEXT FROM [CURSOR_NAME] INTO @PartID_CUR, @TransactQty_CUR, @WarehouseId
+				END
+			END
+
+			CLOSE [CURSOR_NAME]
+			DEALLOCATE [CURSOR_NAME]
+		END
+
+		IF @@TRANCOUNT > 0
+				COMMIT
+		SET @msg = 'S'	
+		END TRY
+
+		BEGIN CATCH 
+		IF @@TRANCOUNT > 0
+			 ROLLBACK
+		SET @msg = ''
+		END CATCH
+	END
+
+	ELSE IF (@Operation = 18)--PROJECT ROLLBACK
+	BEGIN
+		BEGIN TRY
+		BEGIN TRANSACTION
+			UPDATE TW_Projects SET Release = 0
+			WHERE RefId = @RefId
+
+			DELETE FROM @TEMPTABLE
+
+			SET @WarehouseId = 0
+
+			SET @WarehouseId = (SELECT WarehouseId FROM TW_Projects WHERE RefId = @RefId)
+		
+			IF ISNULL(@WarehouseId, 0) = 0
+			BEGIN
+				SET @msg = 'ER01'
+				ROLLBACK
+				RETURN
+			END
+
+			-- PARTS WHICH WILL BE ROLLBACKED
+			INSERT INTO @TEMPTABLE (PartID, TransactQty, WarehouseId)
+			SELECT TW_ProjectParts.PartID, TW_ProjectParts.Qty, @WarehouseId
+			FROM TW_ProjectParts
+			INNER JOIN Inv_Parts ON Inv_Parts.ID = TW_ProjectParts.PartID
+			WHERE RefId = @RefId
+
+				
+			IF(SELECT COUNT(*) FROM @TEMPTABLE) > 0
+			BEGIN
+				-- INDIVIDUAL TRANSACTIONS FOR SAID PARTS
+				DECLARE [CURSOR_NAME] CURSOR	
+
+				STATIC FOR
+				SELECT PartID, TransactQty, WarehouseId FROM @TEMPTABLE 
+
+				OPEN [CURSOR_NAME]
+
+				IF @@CURSOR_ROWS > 0
+				BEGIN
+					FETCH NEXT FROM [CURSOR_NAME] INTO @PartID_CUR, @TransactQty_CUR, @WarehouseId
+
+					WHILE @@FETCH_STATUS = 0
+					BEGIN		
+						IF EXISTS(SELECT Id FROM Inv_Parts_StockInHand WHERE PartId = @PartID_CUR AND WarehouseId = @WarehouseId)
+						BEGIN
+							SET @OPENSTOCK = (SELECT StockInHand FROM Inv_Parts_StockInHand WHERE PartId = @PartID_CUR AND WarehouseId = @WarehouseId)
+						END
+						ELSE
+						BEGIN
+							INSERT INTO Inv_Parts_StockInHand(PartId, WarehouseId, StockInHand, InsertedByUser, InsertedDate)
+							VALUES(@PartID_CUR, @WarehouseId, 0, @LoginUserID, GETDATE())
+						END
+
+						SET @ClosingStock_CUR = (@OPENSTOCK + @TransactQty_CUR)
+						
+						INSERT INTO [dbo].[Inv_StockTransactions]
+						([PartID], [ProjectId], [OpeningStock], [TransactQty], [ClosingStock], [TransactSummary], [TransactMode], [TransactDateTime], [TransactBy], WarehouseId)
+						VALUES(@PartID_CUR, @RefId, @OPENSTOCK, @TransactQty_CUR, @ClosingStock_CUR, 'Rollback', 'A', GETDATE(), @LoginUserID, @WarehouseId)
+
+						--UPDATE Inv_Parts SET StockInHand = @ClosingStock_CUR WHERE ID = @PartID_CUR
+
+						UPDATE Inv_Parts_StockInHand SET StockInHand = (StockInHand + @TransactQty_CUR), UpdatedByUser = @LoginUserID, UpdatedDate = GETDATE() 
+						WHERE PartId = @PartID_CUR AND WarehouseId = @WarehouseId
+
+						FETCH NEXT FROM [CURSOR_NAME] INTO @PartID_CUR, @TransactQty_CUR, @WarehouseId
+					END
+				END
+
+				CLOSE [CURSOR_NAME]
+				DEALLOCATE [CURSOR_NAME]
+			END
+
+		IF @@TRANCOUNT > 0
+		COMMIT
+		SET @msg = 'S'			
+		END TRY
+
+		BEGIN CATCH 
+		IF @@TRANCOUNT > 0
+			 ROLLBACK
+		SET @msg = ''
+		END CATCH
+	END
+
+	ELSE IF (@Operation = 19)--AFTER SAVE/UPDATE SEQUENCE
+	BEGIN
+		SELECT DISTINCT JobID, 
+		CASE 
+			WHEN ISNULL(JobID, '') = '' THEN PONumber
+			ELSE JobID 
+		END AS ProjectName
+		FROM TW_Projects
+		WHERE RefId = @RefId
+		ORDER BY JobID
+	END
+
+	ELSE IF (@Operation = 20) -- RELEASE INDIVIDUAL SHIPMENTS
+	BEGIN
+		IF((SELECT ISNULL(Release, 0) FROM TW_ShipmentHistory WHERE id = TRIM(@Comments)) = 1)
+		BEGIN
+			SET @msg = 'ER02'		
+			RETURN;
+		END
+
+		BEGIN TRY
+		BEGIN TRANSACTION;
+			
+			SET @WarehouseId = (SELECT WarehouseId FROM TW_Projects WHERE RefId = @RefId)
+		
+			IF ISNULL(@WarehouseId, 0) = 0
+			BEGIN
+				SET @msg = 'ER03'
+				ROLLBACK
+				RETURN
+			END			
+
+			DECLARE @ShipmentId INT;
+			SET @PartId = (SELECT PartID FROM TW_ProjectParts WHERE ID = @Id);			
+
+			SET @OPENSTOCK = 0
+
+			IF EXISTS(SELECT Id FROM Inv_Parts_StockInHand WHERE PartId = @PartId AND WarehouseId = @WarehouseId)
+			BEGIN
+				SET @OPENSTOCK = (SELECT StockInHand FROM Inv_Parts_StockInHand WHERE PartId = @PartId AND WarehouseId = @WarehouseId)
+			END
+			ELSE
+			BEGIN
+				INSERT INTO Inv_Parts_StockInHand(PartId, WarehouseId, StockInHand, InsertedDate, InsertedByUser)
+				VALUES(@PartId, @WarehouseId, 0, GETDATE(), @LoginUserID)
+			END
+
+			DECLARE @StockInHand INT = ISNULL((SELECT StockInHand FROM Inv_Parts_StockInHand WHERE PartId = @PartId AND WarehouseId = @WarehouseId), 0);
+			
+			DECLARE cur CURSOR FAST_FORWARD FOR
+			SELECT ID, ShipQty
+			FROM TW_ShipmentHistory
+			WHERE ID IN (
+				SELECT CAST(value AS INT) 
+				FROM STRING_SPLIT(TRIM(@Comments), ',')
+			)
+			ORDER BY ID;
+
+			OPEN cur;
+			FETCH NEXT FROM cur INTO @ShipmentId, @ShipQty;
+
+			WHILE @@FETCH_STATUS = 0
+			BEGIN				
+				INSERT INTO [dbo].[Inv_StockTransactions]
+				([PartID], [ProjectId], [OpeningStock], [TransactQty], [ClosingStock],
+				 [TransactSummary], [TransactMode], [TransactDateTime], [TransactBy], WarehouseId)
+				VALUES(@PartId, @RefId, @StockInHand, -@ShipQty, @StockInHand - @ShipQty,
+					   'Release-PART', 'A', GETDATE(), @LoginUserID, @WarehouseId);
+
+				SET @StockInHand = @StockInHand - @ShipQty;
+
+				UPDATE TW_ShipmentHistory
+				SET Release = 1
+				WHERE ID = @ShipmentId;
+
+				FETCH NEXT FROM cur INTO @ShipmentId, @ShipQty;
+			END;
+
+			CLOSE cur;
+			DEALLOCATE cur;
+
+			--UPDATE Inv_Parts
+			--SET StockInHand = @StockInHand
+			--WHERE ID = @PartId;
+
+			UPDATE Inv_Parts_StockInHand SET StockInHand = @StockInHand, UpdatedDate = GETDATE(), UpdatedByUser = @LoginUserID 
+			WHERE PartId = @PartId AND WarehouseId = @WarehouseId
+
+			COMMIT;
+			SET @msg = 'S';
+		END TRY
+		BEGIN CATCH
+			IF @@TRANCOUNT > 0 ROLLBACK;
+			SET @msg = 'ER01';
+		END CATCH
+	END
+
+	ELSE IF (@Operation = 21)--ROLLBACK SHIPMENT
+	BEGIN
+		IF((SELECT ISNULL(Release, 0) FROM TW_ShipmentHistory WHERE id = TRIM(@Comments)) = 0)
+		BEGIN
+			SET @msg = 'ER02'		
+			RETURN;
+		END
+
+		SET @WarehouseId = (SELECT WarehouseId FROM TW_Projects WHERE RefId = @RefId)
+		
+		IF ISNULL(@WarehouseId, 0) = 0
+		BEGIN
+			SET @msg = 'ER03'
+			RETURN
+		END
+
+		BEGIN TRY
+		BEGIN TRANSACTION
+
+		SET @PartId = (SELECT PartID FROM TW_ProjectParts WHERE ID = @Id);
+		SET @StockInHand = ISNULL((SELECT StockInHand FROM Inv_Parts_StockInHand WHERE PartId = @PartId AND WarehouseId = @WarehouseId), 0);
+		SET @ShipQty = (SELECT ShipQty FROM TW_ShipmentHistory WHERE Id = TRIM(@Comments))
+
+		INSERT INTO [dbo].[Inv_StockTransactions]
+			([PartID], [ProjectId], [OpeningStock], [TransactQty], [ClosingStock],
+				[TransactSummary], [TransactMode], [TransactDateTime], [TransactBy], WarehouseId)
+			VALUES(@PartId, @RefId, @StockInHand, @ShipQty, @StockInHand + @ShipQty,
+					'Rollback-PART', 'A', GETDATE(), @LoginUserID, @WarehouseId);
+
+		UPDATE TW_ShipmentHistory SET Release = 0
+			WHERE ID = TRIM(@Comments);
+
+		SET @StockInHand = @StockInHand + @ShipQty;
+
+		--UPDATE Inv_Parts SET StockInHand = @StockInHand
+		--WHERE ID = @PartId;
+
+		UPDATE Inv_Parts_StockInHand SET StockInHand = @StockInHand, UpdatedDate = GETDATE(), UpdatedByUser = @LoginUserID 
+			WHERE PartId = @PartId AND WarehouseId = @WarehouseId
+
+		IF @@TRANCOUNT > 0
+			 COMMIT
+			SET @msg = 'S';
+		END TRY
+
+		BEGIN CATCH 
+		IF @@TRANCOUNT > 0
+			 ROLLBACK
+			 SET @msg = 'ER01';
+		END CATCH		
+	END
+
+	ELSE IF (@Operation = 22)--GET SHIPMENT INFO
+	BEGIN
+		SELECT ShipQty, CONVERT(VARCHAR, ShipDate, 101) AS ShipDate, Comments, CONVERT(VARCHAR, RequestedReceiveDate, 101) AS RequestedReceiveDate
+		FROM TW_ShipmentHistory
+		WHERE ID = @Id
+	END
+
+	ELSE IF (@Operation = 23)--UPDATE SHIPMENT HISTORY
+	BEGIN
+		IF((SELECT ISNULL(Release, 0) FROM TW_ShipmentHistory WHERE id = @PartId) = 1)
+		BEGIN
+			SET @msg = 'ER02'		
+			RETURN;
+		END
+
+		BEGIN TRY
+		BEGIN TRANSACTION
+
+		UPDATE TW_ShipmentHistory SET ProjectPartId = @Id, ShipQty = @ShipQty, ShipDate = @ShipDate, Comments = @Comments, RequestedReceiveDate = @ReqShipDate
+		WHERE ID = @PartId
+		
+		UPDATE TW_ProjectParts SET PendingQty = Qty - ISNULL((SELECT SUM(ShipQty) FROM TW_ShipmentHistory WHERE ProjectPartId = @Id), 0)
+		WHERE ID = @Id		
+
+		IF @@TRANCOUNT > 0
+			COMMIT
+			SET @msg = 'S'
+		END TRY
+
+		BEGIN CATCH 
+		IF @@TRANCOUNT > 0
+			 ROLLBACK
+		END CATCH
+	END
+
+	ELSE IF (@Operation = 24)--RELEASE ROLLBACK PERMISSIONS
+	BEGIN
+		IF(@LoginUserID IN (255, 263))
+		BEGIN
+			SET @msg = 'S'
+			RETURN;
+		END
+
+		SET @msg = 'ER01'
+	END
+
+	ELSE IF (@Operation = 25)--NESTING SECTION UPDATE
+	BEGIN
+		UPDATE TW_Projects SET NestingStartDate = @NestingStartDate, NestingEndDate = @NestingEndDate, SentDate = @SentDate,
+		NestingStatusId = @NestingStatusId, SentToProduction = @SendToProduction
+		WHERE RefId = @RefId
+
+		SET @msg = 'S'
+	END
+END

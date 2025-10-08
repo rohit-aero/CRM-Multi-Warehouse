@@ -512,7 +512,7 @@ public class AutoComplete : System.Web.Services.WebService {
     [WebMethod]
     public string[] SearchITWJobID(string prefixText)
     {
-        DataTable dt = Utility.ReturnITWProjects(1, prefixText);
+        DataTable dt = Utility.ReturnITWJobID(1, prefixText);
         System.Collections.Generic.List<string> Customer = new System.Collections.Generic.List<string>();
         int i = 0;
         string CustomerName = null;

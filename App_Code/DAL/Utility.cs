@@ -1214,6 +1214,13 @@ public static class Utility
         return dt;
     }
 
+    public static void BindDropDownListWithoutFiller(DropDownList ddl, DataTable dt)
+    {
+        ddl.DataSource = dt;
+        ddl.DataBind();
+        //ddl.Items.Insert(0, new ListItem("Select", "0"));
+    }
+
     public static void BindDropDownList(DropDownList ddl, DataTable dt)
     {
         ddl.DataSource = dt;
@@ -2139,6 +2146,17 @@ public static class Utility
         BLLManageITWProjects ObjBLL = new BLLManageITWProjects();
         DataTable dt;
         ObjBOL.ProjectName = ProjectName;
+        ObjBOL.Operation = op;
+        dt = ObjBLL.Return_DataSet(ObjBOL).Tables[0];
+        return dt;
+    }
+
+    public static DataTable ReturnITWJobID(Int32 op, String JobID)
+    {
+        BOLManageITWProjects ObjBOL = new BOLManageITWProjects();
+        BLLManageITWProjects ObjBLL = new BLLManageITWProjects();
+        DataTable dt;
+        ObjBOL.JobID = JobID;
         ObjBOL.Operation = op;
         dt = ObjBLL.Return_DataSet(ObjBOL).Tables[0];
         return dt;

@@ -1802,6 +1802,12 @@ public partial class SalesManagement_FrmProjectsEng : System.Web.UI.Page
                 ObjBOLRel.projectid = HfJObID.Value;
                 ObjBOLRel.userid = Convert.ToInt32(Utility.GetCurrentUser());
                 msg = ObjBLLRel.ReleaseProject(ObjBOLRel);
+                if (msg.Trim() == "ER01")
+                {
+                    Utility.ShowMessage_Error(Page, "Warehouse not selected !!");
+                    return;
+                }
+
                 if (msg.Trim() == "S")
                 {
                     Utility.MaintainLogsSpecial("FrmProjectsEng", "Release", HfJObID.Value.ToString());

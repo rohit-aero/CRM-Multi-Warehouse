@@ -1,0 +1,1396 @@
+﻿using System;
+using BOLAERO;
+using BLLAERO;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using System.Data;
+
+public partial class TurboWash_FrmITWProjects : System.Web.UI.Page
+{
+    BOLManageITWProjects ObjBOL = new BOLManageITWProjects();
+    BLLManageITWProjects ObjBLL = new BLLManageITWProjects();
+
+    BOLManageITWProjectParts ObjBOL_1 = new BOLManageITWProjectParts();
+    BLLManageITWProjectParts ObjBLL_1 = new BLLManageITWProjectParts();
+
+    protected void Page_Load(object sender, EventArgs e)
+    {
+        if (!IsPostBack)
+        {
+            DisableButtons();
+            BindControls();
+            BindControls_Main();
+        }
+    }
+
+    private void BindControls_Main()
+    {
+        try
+        {
+            ObjBOL.Operation = 9;
+            DataSet ds = new DataSet();
+            ds = ObjBLL.Return_DataSet(ObjBOL);
+            if (ds.Tables[0].Rows.Count > 0)
+            {
+                Utility.BindDropDownList(ddlCompany, ds.Tables[0]);
+            }
+
+            if (ds.Tables[1].Rows.Count > 0)
+            {
+                Utility.BindDropDownList(ddlPOType, ds.Tables[1]);
+            }
+
+            if (ds.Tables[2].Rows.Count > 0)
+            {
+                Utility.BindDropDownList(ddlProductCode, ds.Tables[2]);
+            }
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+    }
+
+    private bool ValidationCheck()
+    {
+        try
+        {
+            if (ddlCompany.SelectedIndex == 0)
+            {
+                Utility.ShowMessage_Error(Page, "Please select Company !");
+                ddlCompany.Focus();
+                return false;
+            }
+
+            if (txtJobId.Text == "" && txtPONumber.Text == "")
+            {
+                Utility.ShowMessage_Error(Page, "Please Enter Atleast JobID or PO# !");
+                ddlCompany.Focus();
+                return false;
+            }
+
+            //if (txtJobId.Text == "")
+            //{
+            //    Utility.ShowMessage_Error(Page, "Please enter JobID !");
+            //    txtJobId.Focus();
+            //    return false;
+            //}
+
+            //if (txtHobartDrawingNumber.Text == "")
+            //{
+            //    Utility.ShowMessage_Error(Page, "Please enter Hobart Drawing Number !");
+            //    txtHobartDrawingNumber.Focus();
+            //    return false;
+            //}
+
+            //if (txtProjectName.Text == "")
+            //{
+            //    Utility.ShowMessage_Error(Page, "Please enter Project Name !");
+            //    txtProjectName.Focus();
+            //    return false;
+            //}
+
+            if (txtPOReceivedDate.Text == "")
+            {
+                Utility.ShowMessage_Error(Page, "Please enter PO Received Date !");
+                txtPOReceivedDate.Focus();
+                return false;
+            }
+
+            if (txtShipDate.Text == "")
+            {
+                Utility.ShowMessage_Error(Page, "Please enter confirmed Ship Date !");
+                txtShipDate.Focus();
+                return false;
+            }
+
+            //if (txtShipDate.Text == "")
+            //{
+            //    Utility.ShowMessage_Error(Page, "Please enter Ship Date !");
+            //    txtShipDate.Focus();
+            //    return false;
+            //}
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+        return true;
+    }
+
+    private bool ValidationCheck_Release()
+    {
+        try
+        {
+            if (txtReleaseDate.Text.Trim() == "")
+            {
+                Utility.ShowMessage_Error(Page, "Please enter Release Date !");
+                txtReleaseDate.Focus();
+                return false;
+            }
+
+            DateTime ReleaseDateTemp;
+            if (!DateTime.TryParse(txtReleaseDate.Text, out ReleaseDateTemp))
+            {
+                Utility.ShowMessage_Error(Page, "Please enter valid Release Date !");
+                txtReleaseDate.Focus();
+                return false;
+            }
+
+            if (txtJobId.Text == "" && txtPONumber.Text == "")
+            {
+                Utility.ShowMessage_Error(Page, "Please Enter Atleast Job ID Or PO# !");
+                return false;
+            }
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+        return true;
+    }
+
+    protected void btnNew_Click(object sender, EventArgs e)
+    {
+        try
+        {
+            if (ddlCompany.SelectedIndex == 0)
+            {
+                Utility.ShowMessage_Error(Page, "Please select Company !");
+                return;
+            }
+            else
+            {
+                string companyId = ddlCompany.SelectedValue;
+                btnCancel_Click_Event();
+                ObjBOL.Operation = 3;
+                ddlCompany.SelectedValue = companyId;
+
+                if (ddlCompany.SelectedIndex > 0)
+                {
+                    ObjBOL.Company = Int32.Parse(ddlCompany.SelectedValue);
+                }
+                else
+                {
+                    Utility.ShowMessage_Error(Page, "Please Select Company !");
+                    return;
+                }
+
+                string returnStatus = ObjBLL.Return_String(ObjBOL);
+
+                txtJobId.Text = returnStatus;
+            }
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+    }
+
+    protected void btnSave_Click(object sender, EventArgs e)
+    {
+        try
+        {
+            if (ValidationCheck())
+            {
+                if (txtId.Text == "")
+                {
+                    ObjBOL.Operation = 4;
+                }
+                else
+                {
+                    ObjBOL.Operation = 5;
+                    ObjBOL.Id = Int32.Parse(txtId.Text);
+                }
+
+                ObjBOL.JobID = txtJobId.Text;
+                ObjBOL.HobartDrawingNumber = txtHobartDrawingNumber.Text;
+                ObjBOL.ProjectName = txtProjectName.Text;
+                ObjBOL.Orientation = ddlOrientationList.SelectedValue;
+                ObjBOL.OptionID = Int32.Parse(ddlOption.SelectedValue);
+                if (txtPOReceivedDate.Text.Trim() != "")
+                {
+                    ObjBOL.POReceivedDate = Utility.ConvertDate(txtPOReceivedDate.Text);
+                }
+
+                if (txtReqShipDate.Text.Trim() != "")
+                {
+                    ObjBOL.ReqShipDate = Utility.ConvertDate(txtReqShipDate.Text);
+                }
+
+                if (txtShipDate.Text.Trim() != "")
+                {
+                    ObjBOL.ShipDate = Utility.ConvertDate(txtShipDate.Text);
+                }
+
+                if (txtEqPrice.Text.Trim() != "")
+                {
+                    ObjBOL.EqPrice = decimal.Parse(txtEqPrice.Text);
+                }
+
+                if (txtReleaseDate.Text.Trim() != "")
+                {
+                    ObjBOL.ReleaseDate = Utility.ConvertDate(txtReleaseDate.Text);
+                }
+
+                if (ddlCompany.SelectedIndex > 0)
+                {
+                    ObjBOL.Company = Int32.Parse(ddlCompany.SelectedValue);
+                }
+                ObjBOL.HobartDrawingRevisionNo = txtHobartDrawingRevisionNo.Text;
+                ObjBOL.PONumber = txtPONumber.Text;
+
+                if (ddlPOType.SelectedIndex > 0)
+                {
+                    ObjBOL.POType = Int32.Parse(ddlPOType.SelectedValue);
+                }
+                ObjBOL.CI = txtCINumber.Text;
+
+                string returnStatus = ObjBLL.Return_String(ObjBOL);
+                if (returnStatus.Trim().Length > 0)
+                {
+                    if (returnStatus.Trim() == "ER01")
+                    {
+                        Utility.ShowMessage_Error(Page, "Job Id already exists !");
+                    }
+                    else if (returnStatus.Trim() == "ER02")
+                    {
+                        Utility.ShowMessage_Error(Page, "PO Number already exists !");
+                    }
+                    else if (returnStatus.Trim() == "S")
+                    {
+                        if (txtSearchPName.Text.Trim() == "")
+                        {
+                            if (txtId.Text == "")
+                            {
+                                if (txtJobId.Text == "")
+                                {
+                                    Utility.MaintainLogsSpecial("FrmITWProjects.aspx", "Save", txtPONumber.Text);
+                                }
+                                else
+                                {
+                                    Utility.MaintainLogsSpecial("FrmITWProjects.aspx", "Save", txtJobId.Text);
+                                }
+                                Utility.ShowMessage_Success(Page, "Project inserted successfully !!");
+                            }
+                            else
+                            {
+                                if (txtJobId.Text == "")
+                                {
+                                    Utility.MaintainLogsSpecial("FrmITWProjects.aspx", "Update", txtPONumber.Text);
+                                }
+                                else
+                                {
+                                    Utility.MaintainLogsSpecial("FrmITWProjects.aspx", "Update", txtJobId.Text);
+                                }
+                                Utility.ShowMessage_Success(Page, "Project Updated successfully !!");
+                            }
+
+
+                        }
+                        else
+                        {
+                            if (txtId.Text == "")
+                            {
+                                if (txtJobId.Text == "")
+                                {
+                                    Utility.MaintainLogsSpecial("FrmITWProjects.aspx", "Save", txtPONumber.Text);
+                                }
+                                else
+                                {
+                                    Utility.MaintainLogsSpecial("FrmITWProjects.aspx", "Save", txtJobId.Text);
+                                }
+                                Utility.ShowMessage_Success(Page, "Project inserted successfully !!");
+                            }
+                            else
+                            {
+                                if (txtJobId.Text == "")
+                                {
+                                    Utility.MaintainLogsSpecial("FrmITWProjects.aspx", "Update", txtPONumber.Text);
+                                }
+                                else
+                                {
+                                    Utility.MaintainLogsSpecial("FrmITWProjects.aspx", "Update", txtJobId.Text);
+                                }
+                                Utility.ShowMessage_Success(Page, "Project updated successfully !!");
+                            }
+                        }
+
+                        AfterSaveOrUpdateSequence();
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+    }
+
+    protected void btnCancel_Click(object sender, EventArgs e)
+    {
+        try
+        {
+            btnCancel_Click_Event();
+            ddlCompany.SelectedIndex = 0;
+            ddlCompany_SelectedIndexChanged();
+            txtJobId.Text = String.Empty;
+            txtPONumber.Text = String.Empty;
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+
+    }
+
+    protected void txtSearchPName_TextChanged(object sender, EventArgs e)
+    {
+        try
+        {
+            if (txtSearchPName.Text != "")
+            {
+                SyncLookups("NAME");
+            }
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+    }
+
+    protected void txtSearchPNum_TextChanged(object sender, EventArgs e)
+    {
+        try
+        {
+            if (txtSearchPNum.Text != "")
+            {
+                SyncLookups("NUMBER");
+            }
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+    }
+
+    private bool ValidateProject(string lookupSelector)
+    {
+        try
+        {
+            ObjBOL.Operation = 6;
+            if (lookupSelector.ToUpper() == "NAME")
+            {
+                ObjBOL.ProjectName = txtSearchPName.Text.Split(',')[0];
+            }
+            else if (lookupSelector.ToUpper() == "NUMBER")
+            {
+                ObjBOL.JobID = txtSearchPNum.Text.Split(',')[0];
+            }
+            DataTable dt = new DataTable();
+            dt = ObjBLL.Return_DataSet(ObjBOL).Tables[0];
+            int count = dt.Rows.Count;
+            if (count > 0)
+            {
+                if (dt.Rows[0]["JobID"].ToString() != "")
+                {
+                    txtSearchPNum.Text = dt.Rows[0]["JobID"].ToString();
+                }
+                else
+                {
+                    txtSearchPNum.Text = dt.Rows[0]["PONumber"].ToString();
+                }
+                txtSearchPName.Text = dt.Rows[0]["ProjectName"].ToString();
+                FetchInfo(dt);
+                return true;
+            }
+            else
+            {
+                txtSearchPName.Text = string.Empty;
+                txtSearchPNum.Text = string.Empty;
+                btnCancel_Click_Event();
+                return false;
+            }
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+        return false;
+    }
+
+    private void SyncLookups(string lookupSelector)
+    {
+        try
+        {
+            bool validProject = ValidateProject(lookupSelector);
+            if (validProject)
+            {
+                if (lookupSelector.ToUpper() == "NAME")
+                {
+                    //txtSearchPNum.Text = txtSearchPName.Text;
+                }
+                else if (lookupSelector.ToUpper() == "NUMBER")
+                {
+                    //txtSearchPName.Text = txtSearchPNum.Text;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+    }
+
+    private void btnCancel_Click_Event()
+    {
+        try
+        {
+            txtSearchPName.Text = string.Empty;
+            txtSearchPNum.Text = string.Empty;
+            txtId.Text = string.Empty;
+            txtHobartDrawingNumber.Text = string.Empty;
+            txtProjectName.Text = string.Empty;
+            ddlOrientationList.SelectedIndex = 0;
+            ddlOption.SelectedIndex = 0;
+            txtPOReceivedDate.Text = string.Empty;
+            txtReqShipDate.Text = string.Empty;
+            txtShipDate.Text = string.Empty;
+            txtEqPrice.Text = string.Empty;
+            txtReleaseDate.Text = string.Empty;
+            ddlCompany.SelectedIndex = 0;
+            ddlProductCode.SelectedIndex = 0;
+            //ddlCompany.Enabled = true;
+            ddlProductCode.SelectedIndex = 0;
+            txtHobartDrawingRevisionNo.Text = string.Empty;
+            ddlPOType.SelectedIndex = 0;
+            txtCINumber.Text = string.Empty;
+            DisableButtons();
+            btnClear_Click_Event();
+            ClearGrid();
+            btnSave.Text = "Save";
+            ViewState["Parts"] = null;
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+    }
+
+    private void FetchInfo(DataTable dt)
+    {
+        try
+        {
+            Dictionary<string, Action<DataRow>> assignments = new Dictionary<string, Action<DataRow>>
+            {
+                { "CompanyId", d =>
+                    {
+                       if(ddlCompany.Items.FindByValue(d["CompanyId"].ToString()) != null)
+                        {
+                            ddlCompany.SelectedValue = d["CompanyId"].ToString();
+                            ddlCompany_SelectedIndexChanged();
+                        }
+                        else
+                        {
+                            //ddlCompany.Enabled = true;
+                            if(ddlCompany.Items.Count > 0)
+                            {
+                                ddlCompany.SelectedIndex = 0;
+                            }
+                        }
+                    }
+                },
+                { "Id", d => txtId.Text = d["Id"].ToString() },
+                { "JobID", d => txtJobId.Text = d["JobID"].ToString() },
+                { "PONumber", d => txtPONumber.Text = d["PONumber"].ToString() },
+                { "POType", d =>
+                    {
+                       if(ddlPOType.Items.FindByValue(d["POType"].ToString()) != null)
+                        {
+                            ddlPOType.SelectedValue = d["POType"].ToString();
+                        }
+                        else
+                        {
+                            if(ddlPOType.Items.Count > 0)
+                            {
+                                ddlPOType.SelectedIndex = 0;
+                            }
+                        }
+                    }
+                },
+                { "HobartDrawingNumber", d => txtHobartDrawingNumber.Text = d["HobartDrawingNumber"].ToString() },
+                { "HobartDrawingRevisionNo", d => txtHobartDrawingRevisionNo.Text = d["HobartDrawingRevisionNo"].ToString() },
+                { "CI", d => txtCINumber.Text = d["CI"].ToString() },
+                { "ProjectName", d => txtProjectName.Text = d["ProjectName"].ToString() },
+                { "Orientation", d =>
+                    {
+                       if(ddlOrientationList.Items.FindByValue(d["Orientation"].ToString()) != null)
+                        {
+                            ddlOrientationList.SelectedValue = d["Orientation"].ToString();
+                        }
+                    }
+                },
+                { "OptionID", d =>
+                    {
+                        if(ddlOption.Items.FindByValue(d["OptionID"].ToString()) != null)
+                        {
+                            ddlOption.SelectedValue = d["OptionID"].ToString();
+                        }
+                    }
+                },
+                { "POReceivedDate", d => txtPOReceivedDate.Text = d["POReceivedDate"].ToString() },
+                { "ReqShipDate", d => txtReqShipDate.Text = d["ReqShipDate"].ToString() },
+                { "ShipDate", d => txtShipDate.Text = d["ShipDate"].ToString() },
+                { "EqPrice", d => txtEqPrice.Text = Convert.ToDecimal(d["EqPrice"]).ToString("N") },
+                { "ReleaseDate", d => txtReleaseDate.Text = d["ReleaseDate"].ToString() },
+                { "Release", d=>
+                    {
+                        btnRelease.Enabled = !bool.Parse(d["Release"].ToString());
+                        btnRollback.Enabled = bool.Parse(d["Release"].ToString());
+                        if(bool.Parse(d["Release"].ToString()))
+                        {
+                            DisableProjectParts();
+                        }else
+                        {
+                            EnableProjectParts();
+                        }
+                    }
+                }
+            };
+
+            foreach (var assignment in assignments)
+            {
+                try
+                {
+                    assignment.Value(dt.Rows[0]);
+                }
+                catch (Exception ex)
+                {
+                    Utility.AddEditException(ex, assignment.Key);
+                }
+            }
+            btnClear_Click_Event();
+            BindGrid();
+            btnSave.Text = "Update";
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+    }
+
+    private void AfterSaveOrUpdateSequence()
+    {
+        try
+        {
+            btnCancel_Click_Event();
+            ObjBOL.Operation = 1;
+            if (txtPONumber.Text != "" && txtJobId.Text == "")
+            {
+                ObjBOL.JobID = txtPONumber.Text;
+            }
+            else
+            {
+                ObjBOL.JobID = txtJobId.Text;
+            }
+            DataTable dt = new DataTable();
+            dt = ObjBLL.Return_DataSet(ObjBOL).Tables[0];
+            txtSearchPNum.Text = dt.Rows[0]["ProjectName"].ToString();
+            SyncLookups("NUMBER");
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+    }
+
+    protected void btnRelease_Click(object sender, EventArgs e)
+    {
+        try
+        {
+            if (ValidationCheck_Release())
+            {
+                ObjBOL.Operation = 7;
+                ObjBOL.Id = Int32.Parse(txtId.Text);
+                if (txtJobId.Text != "")
+                {
+                    ObjBOL.JobID = txtJobId.Text;
+                }
+                else
+                {
+                    ObjBOL.PONumber = txtPONumber.Text;
+                }
+                ObjBOL.ReleaseDate = Convert.ToDateTime(txtReleaseDate.Text);
+                ObjBOL.LoginUserID = Utility.GetCurrentUser();
+                string returnStatus = ObjBLL.Return_String(ObjBOL);
+                if (returnStatus.Trim().Length > 0)
+                {
+                    if (returnStatus.Trim() == "ER01")
+                    {
+                        Utility.ShowMessage_Success(Page, "Job doesnot exists !");
+                        return;
+                    }
+                    else if (returnStatus.Trim() == "ER02")
+                    {
+                        Utility.ShowMessage_Success(Page, "Project Parts Not Exists !");
+                        return;
+                    }
+                    else
+                    {
+                        if (txtJobId.Text != "")
+                        {
+                            Utility.MaintainLogsSpecial("FrmITWProjects", "Release", txtJobId.Text);
+                        }
+                        else
+                        {
+                            Utility.MaintainLogsSpecial("FrmITWProjects", "Release", txtPONumber.Text);
+                        }
+                        Utility.ShowMessage_Success(Page, returnStatus);
+                        AfterSaveOrUpdateSequence();
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+    }
+
+    protected void btnRollback_Click(object sender, EventArgs e)
+    {
+        try
+        {
+            ObjBOL.Operation = 8;
+            ObjBOL.LoginUserID = Utility.GetCurrentUser();
+            if (txtJobId.Text != "")
+            {
+                ObjBOL.JobID = txtJobId.Text;
+            }
+            else
+            {
+                ObjBOL.PONumber = txtPONumber.Text;
+            }
+            ObjBOL.Id = Int32.Parse(txtId.Text);
+            string returnStatus = ObjBLL.Return_String(ObjBOL);
+            if (returnStatus.Trim().Length > 0)
+            {
+                if (returnStatus.Trim() == "ER01")
+                {
+                    Utility.ShowMessage_Success(Page, "Job doesnot exists !");
+                    return;
+                }
+                else
+                {
+                    if (txtJobId.Text != "")
+                    {
+                        Utility.MaintainLogsSpecial("FrmITWProjects", "Rollback", txtJobId.Text);
+                    }
+                    else
+                    {
+                        Utility.MaintainLogsSpecial("FrmITWProjects", "Rollback", txtPONumber.Text);
+                    }
+                    Utility.ShowMessage_Success(Page, returnStatus);
+                    AfterSaveOrUpdateSequence();
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+    }
+
+    private void DisableButtons()
+    {
+        try
+        {
+            btnRelease.Enabled = false;
+            btnRollback.Enabled = false;
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+    }
+
+    private void BindControls()
+    {
+        try
+        {
+            ObjBOL_1.Operation = 4;
+            DataSet ds = new DataSet();
+            ds = ObjBLL_1.Return_DataSet(ObjBOL_1);
+            if (ds.Tables[0].Rows.Count > 0)
+            {
+                Utility.BindDropDownListAll(ddlCategory, ds.Tables[0]);
+            }
+
+            //if (ds.Tables[1].Rows.Count > 0)
+            //{
+            //    Utility.BindDropDownList(ddlPartsDetail, ds.Tables[1]);
+            //    Utility.BindDropDownList(ddlPartNo, ds.Tables[1]);
+            //}
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+    }
+
+    private void DisableProjectpartsDropdowns()
+    {
+        try
+        {
+            ddlCategory.Enabled = false;
+            ddlPartNo.Enabled = false;
+            ddlPartsDetail.Enabled = false;
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+    }
+
+    private void EnableProjectpartsDropdowns()
+    {
+        try
+        {
+            ddlCategory.Enabled = true;
+            ddlPartNo.Enabled = true;
+            ddlPartsDetail.Enabled = true;
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+    }
+
+    private bool ValidationCheck_Projectparts()
+    {
+        try
+        {
+            if (txtSearchPNum.Text.Trim() == "")
+            {
+                Utility.ShowMessage_Error(Page, "Please enter job !");
+                txtSearchPNum.Focus();
+                return false;
+            }
+
+            if (ddlPartsDetail.SelectedIndex == 0 || ddlPartNo.SelectedIndex == 0)
+            {
+                Utility.ShowMessage_Error(Page, "Please select part !");
+                ddlPartsDetail.Focus();
+                return false;
+            }
+
+            if (txtQty.Text == "" || Int32.Parse(txtQty.Text) == 0)
+            {
+                Utility.ShowMessage_Error(Page, "Please enter qty !");
+                txtQty.Focus();
+                return false;
+            }
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+        return true;
+    }
+
+    protected void btnAdd_Click(object sender, EventArgs e)
+    {
+        try
+        {
+            if (ValidationCheck_Projectparts())
+            {
+                if (HfProjectPartID.Value == "-1")
+                {
+                    ObjBOL_1.Operation = 7;
+                    ObjBOL_1.PartID = Int32.Parse(ddlPartNo.SelectedValue);
+                    ObjBOL_1.Id = Int32.Parse(txtId.Text);
+                }
+                else
+                {
+                    ObjBOL_1.Operation = 8;
+                    ObjBOL_1.Id = Int32.Parse(HfProjectPartID.Value);
+                }
+
+                ObjBOL_1.JobID = txtId.Text;
+                if (ddlCompany.SelectedIndex > 0)
+                {
+                    ObjBOL_1.CategoryID = Int32.Parse(ddlCompany.SelectedValue);
+                }
+                ObjBOL_1.Comments = txtComments.Text;
+                ObjBOL_1.Qty = Int32.Parse(txtQty.Text);
+
+                ObjBOL_1.StatusId = Int32.Parse(ddlShipmentStatus.SelectedValue);
+
+                string returnStatus = ObjBLL_1.Return_String(ObjBOL_1);
+                if (returnStatus.Trim() != "")
+                {
+                    if (returnStatus.Trim() == "ER01")
+                    {
+                        Utility.ShowMessage_Error(Page, "Please update company before saving part !!");
+                    }
+                    else
+                    {
+                        if (HfProjectPartID.Value == "-1")
+                        {
+                            Utility.ShowMessage_Success(Page, "Record saved sucessfully !!");
+                            Utility.MaintainLogsSpecial("FrmITWProjects.aspx", "Save-Part", txtSearchPNum.Text.Split(',')[0]);
+                        }
+                        else
+                        {
+                            Utility.ShowMessage_Success(Page, "Record updated sucessfully !!");
+                            Utility.MaintainLogsSpecial("FrmITWProjects.aspx", "Update-Part", txtSearchPNum.Text.Split(',')[0] + " [" + HfProjectPartID.Value + "] ");
+                        }
+                        btnClear_Click_Event();
+                        ClearGrid();
+                        BindGrid();
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+    }
+
+    private void btnClear_Click_Event()
+    {
+        try
+        {
+            EnableProjectpartsDropdowns();
+            //ddlCategory.SelectedIndex = 0;
+            //ddlCategory_SelectedIndexChanged_Event();
+            if (ddlPartsDetail.Items.Count > 0)
+            {
+                ddlPartsDetail.SelectedIndex = 0;
+            }
+
+            if (ddlPartNo.Items.Count > 0)
+            {
+                ddlPartNo.SelectedIndex = 0;
+            }
+
+            txtUM.Text = String.Empty;
+            txtComments.Text = String.Empty;
+            txtQty.Text = string.Empty;
+            HfProjectPartID.Value = "-1";
+            ddlShipmentStatus.SelectedIndex = 0;
+            btnAdd.Text = "Save";
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+    }
+
+    private void ClearGrid()
+    {
+        try
+        {
+            gvDetail.DataSource = string.Empty;
+            gvDetail.DataBind();
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+    }
+
+    private void BindGrid()
+    {
+        try
+        {
+            ObjBOL_1.Operation = 2;
+            ObjBOL_1.Id = Int32.Parse(txtId.Text);
+            ObjBOL_1.JobID = txtJobId.Text;
+            DataSet ds = new DataSet();
+            ds = ObjBLL_1.Return_DataSet(ObjBOL_1);
+            if (ds.Tables[0].Rows.Count > 0)
+            {
+                gvDetail.DataSource = ds.Tables[0];
+                gvDetail.DataBind();
+            }
+            else
+            {
+                ClearGrid();
+            }
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+    }
+
+    protected void gvDetail_RowDeleting(object sender, GridViewDeleteEventArgs e)
+    {
+        try
+        {
+            if (btnRelease.Enabled)
+            {
+                int ID = Convert.ToInt32(gvDetail.DataKeys[e.RowIndex].Values[0]);
+                ObjBOL_1.Operation = 9;
+                ObjBOL_1.PartID = ID;
+                string returnStatus = ObjBLL_1.Return_String(ObjBOL_1);
+                if (returnStatus.Trim() == "ER01")
+                {
+                    Utility.ShowMessage_Error(Page, "Part already has shipments. Cannot be deleted !!");
+                    return;
+                }
+
+                if (returnStatus.Trim() == "S")
+                {
+                    Utility.MaintainLogsSpecial("FromITWProjects.aspx", "Delete", txtSearchPNum.Text.Split(',')[0]);
+                    Utility.ShowMessage_Success(Page, "Record deleted sucessfully !!");
+                    btnClear_Click_Event();
+                    ClearGrid();
+                    BindGrid();
+                }
+            }
+            else
+            {
+                Utility.ShowMessage_Error(Page, "Project is already released !");
+            }
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+    }
+
+    protected void gvDetail_RowEditing(object sender, GridViewEditEventArgs e)
+    {
+        try
+        {
+            //if (btnRelease.Enabled)
+            if (true)
+            {
+                DisableProjectpartsDropdowns();
+                DataSet ds = new DataSet();
+                int ID = Convert.ToInt32(gvDetail.DataKeys[e.NewEditIndex].Values[0]);
+                HfProjectPartID.Value = ID.ToString();
+                ObjBOL_1.Operation = 3;
+                ObjBOL_1.PartID = ID;
+                ds = ObjBLL_1.Return_DataSet(ObjBOL_1);
+                if (ds.Tables[0].Rows.Count > 0)
+                {
+                    DataRow row = ds.Tables[0].Rows[0];
+                    //if (ddlCategory.Items.FindByValue(row["CategoryID"].ToString()) != null)
+                    //{
+                    //    ddlCategory.SelectedValue = row["CategoryID"].ToString();
+                    //    ddlCategory_SelectedIndexChanged_Event();
+                    //}
+
+                    if (ddlPartsDetail.Items.FindByValue(row["PartID"].ToString()) != null)
+                    {
+                        ddlPartsDetail.SelectedValue = row["PartID"].ToString();
+                        ddlPartNo.SelectedValue = row["PartID"].ToString();
+                    }
+                    else
+                    {
+                        ddlPartsDetail.SelectedIndex = 0;
+                        ddlPartNo.SelectedIndex = 0;
+                    }
+
+                    if (ddlShipmentStatus.Items.FindByValue(row["ShipmentStatusId"].ToString()) != null)
+                    {
+                        ddlShipmentStatus.SelectedValue = row["ShipmentStatusId"].ToString();
+                    }
+                    else
+                    {
+                        ddlShipmentStatus.SelectedIndex = 0;
+                    }
+                    txtUM.Text = row["UM"].ToString();
+                    txtComments.Text = row["Comments"].ToString();
+                    txtQty.Text = row["Qty"].ToString();
+                    btnAdd.Text = "Update";
+                }
+            }
+            else
+            {
+                Utility.ShowMessage_Error(Page, "Project is already released !");
+            }
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+    }
+
+    protected void gvDetail_RowCommand(object sender, GridViewCommandEventArgs e)
+    {
+        try
+        {
+            if (e.CommandName == "ShipmentGrid")
+            {
+                GridViewRow gvr = (GridViewRow)((LinkButton)e.CommandSource).NamingContainer;
+                int rowIndex = gvr.RowIndex;
+
+                int id = Convert.ToInt32(gvDetail.DataKeys[rowIndex].Values[0]);
+
+                if (((Label)gvr.FindControl("lblShipmentStatus")).Text == "Close")
+                {
+                    Utility.ShowMessage_Error(Page, "Shipment Status is closed !!");
+                    return;
+                }
+                Label lblPartNo = (Label)gvr.FindControl("lblPartNo");
+                lblOrderAndPartNo.Text = lblPartNo.Text;
+
+                txtOrderQty.Text = ((Label)gvr.FindControl("lblQty")).Text;
+                txtShipQty.Text = string.Empty;
+                txtShipmentShipDate.Text = DateTime.Now.ToShortDateString();
+                HfProjectPartID.Value = id.ToString();
+
+                GetShipmentHistory();
+            }
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+    }
+
+    private void ddlCategory_SelectedIndexChanged_Event()
+    {
+        try
+        {
+            ObjBOL_1.Operation = 5;
+            ObjBOL_1.CategoryID = Int32.Parse(ddlCategory.SelectedValue);
+            DataSet ds = new DataSet();
+            ds = ObjBLL_1.Return_DataSet(ObjBOL_1);
+            if (ds.Tables[0].Rows.Count > 0)
+            {
+                Utility.BindDropDownList(ddlPartsDetail, ds.Tables[0]);
+                Utility.BindDropDownList(ddlPartNo, ds.Tables[0]);
+            }
+            else
+            {
+                ddlPartsDetail.Items.Clear();
+                ddlPartNo.Items.Clear();
+            }
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+    }
+
+    protected void ddlCategory_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        ddlCategory_SelectedIndexChanged_Event();
+    }
+
+    protected void btnClear_Click(object sender, EventArgs e)
+    {
+        btnClear_Click_Event();
+    }
+
+    private void DisableProjectParts()
+    {
+        try
+        {
+            ddlCategory.Enabled = false;
+            ddlPartsDetail.Enabled = false;
+            ddlPartNo.Enabled = false;
+            txtQty.Enabled = false;
+            //btnAdd.Enabled = false;
+            //btnClear.Enabled = false;
+            //gvDetail.Enabled = false;
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+    }
+
+    private void EnableProjectParts()
+    {
+        try
+        {
+            ddlCategory.Enabled = true;
+            ddlPartsDetail.Enabled = true;
+            ddlPartNo.Enabled = true;
+            txtQty.Enabled = true;
+            //btnAdd.Enabled = true;
+            //btnClear.Enabled = true;
+            //gvDetail.Enabled = true;
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+    }
+
+    private void BindUM(string PartID)
+    {
+        try
+        {
+            DataTable dt = (DataTable)ViewState["Parts"];
+            if (dt.Rows.Count > 0)
+            {
+                var filteredRows = dt.AsEnumerable()
+                          .Where(row => row.Field<int>("id") == Convert.ToInt32(PartID)).ToList();
+                if (filteredRows.Count > 0)
+                {
+                    txtUM.Text = filteredRows[0][3].ToString();
+                }
+                else
+                {
+                    txtUM.Text = String.Empty;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+    }
+
+    protected void ddlPartNo_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        try
+        {
+            if (ddlPartNo.SelectedIndex > 0)
+            {
+                ddlPartsDetail.SelectedValue = ddlPartNo.SelectedValue;
+                BindUM(ddlPartsDetail.SelectedValue);
+            }
+            else
+            {
+                ddlPartsDetail.SelectedIndex = 0;
+            }
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+    }
+
+    protected void ddlPartsDetail_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        try
+        {
+            if (ddlPartsDetail.SelectedIndex > 0)
+            {
+                ddlPartNo.SelectedValue = ddlPartsDetail.SelectedValue;
+                BindUM(ddlPartsDetail.SelectedValue);
+            }
+            else
+            {
+                ddlPartNo.SelectedIndex = 0;
+            }
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+    }
+
+    protected void ddlCompany_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        //if (txtSearchPNum.Text.Trim() != "")
+        //{
+        //    Utility.ShowMessage_Error(Page, "Changing company will delete the old Parts !!");
+        //}
+        ddlCompany_SelectedIndexChanged();
+    }
+
+    private void ddlCompany_SelectedIndexChanged()
+    {
+        LoadParts();
+    }
+
+    private bool ValidationCheckShipment()
+    {
+        try
+        {
+            ModalShipmentDetails.Show();
+            if (txtShipQty.Text == "")
+            {
+                Utility.ShowMessage_Error(Page, "Please enter Ship Qty !!");
+                txtShipQty.Focus();
+                return false;
+            }
+
+            if (txtShipmentShipDate.Text == "")
+            {
+                Utility.ShowMessage_Error(Page, "Please enter Ship Date !!");
+                txtShipmentShipDate.Focus();
+                return false;
+            }
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+        return true;
+    }
+
+    private void GetShipmentHistory()
+    {
+        try
+        {
+            ObjBOL_1.Operation = 10;
+            ObjBOL_1.Id = Int32.Parse(HfProjectPartID.Value);
+            DataSet ds = ObjBLL_1.Return_DataSet(ObjBOL_1);
+            if (ds.Tables[0].Rows.Count > 0)
+            {
+                gvShipmentHistory.DataSource = ds.Tables[0];
+                gvShipmentHistory.DataBind();
+            }
+            else
+            {
+                gvShipmentHistory.DataSource = string.Empty;
+                gvShipmentHistory.DataBind();
+            }
+            ModalShipmentDetails.Show();
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+    }
+
+    protected void gvShipmentHistory_RowDeleting(object sender, GridViewDeleteEventArgs e)
+    {
+        try
+        {
+            string Id = Convert.ToString(gvShipmentHistory.DataKeys[e.RowIndex].Value);
+            ObjBOL_1.Operation = 12;
+            ObjBOL_1.Id = Int32.Parse(Id);
+            string returnStatus = ObjBLL_1.Return_String(ObjBOL_1);
+            if (returnStatus.Trim() == "S")
+            {
+                Utility.MaintainLogsSpecial("FromITWProjects.aspx", "Del-Ship", HfProjectPartID.Value);
+                Utility.ShowMessage_Success(Page, "Record deleted successfully !!");
+                GetShipmentHistory();
+                BindGrid();
+            }
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+    }
+
+    protected void btnAddShipmentDetail_Click(object sender, EventArgs e)
+    {
+        try
+        {
+            if (ValidationCheckShipment())
+            {
+                ObjBOL_1.Operation = 11;
+                ObjBOL_1.Id = Int32.Parse(HfProjectPartID.Value);
+                ObjBOL_1.ShipQty = Int32.Parse(txtShipQty.Text);
+                ObjBOL_1.ShipDate = Utility.ConvertDate(txtShipmentShipDate.Text);
+                ObjBOL_1.Comments = txtShipmentComments.Text;
+                ObjBOL_1.CategoryID = Utility.GetCurrentUser();
+                string returnStatus = ObjBLL_1.Return_String(ObjBOL_1);
+                if (returnStatus.Trim() == "S")
+                {
+                    Utility.MaintainLogsSpecial("FromITWProjects.aspx", "Save-Ship", HfProjectPartID.Value);
+                    Utility.ShowMessage_Success(Page, "Record inserted successfully !!");
+                    GetShipmentHistory();
+                    BindGrid();
+                    btnCancelShipmentDetail_Click();
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+    }
+
+    protected void btnCancelShipmentDetail_Click(object sender, EventArgs e)
+    {
+        btnCancelShipmentDetail_Click();
+    }
+
+    protected void btnCancelShipmentDetail_Click()
+    {
+        try
+        {
+            txtShipmentShipDate.Text = string.Empty;
+            txtShipQty.Text = string.Empty;
+            txtShipmentComments.Text = string.Empty;
+            ModalShipmentDetails.Show();
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+    }
+
+    protected void gvDetail_RowDataBound(object sender, GridViewRowEventArgs e)
+    {
+        try
+        {
+            if (e.Row.RowType == DataControlRowType.DataRow)
+            {
+                Label lblShipQty = (Label)e.Row.FindControl("lblShipQty");
+                Label lblQty = (Label)e.Row.FindControl("lblQty");
+                // Or conditional based on value
+                if (Convert.ToInt32(lblShipQty.Text) > Convert.ToInt32(lblQty.Text))
+                {
+                    lblShipQty.ForeColor = System.Drawing.Color.Red;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+    }
+
+    protected void ddlProductCode_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        LoadParts();
+    }
+
+    private void LoadParts()
+    {
+        try
+        {
+            //if (ddlCompany.SelectedIndex > 0 || ddlProductCode.SelectedIndex > 0)
+            //{
+            ObjBOL.Operation = 10;
+            if (ddlCompany.SelectedIndex > 0)
+            {
+                ObjBOL.Company = Int32.Parse(ddlCompany.SelectedValue);
+            }
+
+            if (ddlProductCode.SelectedIndex > 0)
+            {
+                ObjBOL.Id = Int32.Parse(ddlProductCode.SelectedValue);
+            }
+            DataSet ds = ObjBLL.Return_DataSet(ObjBOL);
+            if (ds.Tables[0].Rows.Count > 0)
+            {
+                Utility.BindDropDownList(ddlPartNo, ds.Tables[0]);
+                Utility.BindDropDownList(ddlPartsDetail, ds.Tables[0]);
+                ddlPartNo.SelectedIndex = 0;
+                ddlPartsDetail.SelectedIndex = 0;
+                ViewState["Parts"] = ds.Tables[0];
+            }
+            else
+            {
+                ddlPartNo.Items.Clear();
+                ddlPartsDetail.Items.Clear();
+                ViewState["Parts"] = null;
+            }
+            //}
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+    }
+}

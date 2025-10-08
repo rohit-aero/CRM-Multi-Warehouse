@@ -14132,6 +14132,19 @@ namespace BOLAERO
 
     public class BOLTurboWashPart
     {
+        Int32 _CompanyID;
+        public Int32 CompanyID
+        {
+            get { return _CompanyID; }
+            set { _CompanyID = value; }
+        }
+
+        string _PartDescription;
+        public string PartDescription
+        {
+            get { return _PartDescription; }
+            set { _PartDescription = value; }
+        }
 
         Int32 _Operation;
         public Int32 Operation
@@ -14409,8 +14422,58 @@ namespace BOLAERO
             set { _UserInputOTP = value; }
         }
     }
+
     public class BOLManageITWProjects
     {
+        String _RefId;
+        public String RefId
+        {
+            get { return _RefId; }
+            set { _RefId = value; }
+        }
+
+        Int32 _WarehouseId;
+        public Int32 WarehouseId
+        {
+            get { return _WarehouseId; }
+            set { _WarehouseId = value; }
+        }
+
+        Int32 _Company;
+        public Int32 Company
+        {
+            get { return _Company; }
+            set { _Company = value; }
+        }
+
+        String _HobartDrawingRevisionNo;
+        public String HobartDrawingRevisionNo
+        {
+            get { return _HobartDrawingRevisionNo; }
+            set { _HobartDrawingRevisionNo = value; }
+        }
+
+        String _PONumber;
+        public String PONumber
+        {
+            get { return _PONumber; }
+            set { _PONumber = value; }
+        }
+
+        Int32 _POType;
+        public Int32 POType
+        {
+            get { return _POType; }
+            set { _POType = value; }
+        }
+
+        String _CI;
+        public String CI
+        {
+            get { return _CI; }
+            set { _CI = value; }
+        }
+
         Int32 _Operation;
         public Int32 Operation
         {
@@ -14437,20 +14500,6 @@ namespace BOLAERO
         {
             get { return _HobartDrawingNumber; }
             set { _HobartDrawingNumber = value; }
-        }
-
-        String _Orientation;
-        public String Orientation
-        {
-            get { return _Orientation; }
-            set { _Orientation = value; }
-        }
-
-        Int32 _OptionID;
-        public Int32 OptionID
-        {
-            get { return _OptionID; }
-            set { _OptionID = value; }
         }
 
         DateTime? _POReceivedDate;
@@ -14488,11 +14537,18 @@ namespace BOLAERO
             set { _Release = value; }
         }
 
-        DateTime? _ReleaseDate;
-        public DateTime? ReleaseDate
+        bool _SendToProduction;
+        public bool SendToProduction
         {
-            get { return _ReleaseDate; }
-            set { _ReleaseDate = value; }
+            get { return _SendToProduction; }
+            set { _SendToProduction = value; }
+        }
+
+        DateTime? _DrawingReleaseDate;
+        public DateTime? DrawingReleaseDate
+        {
+            get { return _DrawingReleaseDate; }
+            set { _DrawingReleaseDate = value; }
         }
 
         Int32 _LoginUserID;
@@ -14501,10 +14557,108 @@ namespace BOLAERO
             get { return _LoginUserID; }
             set { _LoginUserID = value; }
         }
+
+        String _Comments;
+        public String Comments
+        {
+            get { return _Comments; }
+            set { _Comments = value; }
+        }
+
+        Int32 _Id;
+        public Int32 Id
+        {
+            get { return _Id; }
+            set { _Id = value; }
+        }
+
+        Int32 _PartId;
+        public Int32 PartId
+        {
+            get { return _PartId; }
+            set { _PartId = value; }
+        }
+
+        Int32 _Qty;
+        public Int32 Qty
+        {
+            get { return _Qty; }
+            set { _Qty = value; }
+        }
+
+        Int32 _ShipQty;
+        public Int32 ShipQty
+        {
+            get { return _ShipQty; }
+            set { _ShipQty = value; }
+        }
+
+        DateTime? _NestingStartDate;
+        public DateTime? NestingStartDate
+        {
+            get { return _NestingStartDate; }
+            set { _NestingStartDate = value; }
+        }
+
+        DateTime? _NestingEndDate;
+        public DateTime? NestingEndDate
+        {
+            get { return _NestingEndDate; }
+            set { _NestingEndDate = value; }
+        }
+
+        DateTime? _SentDate;
+        public DateTime? SentDate
+        {
+            get { return _SentDate; }
+            set { _SentDate = value; }
+        }
+
+        Int32 _NestingStatusId;
+        public Int32 NestingStatusId
+        {
+            get { return _NestingStatusId; }
+            set { _NestingStatusId = value; }
+        }
     }
 
     public class BOLManageITWProjectParts
     {
+        Int32 _StatusId;
+        public Int32 StatusId
+        {
+            get { return _StatusId; }
+            set { _StatusId = value; }
+        }
+
+        DateTime? _ShipDate;
+        public DateTime? ShipDate
+        {
+            get { return _ShipDate; }
+            set { _ShipDate = value; }
+        }
+
+        Int32? _ShipQty;
+        public Int32? ShipQty
+        {
+            get { return _ShipQty; }
+            set { _ShipQty = value; }
+        }
+
+        String _Comments;
+        public String Comments
+        {
+            get { return _Comments; }
+            set { _Comments = value; }
+        }
+
+        Int32 _Id;
+        public Int32 Id
+        {
+            get { return _Id; }
+            set { _Id = value; }
+        }
+
         Int32 _Operation;
         public Int32 Operation
         {

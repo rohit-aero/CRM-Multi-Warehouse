@@ -8923,7 +8923,7 @@ namespace DALAERO
 
         public string GetString(BOLTurboWashPart ObjBOL)
         {
-            SqlParameter[] param = new SqlParameter[12];
+            SqlParameter[] param = new SqlParameter[10];
             param[0] = new SqlParameter("@msg", SqlDbType.VarChar, 500);
             param[0].Direction = ParameterDirection.Output;
             param[1] = new SqlParameter("@Operation", ObjBOL.Operation);
@@ -9111,44 +9111,75 @@ namespace DALAERO
     {
         public DataSet Return_DataSet(BOLManageITWProjects ObjBOL)
         {
-            SqlParameter[] param = new SqlParameter[13];
+            SqlParameter[] param = new SqlParameter[28];
             param[0] = new SqlParameter("@Operation", ObjBOL.Operation);
             param[1] = new SqlParameter("@JobID", ObjBOL.JobID);
             param[2] = new SqlParameter("@HobartDrawingNumber", ObjBOL.HobartDrawingNumber);
             param[3] = new SqlParameter("@ProjectName", ObjBOL.ProjectName);
-            param[4] = new SqlParameter("@Orientation", ObjBOL.Orientation);
-            param[5] = new SqlParameter("@OptionID", ObjBOL.OptionID);
-            param[6] = new SqlParameter("@POReceivedDate", ObjBOL.POReceivedDate);
-            param[7] = new SqlParameter("@ReqShipDate", ObjBOL.ReqShipDate);
-            param[8] = new SqlParameter("@ShipDate", ObjBOL.ShipDate);
-            param[9] = new SqlParameter("@EqPrice", ObjBOL.EqPrice);
-            param[10] = new SqlParameter("@Release", ObjBOL.Release);
-            param[11] = new SqlParameter("@ReleaseDate", ObjBOL.ReleaseDate);
-            param[12] = new SqlParameter("@LoginUserID", ObjBOL.LoginUserID);
-            DataSet ds = SqlHelper1.ExecuteDataset(con, CommandType.StoredProcedure, "[dbo].[TW_ManageITWProjects]", param);
+            param[4] = new SqlParameter("@POReceivedDate", ObjBOL.POReceivedDate);
+            param[5] = new SqlParameter("@ReqShipDate", ObjBOL.ReqShipDate);
+            param[6] = new SqlParameter("@ShipDate", ObjBOL.ShipDate);
+            param[7] = new SqlParameter("@EqPrice", ObjBOL.EqPrice);
+            param[8] = new SqlParameter("@Release", ObjBOL.Release);
+            param[9] = new SqlParameter("@DrawingReleaseDate", ObjBOL.DrawingReleaseDate);
+            param[10] = new SqlParameter("@LoginUserID", ObjBOL.LoginUserID);
+            param[11] = new SqlParameter("@Company", ObjBOL.Company);
+            param[12] = new SqlParameter("@HobartDrawingRevisionNo", ObjBOL.HobartDrawingRevisionNo);
+            param[13] = new SqlParameter("@PONumber", ObjBOL.PONumber);
+            param[14] = new SqlParameter("@POType", ObjBOL.POType);
+            param[15] = new SqlParameter("@CI", ObjBOL.CI);
+            param[16] = new SqlParameter("@RefId", ObjBOL.RefId);
+            param[17] = new SqlParameter("@Id", ObjBOL.Id);
+            param[18] = new SqlParameter("@PartId", ObjBOL.PartId);
+            param[19] = new SqlParameter("@Comments", ObjBOL.Comments);
+            param[20] = new SqlParameter("@Qty", ObjBOL.Qty);
+            param[21] = new SqlParameter("@ShipQty", ObjBOL.ShipQty);
+            param[22] = new SqlParameter("@NestingStartDate", ObjBOL.NestingStartDate);
+            param[23] = new SqlParameter("@NestingEndDate", ObjBOL.NestingEndDate);
+            param[24] = new SqlParameter("@SentDate", ObjBOL.SentDate);
+            param[25] = new SqlParameter("@NestingStatusId", ObjBOL.NestingStatusId);
+            param[26] = new SqlParameter("@SendToProduction", ObjBOL.SendToProduction);
+            param[27] = new SqlParameter("@WarehouseId", ObjBOL.WarehouseId);
+            DataSet ds = SqlHelper1.ExecuteDataset(con, CommandType.StoredProcedure, "[dbo].[TW_ManageITWProjects_V2]", param);
             return ds;
         }
 
         public string Return_String(BOLManageITWProjects ObjBOL)
         {
-            SqlParameter[] param = new SqlParameter[14];
+            SqlParameter[] param = new SqlParameter[29];
             param[0] = new SqlParameter("@Operation", ObjBOL.Operation);
             param[1] = new SqlParameter("@JobID", ObjBOL.JobID);
             param[2] = new SqlParameter("@HobartDrawingNumber", ObjBOL.HobartDrawingNumber);
             param[3] = new SqlParameter("@ProjectName", ObjBOL.ProjectName);
-            param[4] = new SqlParameter("@Orientation", ObjBOL.Orientation);
-            param[5] = new SqlParameter("@OptionID", ObjBOL.OptionID);
-            param[6] = new SqlParameter("@POReceivedDate", ObjBOL.POReceivedDate);
-            param[7] = new SqlParameter("@ReqShipDate", ObjBOL.ReqShipDate);
-            param[8] = new SqlParameter("@ShipDate", ObjBOL.ShipDate);
-            param[9] = new SqlParameter("@EqPrice", ObjBOL.EqPrice);
-            param[10] = new SqlParameter("@Release", ObjBOL.Release);
-            param[11] = new SqlParameter("@ReleaseDate", ObjBOL.ReleaseDate);
-            param[12] = new SqlParameter("@LoginUserID", ObjBOL.LoginUserID);
-            param[13] = new SqlParameter("@msg", SqlDbType.VarChar, 50);
-            param[13].Direction = ParameterDirection.Output;
-            SqlHelper1.ExecuteNonQuery(con, CommandType.StoredProcedure, "[dbo].[TW_ManageITWProjects]", param);
-            string msg = param[13].Value.ToString();
+            param[4] = new SqlParameter("@POReceivedDate", ObjBOL.POReceivedDate);
+            param[5] = new SqlParameter("@ReqShipDate", ObjBOL.ReqShipDate);
+            param[6] = new SqlParameter("@ShipDate", ObjBOL.ShipDate);
+            param[7] = new SqlParameter("@EqPrice", ObjBOL.EqPrice);
+            param[8] = new SqlParameter("@Release", ObjBOL.Release);
+            param[9] = new SqlParameter("@DrawingReleaseDate", ObjBOL.DrawingReleaseDate);
+            param[10] = new SqlParameter("@LoginUserID", ObjBOL.LoginUserID);
+            param[11] = new SqlParameter("@Company", ObjBOL.Company);
+            param[12] = new SqlParameter("@HobartDrawingRevisionNo", ObjBOL.HobartDrawingRevisionNo);
+            param[13] = new SqlParameter("@PONumber", ObjBOL.PONumber);
+            param[14] = new SqlParameter("@POType", ObjBOL.POType);
+            param[15] = new SqlParameter("@CI", ObjBOL.CI);
+            param[16] = new SqlParameter("@RefId", ObjBOL.RefId);
+            param[18] = new SqlParameter("@Id", ObjBOL.Id);
+            param[19] = new SqlParameter("@PartId", ObjBOL.PartId);
+            param[20] = new SqlParameter("@Comments", ObjBOL.Comments);
+            param[21] = new SqlParameter("@Qty", ObjBOL.Qty);
+            param[22] = new SqlParameter("@ShipQty", ObjBOL.ShipQty);
+            param[23] = new SqlParameter("@NestingStartDate", ObjBOL.NestingStartDate);
+            param[24] = new SqlParameter("@NestingEndDate", ObjBOL.NestingEndDate);
+            param[25] = new SqlParameter("@SentDate", ObjBOL.SentDate);
+            param[26] = new SqlParameter("@NestingStatusId", ObjBOL.NestingStatusId);
+            param[27] = new SqlParameter("@SendToProduction", ObjBOL.SendToProduction);
+            param[28] = new SqlParameter("@WarehouseId", ObjBOL.WarehouseId);
+
+            param[17] = new SqlParameter("@msg", SqlDbType.VarChar, 50);
+            param[17].Direction = ParameterDirection.Output;
+            SqlHelper1.ExecuteNonQuery(con, CommandType.StoredProcedure, "[dbo].[TW_ManageITWProjects_V2]", param);
+            string msg = param[17].Value.ToString();
             return msg;
         }
     }

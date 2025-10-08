@@ -1,0 +1,533 @@
+﻿<%@ Page Language="C#" AutoEventWireup="true" MasterPageFile="~/Main.master" CodeFile="FrmITWProjects.aspx.cs" Inherits="TurboWash_FrmITWProjects" %>
+
+<%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="asp" %>
+<asp:Content ID="Content1" ContentPlaceHolderID="ContentPlaceHolder1" runat="Server">
+    <asp:UpdatePanel ID="UpdatePanel11" runat="server">
+        <ContentTemplate>
+            <div class="col-12 pt-2 piDiv position-sticky">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="d-flex align-items-center mb-2">
+                            <button type="button" class="btn btn-info btn-sm mr-3" onclick="previousPage()">
+                                <i class="fas fa-chevron-left fa-sm"></i>Back</button>
+                            <h4 class="title-hyphen position-relative mr-3">ITW Project Information
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <div class="row">
+                                    <div class="col-sm-auto">
+                                        <label class="mb-0">Project Name</label>
+                                    </div>
+                                    <div class="col-sm chosenFullWidth">
+                                        <asp:Panel ID="PName" runat="server" Style="height: 200px; overflow: scroll; display: none;">
+                                        </asp:Panel>
+                                        <asp:Panel ID="PanelPName" runat="server" DefaultButton="SearchPNameButton">
+                                            <asp:TextBox ID="txtSearchPName" AutoComplete="off" placeholder="Type Job Name" CssClass="form-control form-control-sm" OnBlur="return ClickEventForPName(event)" runat="server">
+                                            </asp:TextBox>
+                                            <asp:AutoCompleteExtender ID="PName_Extender" runat="server" TargetControlID="txtSearchPName"
+                                                CompletionInterval="1" CompletionSetCount="10" MinimumPrefixLength="1" CompletionListElementID="PName"
+                                                ServicePath="../AutoComplete.asmx" ServiceMethod="SearchITWProject" CompletionListCssClass="autocomplete" />
+                                            <asp:Button ID="SearchPNameButton" runat="server" Text="Submit" Style="display: none" OnClick="txtSearchPName_TextChanged" />
+                                        </asp:Panel>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="row">
+                                    <div class="col-sm-auto">
+                                        <label class="mb-0">Job ID</label>
+                                    </div>
+                                    <div class="col-sm chosenFullWidth">
+                                        <asp:Panel ID="PanelJNum_Hidden" runat="server" Style="height: 200px; overflow: scroll; display: none;">
+                                        </asp:Panel>
+                                        <asp:Panel ID="PanelJNum" runat="server" DefaultButton="SearchJNumberButton">
+                                            <asp:TextBox ID="txtSearchPNum" AutoComplete="off" placeholder="Type Job Number" CssClass="form-control form-control-sm" OnBlur="return ClickEvent(event)" runat="server">
+                                            </asp:TextBox>
+                                            <asp:AutoCompleteExtender ID="AutoCompleteExtender2" runat="server" TargetControlID="txtSearchPNum"
+                                                CompletionInterval="3" CompletionSetCount="10" MinimumPrefixLength="2" CompletionListElementID="PanelJNum_Hidden"
+                                                ServicePath="../AutoComplete.asmx" ServiceMethod="SearchITWJobID" CompletionListCssClass="autocomplete" />
+                                            <asp:Button ID="SearchJNumberButton" runat="server" Text="Submit" Style="display: none" OnClick="txtSearchPNum_TextChanged" />
+                                        </asp:Panel>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="row">
+                                    <div class="col-auto">
+                                        <asp:Button ID="btnNew" runat="server" CssClass="btn btn-primary btn-sm mb-3" OnClick="btnNew_Click" Text="New Project" Visible="false" />
+                                        <asp:Button ID="btnSave" runat="server" CssClass="btn btn-success btn-sm mb-3" Text="Save" OnClick="btnSave_Click" />
+                                        <asp:Button ID="btnCancel" runat="server" CssClass="btn btn-danger btn-sm mb-3" Text="Cancel" OnClick="btnCancel_Click" OnClientClick="RemoveQueryString()" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <%-- Info Section --%>
+            <div class="col-12 border-top">
+                <div class="row pt-3">
+                    <div class="col-12">
+                        <h5 class="text-uppercase">Project Information</h5>
+                    </div>
+
+                    <div class="col-2">
+                        <label>Product Code</label>
+                        <asp:DropDownList CssClass="form-control form-control-sm" ID="ddlProductCode" runat="server" DataTextField="text" DataValueField="id"
+                            AutoPostBack="True" OnSelectedIndexChanged="ddlProductCode_SelectedIndexChanged">
+                        </asp:DropDownList>
+                    </div>
+
+                    <div class="col-2">
+                        <label class="text-danger">Company*</label>
+                        <asp:DropDownList CssClass="form-control form-control-sm" ID="ddlCompany" runat="server" DataTextField="text" DataValueField="id"
+                            AutoPostBack="true" OnSelectedIndexChanged="ddlCompany_SelectedIndexChanged">
+                        </asp:DropDownList>
+                    </div>
+
+                    <div class="col-sm-2">
+                        <div class="form-group">
+                            <label>Job ID</label>
+                            <asp:TextBox ID="txtId" runat="server" MaxLength="50" Visible="false" AutoComplete="off" CssClass="form-control form-control-sm"></asp:TextBox>
+                            <asp:TextBox ID="txtJobId" runat="server" MaxLength="50" AutoComplete="off" CssClass="form-control form-control-sm"></asp:TextBox>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-2">
+                        <div class="form-group">
+                            <label>Hobart Drawing#</label>
+                            <asp:TextBox ID="txtHobartDrawingNumber" runat="server" MaxLength="50" AutoComplete="off" CssClass="form-control form-control-sm"></asp:TextBox>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-2">
+                        <div class="form-group">
+                            <label>Hobart Drawing Revision No</label>
+                            <asp:TextBox ID="txtHobartDrawingRevisionNo" runat="server" MaxLength="20" AutoComplete="off" CssClass="form-control form-control-sm"></asp:TextBox>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <label>Project Name</label>
+                            <asp:TextBox ID="txtProjectName" runat="server" MaxLength="200" AutoComplete="off" CssClass="form-control form-control-sm"></asp:TextBox>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-2">
+                        <div class="form-group">
+                            <label>PO#</label>
+                            <asp:TextBox ID="txtPONumber" runat="server" MaxLength="50" AutoComplete="off" CssClass="form-control form-control-sm"></asp:TextBox>
+                        </div>
+                    </div>
+
+                    <div class="col-2">
+                        <label>PO Type</label>
+                        <asp:DropDownList CssClass="form-control form-control-sm" ID="ddlPOType" runat="server" DataTextField="text" DataValueField="id">
+                        </asp:DropDownList>
+                    </div>
+
+                    <div class="col-sm-2">
+                        <label>Orientation</label>
+                        <asp:DropDownList ID="ddlOrientationList" runat="server" CssClass="form-control form-control-sm">
+                            <asp:ListItem Value="">Select</asp:ListItem>
+                            <asp:ListItem Value="RL">RL</asp:ListItem>
+                            <asp:ListItem Value="LR">LR</asp:ListItem>
+                        </asp:DropDownList>
+                    </div>
+
+                    <div class="col-sm-2" style="display: none">
+                        <label>Option</label>
+                        <asp:DropDownList ID="ddlOption" runat="server" CssClass="form-control form-control-sm">
+                            <asp:ListItem Value="0">Select</asp:ListItem>
+                            <asp:ListItem Value="1">With Drain</asp:ListItem>
+                            <asp:ListItem Value="2">With Sump</asp:ListItem>
+                        </asp:DropDownList>
+                    </div>
+
+                    <div class="col-sm-2">
+                        <div class="form-group">
+                            <label class="text-danger">PO Received Date*</label>
+                            <asp:TextBox CssClass="form-control form-control-sm" ID="txtPOReceivedDate" AutoComplete="off" runat="server"></asp:TextBox>
+                            <asp:CalendarExtender ID="CalendarExtender1" runat="server" Format="MM/dd/yyyy" PopupButtonID="txtPOReceivedDate" TargetControlID="txtPOReceivedDate"></asp:CalendarExtender>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-2">
+                        <div class="form-group">
+                            <label>Req. Ship Date</label>
+                            <asp:TextBox CssClass="form-control form-control-sm" ID="txtReqShipDate" AutoComplete="off" runat="server"></asp:TextBox>
+                            <asp:CalendarExtender ID="txtReqShipDate_Extender" runat="server" Format="MM/dd/yyyy" PopupButtonID="txtReqShipDate" TargetControlID="txtReqShipDate"></asp:CalendarExtender>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-2">
+                        <div class="form-group">
+                            <label class="text-danger">Confirmed Ship Date*</label>
+                            <asp:TextBox CssClass="form-control form-control-sm" ID="txtShipDate" AutoComplete="off" runat="server"></asp:TextBox>
+                            <asp:CalendarExtender ID="txtShipDate_Extender" runat="server" Format="MM/dd/yyyy" PopupButtonID="txtShipDate" TargetControlID="txtShipDate"></asp:CalendarExtender>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-2">
+                        <div class="form-group">
+                            <label>Eq Price($)</label>
+                            <asp:TextBox ID="txtEqPrice" runat="server" MaxLength="10" AutoComplete="off" onkeypress="return onlyDotsAndNumbers(this,event);" CssClass="form-control form-control-sm"></asp:TextBox>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-2">
+                        <div class="form-group">
+                            <label>Drawing Release Date</label>
+                            <asp:TextBox CssClass="form-control form-control-sm" ID="txtReleaseDate" AutoComplete="off" runat="server"></asp:TextBox>
+                            <asp:CalendarExtender ID="CalendarExtender2" runat="server" Format="MM/dd/yyyy" PopupButtonID="txtReleaseDate" TargetControlID="txtReleaseDate"></asp:CalendarExtender>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-2">
+                        <div class="form-group">
+                            <label>Customer ID</label>
+                            <asp:TextBox ID="txtCINumber" runat="server" MaxLength="50" AutoComplete="off" CssClass="form-control form-control-sm"></asp:TextBox>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-2">
+                        <div class="form-group">
+                            <div class="row">
+                                <label class="col-12">&nbsp;</label>
+                            </div>
+                            <asp:Button ID="btnRelease" runat="server" CssClass="btn btn-primary btn-sm mb-3" OnClientClick="return confirm('Are you sure to Release.?');" Text="Release" OnClick="btnRelease_Click" />
+                            <asp:Button ID="btnRollback" runat="server" CssClass="btn btn-danger btn-sm mb-3" OnClientClick="return confirm('Are you sure to Rollback.?');" Text="Rollback" OnClick="btnRollback_Click" />
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <asp:Panel ID="Panel2" runat="server">
+                <div class="col-12 pt-2 border-top">
+                    <div class="row d-flex justify-content-center">
+                        <div class="col-md-12 mx-auto">
+                            <div class="row">
+                                <div class="col-12">
+                                    <h5 class="text-uppercase">Project Parts
+                                     
+                                    <asp:Button CssClass="btn btn-success btn-sm" ID="btnAdd" runat="server" Text="Save" OnClick="btnAdd_Click" />
+                                        <asp:Button CssClass="btn btn-danger btn-sm" ID="btnClear" runat="server" Text="Cancel" OnClick="btnClear_Click" />
+
+                                    </h5>
+                                </div>
+
+                                <%--<asp:TextBox ID="txtProjectPartId" runat="server" MaxLength="50" Visible="false" AutoComplete="off" CssClass="form-control form-control-sm"></asp:TextBox>--%>
+                                <div class="col-md-3" style="display: none;">
+                                    <div class="row">
+                                        <label class="col-auto">Category</label>
+                                        <div class="col chosenFullWidth">
+                                            <asp:DropDownList CssClass="form-control form-control-sm" ID="ddlCategory" runat="server" DataTextField="Category" DataValueField="CategoryID" AutoPostBack="True" OnSelectedIndexChanged="ddlCategory_SelectedIndexChanged"></asp:DropDownList>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-2 pl-0">
+                                    <div class="form-group">
+                                        <label class="col-sm-auto">Part #</label>
+                                        <div class="col chosenFullWidth">
+                                            <asp:DropDownList CssClass="form-control form-control-sm" ID="ddlPartNo" DataTextField="PartNumber" DataValueField="ID" runat="server" AutoPostBack="true" OnSelectedIndexChanged="ddlPartNo_SelectedIndexChanged"></asp:DropDownList>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="form-group">
+                                        <label class="col-sm-auto">Part Description</label>
+                                        <div class="col chosenFullWidth">
+                                            <asp:DropDownList CssClass="form-control form-control-sm" ID="ddlPartsDetail" DataTextField="PartDes" DataValueField="ID" runat="server" AutoPostBack="true" OnSelectedIndexChanged="ddlPartsDetail_SelectedIndexChanged"></asp:DropDownList>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="form-group">
+                                        <label class="col-sm-auto">UM</label>
+                                        <div class="col">
+                                            <asp:TextBox CssClass="form-control form-control-sm" ID="txtUM" Enabled="false" runat="server"></asp:TextBox>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-1">
+                                    <div class="form-group">
+                                        <label class="col-sm-auto">Quantity</label>
+                                        <div class="col">
+                                            <asp:TextBox CssClass="form-control form-control-sm text-right" ID="txtQty" AutoComplete="off" MaxLength="6" runat="server" onkeypress="return onlyNumbers(event);"></asp:TextBox>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 pl-0">
+                                    <div class="form-group">
+                                        <label class="col-sm-auto">Comments</label>
+                                        <div class="col">
+                                            <asp:TextBox CssClass="form-control form-control-sm" ID="txtComments" runat="server" MaxLength="500" AutoComplete="off"></asp:TextBox>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-2">
+                                    <div class="form-group chosenFullWidth">
+                                        <label>Status</label>
+                                        <asp:DropDownList ID="ddlShipmentStatus" CssClass="form-control form-control-sm" DataTextField="text" DataValueField="id" runat="server">
+                                            <%--<asp:ListItem Value="">Select</asp:ListItem>--%>
+                                            <asp:ListItem Value="1" Selected>Active</asp:ListItem>
+                                            <asp:ListItem Value="2">Close</asp:ListItem>
+                                        </asp:DropDownList>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 pt-3">
+                    <div class="table-responsive">
+                        <asp:GridView CssClass="table mainGridTable table-sm" ID="gvDetail" runat="server" AutoGenerateColumns="False" EmptyDataText="No Parts has been Added"
+                            EnableModelValidation="True" DataKeyNames="ProjectPartID" OnRowDeleting="gvDetail_RowDeleting" OnRowEditing="gvDetail_RowEditing" OnRowCommand="gvDetail_RowCommand"
+                            OnRowDataBound="gvDetail_RowDataBound">
+                            <Columns>
+                                <asp:TemplateField HeaderText="Sr. No." HeaderStyle-CssClass="align-center">
+                                    <ItemTemplate>
+                                        <asp:Label ID="lblSrNo" runat="server" Text='<%#Eval("RowNum") %>'></asp:Label>
+                                    </ItemTemplate>
+                                    <ItemStyle HorizontalAlign="Center" />
+                                </asp:TemplateField>
+                                <asp:TemplateField HeaderText="Part Number">
+                                    <ItemTemplate>
+                                        <asp:Label ID="lblPartNo" runat="server" Text='<%#Eval("PartNo") %>'></asp:Label>
+                                    </ItemTemplate>
+                                </asp:TemplateField>
+                                <asp:TemplateField HeaderText="Part Description">
+                                    <ItemTemplate>
+                                        <asp:Label ID="lblPartDes" runat="server" Text='<%#Eval("PartDesc") %>'></asp:Label>
+                                    </ItemTemplate>
+                                </asp:TemplateField>
+
+                                <asp:TemplateField HeaderText="Comments">
+                                    <ItemTemplate>
+                                        <asp:Label ID="lblComments" runat="server" Text='<%#Eval("Comments") %>'></asp:Label>
+                                    </ItemTemplate>
+                                    <ItemStyle />
+                                </asp:TemplateField>
+
+                                <asp:TemplateField HeaderText="Qty" HeaderStyle-CssClass="align-right">
+                                    <ItemTemplate>
+                                        <asp:Label ID="lblQty" runat="server" Text='<%#Eval("Qty") %>'></asp:Label>
+                                    </ItemTemplate>
+                                    <ItemStyle HorizontalAlign="Right" />
+                                </asp:TemplateField>
+
+                                <asp:TemplateField HeaderText="Total Ship Qty" HeaderStyle-CssClass="align-right">
+                                    <ItemTemplate>
+                                        <asp:Label ID="lblShipQty" runat="server" Text='<%#Eval("ShipQty") %>'></asp:Label>
+                                    </ItemTemplate>
+                                    <ItemStyle HorizontalAlign="Right" />
+                                </asp:TemplateField>
+
+                                <asp:TemplateField HeaderText="Pending Qty" HeaderStyle-CssClass="align-right">
+                                    <ItemTemplate>
+                                        <asp:Label ID="lblPendingQty" runat="server" Text='<%#Eval("PendingQty") %>'></asp:Label>
+                                    </ItemTemplate>
+                                    <ItemStyle HorizontalAlign="Right" />
+                                </asp:TemplateField>
+
+                                <asp:TemplateField HeaderText="UM">
+                                    <ItemTemplate>
+                                        <asp:Label ID="lblUM" runat="server" Text='<%#Eval("UM") %>'></asp:Label>
+                                    </ItemTemplate>
+                                    <ItemStyle />
+                                </asp:TemplateField>
+
+                                <asp:TemplateField HeaderText="Shipment Status">
+                                    <ItemTemplate>
+                                        <asp:Label ID="lblShipmentStatus" runat="server" Text='<%#Eval("ShipmentStatus") %>'></asp:Label>
+                                    </ItemTemplate>
+                                    <ItemStyle />
+                                </asp:TemplateField>
+
+                                <asp:TemplateField HeaderText="Modify" HeaderStyle-CssClass="align-center">
+                                    <ItemTemplate>
+                                        <asp:LinkButton runat="server" CssClass="btn btn-primary btn-sm" Text="Edit" CommandName="ShipmentGrid">
+                                                        <i class="fa fa-plus-square" title="Shipment"></i>                                                
+                                        </asp:LinkButton>
+                                        &nbsp;<asp:LinkButton ID="lnkEdit" runat="server" CssClass="btn btn-info btn-sm" CommandName="edit"><i class="far fa-edit" title="Edit"></i></asp:LinkButton>
+                                        &nbsp;
+				                    <asp:LinkButton ID="btnDelete" CssClass="btn btn-danger btn-sm" OnClientClick="return confirm('Are you sure to delete. ?');" runat="server" CommandName="Delete"><i class="fas fa-times" title="Delete"></i></asp:LinkButton>
+                                    </ItemTemplate>
+                                    <HeaderStyle HorizontalAlign="Center" />
+                                    <ItemStyle HorizontalAlign="Center" />
+                                </asp:TemplateField>
+                            </Columns>
+                        </asp:GridView>
+                    </div>
+                </div>
+            </asp:Panel>
+
+            <asp:ModalPopupExtender ID="ModalShipmentDetails" runat="server" TargetControlID="btnShipmentDetails"
+                PopupControlID="PanelShipmentDetails" BackgroundCssClass="modalBackground" CancelControlID="btnClose">
+            </asp:ModalPopupExtender>
+            <asp:Panel ID="PanelShipmentDetails" runat="server" CssClass="ReportsModalPopup" Style="display: none" Width="50%" Height="70%">
+                <div class="position-relative h-100">
+                    <asp:ImageButton CssClass="position-absolute crossCloseBtn" ID="btnClose" runat="server" ImageUrl="../images/closebtnCircle.png"
+                        AlternateText="Close Popup" ToolTip="Close Popup" />
+                    <div class="overflow-auto h-100">
+                        <div class="col-12">
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <h5 class="text-uppercase text-center">Shipment Details:-
+                                      <asp:Label ID="lblOrderAndPartNo" runat="server">Order 1/P001</asp:Label>
+                                        </h5>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr />
+                            <div class="row">
+                                <div class="col-2" style="display: none;">
+                                    <div class="form-group">
+                                        <label class="text-danger">Order Detail ID</label>
+                                        <asp:TextBox CssClass="form-control form-control-sm" ID="txtShipmentId" autocomplete="off" Text="-1" MaxLength="5" runat="server" Enabled="false"></asp:TextBox>
+                                    </div>
+                                </div>
+
+                                <div class="col-2">
+                                    <div class="form-group">
+                                        <label class="text-danger">Order Qty*</label>
+                                        <asp:TextBox CssClass="form-control form-control-sm" ID="txtOrderQty" Style="text-align: right" autocomplete="off" Text="100" MaxLength="5" runat="server" Enabled="false"></asp:TextBox>
+                                    </div>
+                                </div>
+
+                                <div class="col-2">
+                                    <div class="form-group">
+                                        <label class="text-danger">Ship Qty*</label>
+                                        <asp:TextBox CssClass="form-control form-control-sm" ID="txtShipQty" Style="text-align: right" autocomplete="off" MaxLength="5" runat="server"></asp:TextBox>
+                                    </div>
+                                </div>
+
+                                <div class="col-3">
+                                    <div class="form-group">
+                                        <label class="text-danger">Ship Date*</label>
+                                        <asp:TextBox ID="txtShipmentShipDate" autocomplete="off" CssClass="form-control form-control-sm" runat="server"></asp:TextBox>
+                                        <asp:CalendarExtender ID="CalendarExtender3" runat="server" Format="MM/dd/yyyy" PopupButtonID="txtShipDate" TargetControlID="txtShipDate">
+                                        </asp:CalendarExtender>
+                                    </div>
+                                </div>
+
+                                <div class="col-5">
+                                    <div class="form-group">
+                                        <label>Comments</label>
+                                        <asp:TextBox CssClass="form-control form-control-sm" ID="txtShipmentComments" runat="server" oninput="return limitMultiLineInputLength(this, 500)"
+                                            TextMode="MultiLine" AutoComplete="off"></asp:TextBox>
+                                    </div>
+                                </div>
+
+                                <div class="col-6">
+                                    <%--<label>&nbsp;</label>--%>
+                                    <div class="form-group">
+                                        <asp:Button ID="btnAddShipmentDetail" runat="server" CssClass="btn btn-primary btn-sm" Text="Add" OnClick="btnAddShipmentDetail_Click" />
+                                        <asp:Button ID="btnCancelShipmentDetail" runat="server" CssClass="btn btn-danger btn-sm" Text="Cancel" OnClick="btnCancelShipmentDetail_Click" />
+                                        <%--<asp:Button ID="btnChangeShipmentStatus" runat="server" CssClass="btn btn-success btn-sm" Text="Close Shipments" OnClick="btnChangeShipmentStatus_Click" />--%>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col">
+                                    <asp:GridView ID="gvShipmentHistory" runat="server" AutoGenerateColumns="False" BorderStyle="Solid" EmptyDataText="No Records Found"
+                                        BorderWidth="1px" CellPadding="3" EnableModelValidation="True" ForeColor="Black" GridLines="Vertical" Width="100%" AllowSorting="true"
+                                        CssClass="table mainGridTable table-sm" OnRowDeleting="gvShipmentHistory_RowDeleting" DataKeyNames="id"
+                                        Style="font-size: small" BackColor="White" BorderColor="#999999">
+                                        <Columns>
+                                            <asp:BoundField DataField="ShipQty" HeaderText="Ship Qty">
+                                                <ItemStyle HorizontalAlign="Right" Width="15%" />
+                                                <HeaderStyle CssClass="header-right" />
+                                            </asp:BoundField>
+
+                                            <asp:BoundField DataField="ShipDate" HeaderText="Ship Date">
+                                                <ItemStyle HorizontalAlign="Left" Width="15%" />
+                                            </asp:BoundField>
+
+                                            <asp:BoundField DataField="Comments" HeaderText="Comments">
+                                                <ItemStyle HorizontalAlign="Left" Width="55%" />
+                                            </asp:BoundField>
+
+                                            <%--<asp:BoundField DataField="Status" HeaderText="Status" SortExpression="Status">
+                                            <ItemStyle HorizontalAlign="Left" Width="15%" />
+                                        </asp:BoundField>--%>
+
+                                            <asp:TemplateField HeaderText="Modify">
+                                                <ItemTemplate>
+                                                    <div style="text-align: center;">
+                                                        <asp:LinkButton CssClass="btn btn-danger btn-sm" title="Delete" runat="server" Text="Delete" CommandName="Delete" OnClientClick="return confirm('Are you sure.?');">
+                                                <i class="far fa-times-circle"></i>
+                                                        </asp:LinkButton>
+                                                    </div>
+                                                </ItemTemplate>
+                                                <HeaderStyle CssClass="header-center" />
+                                            </asp:TemplateField>
+                                        </Columns>
+                                        <FooterStyle BackColor="#CCCCCC" />
+                                        <HeaderStyle BackColor="Black" Font-Bold="True" ForeColor="White" />
+                                    </asp:GridView>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </asp:Panel>
+            <asp:LinkButton ID="btnShipmentDetails" runat="server"></asp:LinkButton>
+            <asp:HiddenField runat="server" ID="HfProjectPartID" Value="-1" />
+        </ContentTemplate>
+    </asp:UpdatePanel>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            Sys.WebForms.PageRequestManager.getInstance().add_pageLoaded(PageLoaded)
+        });
+
+        function PageLoaded(sender, args) {
+            BindDrp();
+        }
+
+        $.when.apply($, PageLoaded).then(function () {
+            BindDrp();
+        });
+
+        function BindDrp() {
+            $('#<%=ddlOrientationList.ClientID%>').chosen();
+            $('#<%=ddlOption.ClientID%>').chosen();
+            $('#<%=ddlCategory.ClientID%>').chosen();
+            $('#<%=ddlPartNo.ClientID%>').chosen();
+            $('#<%=ddlPartsDetail.ClientID%>').chosen();
+            $('#<%=ddlCategory.ClientID%>').chosen();
+            $('#<%=ddlCompany.ClientID%>').chosen();
+            $('#<%=ddlPOType.ClientID%>').chosen();
+            $('#<%=ddlShipmentStatus.ClientID%>').chosen();
+            $('#<%=ddlProductCode.ClientID%>').chosen();
+        }
+
+        function ClickEventForPName(e) {
+            __doPostBack('<%=SearchPNameButton.UniqueID%>', "");
+        }
+
+        function ClickEvent(e) {
+            __doPostBack('<%=SearchJNumberButton.UniqueID%>', "");
+        }
+
+        function RemoveQueryString() {
+            var uri = window.location.toString();
+            if (uri.indexOf("?") > 0) {
+                var clean_uri = uri.substring(0, uri.indexOf("?"));
+                window.history.replaceState({}, document.title, clean_uri);
+            }
+        }
+    </script>
+</asp:Content>
