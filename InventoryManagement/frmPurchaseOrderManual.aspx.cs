@@ -1748,7 +1748,7 @@ public partial class InventoryManagement_frmPurchaseOrderManual : System.Web.UI.
             }
             if (OrderQty > InTransitQty && InTransitQty > 0)
             {
-                Utility.ShowMessage_Error(Page, "Intransit Qty Not more than Order Qty !!");
+                Utility.ShowMessage_Error(Page, "Order Qty should greater then In-Transit Qty !!");
             }
             if (OrderQty > ReqQty)
             {
@@ -1789,7 +1789,7 @@ public partial class InventoryManagement_frmPurchaseOrderManual : System.Web.UI.
             }
             if (OrderQty < InTransitQty && InTransitQty > 0)
             {
-                Utility.ShowMessage_Error(Page, "Intransit Qty Not more than Order Qty !!");
+                Utility.ShowMessage_Error(Page, "Order Qty should greater then In-Transit Qty !!");
             }
             if (OrderQty > ReqQty && ReqQty > 0)
             {
