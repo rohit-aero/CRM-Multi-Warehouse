@@ -14003,8 +14003,8 @@ namespace BOLAERO
             set { _Notes = value; }
         }
 
-        Int32 _PMResponse;
-        public Int32 PMResponse
+        bool? _PMResponse;
+        public bool? PMResponse
         {
             get { return _PMResponse; }
             set { _PMResponse = value; }
@@ -14595,20 +14595,6 @@ namespace BOLAERO
             set { _HobartDrawingNumber = value; }
         }
 
-        String _Orientation;
-        public String Orientation
-        {
-            get { return _Orientation; }
-            set { _Orientation = value; }
-        }
-
-        Int32 _OptionID;
-        public Int32 OptionID
-        {
-            get { return _OptionID; }
-            set { _OptionID = value; }
-        }
-
         DateTime? _POReceivedDate;
         public DateTime? POReceivedDate
         {
@@ -14644,6 +14630,13 @@ namespace BOLAERO
             set { _Release = value; }
         }
 
+        bool _SendToProduction;
+        public bool SendToProduction
+        {
+            get { return _SendToProduction; }
+            set { _SendToProduction = value; }
+        }
+
         DateTime? _DrawingReleaseDate;
         public DateTime? DrawingReleaseDate
         {
@@ -14657,6 +14650,7 @@ namespace BOLAERO
             get { return _LoginUserID; }
             set { _LoginUserID = value; }
         }
+
         String _Comments;
         public String Comments
         {
@@ -14690,6 +14684,41 @@ namespace BOLAERO
         {
             get { return _ShipQty; }
             set { _ShipQty = value; }
+        }
+
+        DateTime? _NestingStartDate;
+        public DateTime? NestingStartDate
+        {
+            get { return _NestingStartDate; }
+            set { _NestingStartDate = value; }
+        }
+
+        DateTime? _NestingEndDate;
+        public DateTime? NestingEndDate
+        {
+            get { return _NestingEndDate; }
+            set { _NestingEndDate = value; }
+        }
+
+        DateTime? _SentDate;
+        public DateTime? SentDate
+        {
+            get { return _SentDate; }
+            set { _SentDate = value; }
+        }
+
+        Int32 _NestingStatusId;
+        public Int32 NestingStatusId
+        {
+            get { return _NestingStatusId; }
+            set { _NestingStatusId = value; }
+        }
+
+        Int32 _WarehouseId;
+        public Int32 WarehouseId
+        {
+            get { return _WarehouseId; }
+            set { _WarehouseId = value; }
         }
     }
 

@@ -13,6 +13,59 @@ using Microsoft.ApplicationBlocks.Data1;
 
 namespace DALAERO
 {
+    public class DALInstallers : Connection
+    {
+        public DataSet Return_DataSet(BOLInstallers ObjBOL)
+        {
+            SqlParameter[] param = new SqlParameter[17];
+            param[0] = new SqlParameter("@Operation", ObjBOL.Operation);
+            param[1] = new SqlParameter("@ID", ObjBOL.ID);
+            param[2] = new SqlParameter("@CompanyName", ObjBOL.CompanyName);
+            param[3] = new SqlParameter("@Address", ObjBOL.Address);
+            param[4] = new SqlParameter("@CountryID", ObjBOL.CountryID);
+            param[5] = new SqlParameter("@StateID", ObjBOL.StateID);
+            param[6] = new SqlParameter("@City", ObjBOL.City);
+            param[7] = new SqlParameter("@ZipCode", ObjBOL.ZipCode);
+            param[8] = new SqlParameter("@BankDetails", ObjBOL.BankDetails);
+            param[9] = new SqlParameter("@StatusID", ObjBOL.StatusID);
+            param[10] = new SqlParameter("@Title", ObjBOL.Title);
+            param[11] = new SqlParameter("@FirstName", ObjBOL.FirstName);
+            param[12] = new SqlParameter("@LastName", ObjBOL.LastName);
+            param[13] = new SqlParameter("@Extension", ObjBOL.Extension);
+            param[14] = new SqlParameter("@Phone", ObjBOL.Phone);
+            param[15] = new SqlParameter("@Cell", ObjBOL.Cell);
+            param[16] = new SqlParameter("@Email", ObjBOL.Email);
+            DataSet ds = SqlHelper1.ExecuteDataset(con, CommandType.StoredProcedure, "[dbo].[aero_Installers]", param);
+            return ds;
+        }
+
+        public string Return_String(BOLInstallers ObjBOL)
+        {
+            SqlParameter[] param = new SqlParameter[18];
+            param[0] = new SqlParameter("@msg", SqlDbType.VarChar, 50);
+            param[0].Direction = ParameterDirection.Output;
+            param[1] = new SqlParameter("@Operation", ObjBOL.Operation);
+            param[2] = new SqlParameter("@ID", ObjBOL.ID);
+            param[3] = new SqlParameter("@CompanyName", ObjBOL.CompanyName);
+            param[4] = new SqlParameter("@Address", ObjBOL.Address);
+            param[5] = new SqlParameter("@CountryID", ObjBOL.CountryID);
+            param[6] = new SqlParameter("@StateID", ObjBOL.StateID);
+            param[7] = new SqlParameter("@City", ObjBOL.City);
+            param[8] = new SqlParameter("@ZipCode", ObjBOL.ZipCode);
+            param[9] = new SqlParameter("@BankDetails", ObjBOL.BankDetails);
+            param[10] = new SqlParameter("@StatusID", ObjBOL.StatusID);
+            param[11] = new SqlParameter("@Title", ObjBOL.Title);
+            param[12] = new SqlParameter("@FirstName", ObjBOL.FirstName);
+            param[13] = new SqlParameter("@LastName", ObjBOL.LastName);
+            param[14] = new SqlParameter("@Extension", ObjBOL.Extension);
+            param[15] = new SqlParameter("@Phone", ObjBOL.Phone);
+            param[16] = new SqlParameter("@Cell", ObjBOL.Cell);
+            param[17] = new SqlParameter("@Email", ObjBOL.Email);
+            SqlHelper1.ExecuteNonQuery(con, CommandType.StoredProcedure, "[dbo].[aero_Installers]", param);
+            string msg = param[0].Value.ToString();
+            return msg;
+        }
+    }
     public class DALProjectsFabricationAndNestingTasks : Connection
     {
         public DataSet Return_DataSet(BOLProjectsFabricationAndNestingTasks ObjBOL)
@@ -6342,6 +6395,14 @@ namespace DALAERO
             param[0] = new SqlParameter("@partid", ObjBOL.partid);
             param[1] = new SqlParameter("@Operation", ObjBOL.Operation);
             DataSet ds = SqlHelper1.ExecuteDataset(con, CommandType.StoredProcedure, "[IV].[Inv_Requisition_PopupInShop]", param);
+            return ds;
+        }
+        public DataSet GetInOrderData(BOLRequisition ObjBOL)
+        {
+            SqlParameter[] param = new SqlParameter[2];
+            param[0] = new SqlParameter("@partid", ObjBOL.partid);
+            param[1] = new SqlParameter("@Operation", ObjBOL.Operation);
+            DataSet ds = SqlHelper1.ExecuteDataset(con, CommandType.StoredProcedure, "[IV].[Get_Parts_TransactionHistory]", param);
             return ds;
         }
         //GetInStockData
