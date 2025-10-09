@@ -41,7 +41,7 @@
 
             <%-- Info Section --%>
             <div class="col-12">
-            <div class="row pt-3">
+                <div class="row pt-3">
                     <!-- Existing form content here -->
                     <div class="col-8">
                         <div class="row pt-3">
@@ -98,6 +98,12 @@
                     <asp:GridView CssClass="table mainGridTable table-sm" ID="GvShipmentTracker" runat="server" AutoGenerateColumns="False" DataKeyNames="ID"
                         EnableModelValidation="True" Style="margin-top: 0px">
                         <Columns>
+                            <asp:TemplateField HeaderText="Status">
+                                <ItemTemplate>
+                                    <asp:Label ID="lblStatus" runat="server" Text='<%# Eval("ProjectStatus") %>'></asp:Label>
+                                    <asp:Label ID="lblEditProjectStatus" runat="server" Text='<%# Eval("StatusID") %>' Visible="false"></asp:Label>
+                                </ItemTemplate>
+                            </asp:TemplateField>
                             <asp:TemplateField HeaderText="Revised ETA" HeaderStyle-Width="12%">
                                 <EditItemTemplate>
                                     <asp:TextBox ID="txtUpdateRevisedETA" runat="server" class="form-control form-control-sm" autocomplete="off" Text='<%# Eval("RevisedETA", "{0:MM/dd/yyyy}") %>'></asp:TextBox>
@@ -191,45 +197,45 @@
                 }
                 function CheckFileValidations() {
                     var fileInput = document.getElementById('<%= fpUpload.ClientID %>');
-                        var file = fileInput.files[0];
+                    var file = fileInput.files[0];
 
-                        const MAX_FILE_SIZE = 5120000; // 5120000/1024=5000 KB
-                        const ALLOWED_FILE_TYPES = ['application/pdf', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/vnd.ms-excel'];
+                    const MAX_FILE_SIZE = 5120000; // 5120000/1024=5000 KB
+                    const ALLOWED_FILE_TYPES = ['application/pdf', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/vnd.ms-excel'];
 
-                        // Check if a file is selected
-                        if (!file) {
-                            toastr.error("No file selected. Please choose a file to upload.", '', { 'timeOut': 5000, 'hideDuration': 100, 'closeButton': true });
-                            return;
-                        }
-
-                        // Check file size
-                        if (file.size > MAX_FILE_SIZE) {
-                            var filesize = "File size exceeds 5000 KB. Please upload a smaller file.";
-                            toastr.error(filesize, '', { 'timeOut': 5000, 'hideDuration': 100, 'closeButton': true });
-                            fileInput.value = '';
-                            return;
-                        }
-
-                        // Check file type
-                        if (!ALLOWED_FILE_TYPES.includes(file.type)) {
-                            var filetype = "Only PDF and Excel files are allowed. Please upload a PDF or Excel file.";
-                            toastr.error(filetype, '', { 'timeOut': 5000, 'hideDuration': 100, 'closeButton': true });
-                            fileInput.value = '';
-                            return;
-                        }
+                    // Check if a file is selected
+                    if (!file) {
+                        toastr.error("No file selected. Please choose a file to upload.", '', { 'timeOut': 5000, 'hideDuration': 100, 'closeButton': true });
+                        return;
                     }
 
-                    function showToastrOnFileUpload() {
-                        toastr.success('File Uploaded Successfully and Email Sent !', 'Success');
+                    // Check file size
+                    if (file.size > MAX_FILE_SIZE) {
+                        var filesize = "File size exceeds 5000 KB. Please upload a smaller file.";
+                        toastr.error(filesize, '', { 'timeOut': 5000, 'hideDuration': 100, 'closeButton': true });
+                        fileInput.value = '';
+                        return;
                     }
 
-                    function showemailnotification() {
-                        toastr.success('Email Sent Successfully!', 'Success');
+                    // Check file type
+                    if (!ALLOWED_FILE_TYPES.includes(file.type)) {
+                        var filetype = "Only PDF and Excel files are allowed. Please upload a PDF or Excel file.";
+                        toastr.error(filetype, '', { 'timeOut': 5000, 'hideDuration': 100, 'closeButton': true });
+                        fileInput.value = '';
+                        return;
                     }
+                }
 
-                    function showemailnotificationDisabled() {
-                        toastr.error('Email Sent Successfully!', 'error');
-                    }
+                function showToastrOnFileUpload() {
+                    toastr.success('File Uploaded Successfully and Email Sent !', 'Success');
+                }
+
+                function showemailnotification() {
+                    toastr.success('Email Sent Successfully!', 'Success');
+                }
+
+                function showemailnotificationDisabled() {
+                    toastr.error('Email Sent Successfully!', 'error');
+                }
 
             </script>
             <CR:CrystalReportViewer Visible="false" ID="rptGenerateReport" runat="server" AutoDataBind="true" BestFitPage="False" Width="100%" EnableDatabaseLogonPrompt="False" EnableParameterPrompt="False" ToolPanelView="None" />
