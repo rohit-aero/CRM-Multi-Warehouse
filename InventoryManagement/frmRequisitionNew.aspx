@@ -465,6 +465,7 @@
 
             </asp:Panel>
             <asp:LinkButton ID="LinkButton1" runat="server"></asp:LinkButton>
+
             <asp:ModalPopupExtender ID="ModalPopupExtender2" runat="server" TargetControlID="LinkButton2"
                 PopupControlID="Panel2" BackgroundCssClass="modalBackground" CancelControlID="btnClose2">
             </asp:ModalPopupExtender>
@@ -608,15 +609,11 @@
                     </div>
                 </div>
             </asp:Panel>
-
-
-
             <asp:LinkButton ID="LinkButton2" runat="server"></asp:LinkButton>
 
             <asp:ModalPopupExtender ID="ModalPopupExtenderShowParts" runat="server" TargetControlID="LinkButton3"
                 PopupControlID="PanelShowParts" BackgroundCssClass="modalBackground" CancelControlID="btnClose">
             </asp:ModalPopupExtender>
-
             <asp:Panel ID="PanelShowParts" runat="server" CssClass="ReportsModalPopup" Style="display: none;" Width="85%" Height="95%">
                 <div class="position-relative h-100">
                     <asp:ImageButton CssClass="position-absolute crossCloseBtn" ID="ImageButton1" runat="server" ImageUrl="../images/closebtnCircle.png"
@@ -782,8 +779,6 @@
                 </div>
 
             </asp:Panel>
-
-
             <asp:LinkButton ID="LinkButton4" runat="server"></asp:LinkButton>
 
             <script type="text/javascript">

@@ -370,7 +370,7 @@ public partial class InventoryManagement_frmPurchaseOrderManual : System.Web.UI.
             {
                 SendEmail_Prepare(true);
             }
-            
+
         }
         catch (Exception ex)
         {
@@ -382,7 +382,7 @@ public partial class InventoryManagement_frmPurchaseOrderManual : System.Web.UI.
     {
         try
         {
-            SubmitPO();            
+            SubmitPO();
         }
         catch (Exception ex)
         {
@@ -855,6 +855,10 @@ public partial class InventoryManagement_frmPurchaseOrderManual : System.Web.UI.
         try
         {
             ddlSource.SelectedIndex = 0;
+            if (ddlWareHouse.Items.Count > 0)
+            {
+                ddlWareHouse.Items.Clear();
+            }
             ddlPreparedby.SelectedIndex = 0;
             txtIssueDate.Text = String.Empty;
             ddlStatus.SelectedIndex = 0;
@@ -1091,7 +1095,7 @@ public partial class InventoryManagement_frmPurchaseOrderManual : System.Web.UI.
                     ModalPopupExtender2.Show();
                 }
             }
-            if(e.CommandName == "InStock")
+            if (e.CommandName == "InStock")
             {
                 DataSet ds = new DataSet();
                 GridViewRow clickedRow = ((LinkButton)e.CommandSource).NamingContainer as GridViewRow;
@@ -1225,7 +1229,7 @@ public partial class InventoryManagement_frmPurchaseOrderManual : System.Web.UI.
             ObjBOL.PreparedBy = ddlPreparedby.SelectedValue;
             if (txtIssueDate.Text != "")
             {
-                ObjBOL.IssueDate = Utility.ConvertDate(txtIssueDate.Text);
+                ObjBOL.IssueDate = Utility.ConvertDateFormat(txtIssueDate.Text);
             }
             ObjBOL.WareHouseID = Convert.ToInt32(ddlWareHouse.SelectedValue);
             ObjBOL.Status = Convert.ToInt32(ddlStatus.SelectedValue);
@@ -1325,8 +1329,14 @@ public partial class InventoryManagement_frmPurchaseOrderManual : System.Web.UI.
             if (ddlSource.SelectedIndex == 0)
             {
                 //ScriptManager.RegisterClientScriptBlock(this, this.GetType(), "window", "alert('Please Select Vendor. !');", true);
-                Utility.ShowMessage_Error(Page, "Please Select Vendor. !");
+                Utility.ShowMessage_Error(Page, "Please Select Source Warehouse !");
                 ddlSource.Focus();
+                return false;
+            }
+            if (ddlWareHouse.SelectedIndex == 0)
+            {
+                Utility.ShowMessage_Error(Page, "Please Select Destination Warehouse !");
+                ddlWareHouse.Focus();
                 return false;
             }
             if (txtIssueDate.Text == "")
@@ -1341,12 +1351,6 @@ public partial class InventoryManagement_frmPurchaseOrderManual : System.Web.UI.
                 //ScriptManager.RegisterClientScriptBlock(this, this.GetType(), "window", "alert('Please Select Status !');", true);
                 Utility.ShowMessage_Error(Page, "Please Select Status !");
                 ddlStatus.Focus();
-                return false;
-            }
-            if (ddlWareHouse.SelectedIndex == 0)
-            {
-                Utility.ShowMessage_Error(Page, "Please Select Destination Warehouse !");
-                ddlWareHouse.Focus();
                 return false;
             }
         }
@@ -1660,7 +1664,15 @@ public partial class InventoryManagement_frmPurchaseOrderManual : System.Web.UI.
     {
         try
         {
-            Response.Redirect("~/Reports/frmPOReport.aspx", false);
+            string url = ResolveUrl("~/Reports/frmPOReport.aspx");            
+            string script = "var a = document.createElement('a');" +
+                "a.href = '" + url + "';" +
+                "a.target = '_blank';" +
+                "a.rel = 'noopener';" +
+                "document.body.appendChild(a);" +
+                "a.click();" +
+                "document.body.removeChild(a);";
+            ScriptManager.RegisterStartupScript(this, this.GetType(), "openTab", script, true);
         }
         catch (Exception ex)
         {
@@ -1672,7 +1684,7 @@ public partial class InventoryManagement_frmPurchaseOrderManual : System.Web.UI.
     {
         try
         {
-            if(ValidationCheck() == true)
+            if (ValidationCheck() == true)
             {
                 int purchaseOrderID = Int32.Parse(ddlPurchaseOrder.SelectedValue);
                 if (purchaseOrderID > 0)
@@ -1814,7 +1826,6 @@ public partial class InventoryManagement_frmPurchaseOrderManual : System.Web.UI.
                 {
                     ddlWareHouse.Items.Clear();
                 }
-
             }
         }
         catch (Exception ex)

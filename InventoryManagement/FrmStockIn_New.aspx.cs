@@ -18,7 +18,7 @@ public partial class InventoryManagement_FrmStockIn_New : System.Web.UI.Page
     BOLStockIn_New ObjBOL = new BOLStockIn_New();
     BLLStockIn_New ObjBLL = new BLLStockIn_New();
     ReportDocument rprt = new ReportDocument();
-    commonclass1 clscon = new commonclass1();    
+    commonclass1 clscon = new commonclass1();
     string containerNo = "";
     string shipmentDate = "";
     string vendorName = "";
@@ -26,7 +26,7 @@ public partial class InventoryManagement_FrmStockIn_New : System.Web.UI.Page
     string Notes = "";
     string shippmentMethod = "";
     string shippmentStatus = "";
-   
+
     MailAddress MailAddress_AeroIt = new MailAddress(Utility.Email(), Utility.EmailDisplayName());
     MailAddress MailAddress_Purchasing = new MailAddress("purchasing@aero-werks.com", "Purchasing");
 
@@ -43,7 +43,7 @@ public partial class InventoryManagement_FrmStockIn_New : System.Web.UI.Page
                     DisableButton();
                     BindControls(false);
                 }
-            }                       
+            }
         }
         catch (Exception ex)
         {
@@ -64,7 +64,7 @@ public partial class InventoryManagement_FrmStockIn_New : System.Web.UI.Page
                 Utility.BindDropDownListAll(ddlVendorLookup, ds.Tables[0]);
             }
 
-            if (ds.Tables[1].Rows.Count > 0)
+            if ((ds.Tables[1].Rows.Count == 0) || (ds.Tables[1].Rows.Count > 0))
             {
                 Utility.BindDropDownList(ddlContainerLookup, ds.Tables[1]);
             }
@@ -83,7 +83,7 @@ public partial class InventoryManagement_FrmStockIn_New : System.Web.UI.Page
         {
             string msg = "";
             ObjBOL.Operation = 14;
-            ObjBOL.EmployeeID= Utility.GetCurrentSession().EmployeeID;
+            ObjBOL.EmployeeID = Utility.GetCurrentSession().EmployeeID;
             msg = ObjBLL.Return_String(ObjBOL);
             if (msg == "1")
             {
@@ -114,7 +114,7 @@ public partial class InventoryManagement_FrmStockIn_New : System.Web.UI.Page
             ObjBOL.EmployeeID = Utility.GetCurrentSession().EmployeeID;
             ObjBOL.ID = Convert.ToInt32(ddlContainerLookup.SelectedValue);
             msg = ObjBLL.Return_String(ObjBOL);
-            if(msg == "1")
+            if (msg == "1")
             {
                 btnSave.Enabled = true;
             }
@@ -160,7 +160,7 @@ public partial class InventoryManagement_FrmStockIn_New : System.Web.UI.Page
                 Utility.ShowMessage_Error(Page, "Please Enter Revised ETA. !");
                 RevisedETA.Focus();
                 return false;
-            }            
+            }
         }
         catch (Exception ex)
         {
@@ -171,7 +171,7 @@ public partial class InventoryManagement_FrmStockIn_New : System.Web.UI.Page
 
     #endregion
 
-   
+
 
     //Event Handler for Dropdown
     protected void ddlVendorLookup_SelectedIndexChanged(object sender, EventArgs e)
@@ -208,7 +208,7 @@ public partial class InventoryManagement_FrmStockIn_New : System.Web.UI.Page
     {
         //btnSendEmail_Click_Event();
     }
-      
+
     #region other functions
 
     private void Send_Email(String Message, String Subject, List<MailAddress> sendToList, List<MailAddress> ccList)
@@ -256,7 +256,7 @@ public partial class InventoryManagement_FrmStockIn_New : System.Web.UI.Page
     }
 
 
-    private void SendEmail_Prepare(string invoice,string containerNo,string vendor,string receiveDateString,string revicedETA,string comments)
+    private void SendEmail_Prepare(string invoice, string containerNo, string vendor, string receiveDateString, string revicedETA, string comments)
     {
         try
         {
@@ -279,28 +279,28 @@ public partial class InventoryManagement_FrmStockIn_New : System.Web.UI.Page
 
                 Message += " <tr style='background:#efefef'><td style='width:1%;white-space:nowrap'> ETA </td><td style='font-weight:600;width:99%'> " + revicedETA + "</td></tr>";
 
-                
+
                 Message += " <tr><td style='width:1%;white-space:nowrap'> Comments  </td><td style='font-weight:600;width:99%' > " + comments + "</td></tr> ";
                 Message += " <tr style='background:#efefef'><td style='width:1%;white-space:nowrap'> Shipment Status </td><td style='font-weight:600;width:99%'> " + "In-Transit" + "</td></tr>";
                 Message += " <tr><td colspan = '2'>If you have any questions or concerns regarding the above Information, please contact the Liezl. liezl@aero-werks.com <br /><br/ > ";
                 Message += " Thanks, <br/ > <strong> " + Utility.EmailDisplayName() + " </strong> <br />";
-                Message += " </td></tr><tr><td colspan='2' style='color:Red'>"+ Do_Not_Reply +"</td></tr></table></td></tr></table></body></html> ";
-               
+                Message += " </td></tr><tr><td colspan='2' style='color:Red'>" + Do_Not_Reply + "</td></tr></table></td></tr></table></body></html> ";
+
                 List<MailAddress> sendToList = new List<MailAddress>();
                 List<MailAddress> ccList = new List<MailAddress>();
-                sendToList.Add(MailAddress_Purchasing);    
-                if(containerNo == "")
+                sendToList.Add(MailAddress_Purchasing);
+                if (containerNo == "")
                 {
                     EmailSubject = "Invoice No " + invoice + " ETA " + revicedETA;
                 }
                 else
                 {
                     EmailSubject = "Container No " + containerNo + " ETA " + revicedETA;
-                }         
+                }
                 Send_Email(Message, EmailSubject, sendToList, ccList);
             }
             else
-            {                
+            {
                 ClientScript.RegisterStartupScript(this.GetType(), "showemailnotificationDisabled", "showemailnotificationDisabled();", true);
             }
         }
@@ -381,7 +381,7 @@ public partial class InventoryManagement_FrmStockIn_New : System.Web.UI.Page
                 }
                 GetContainerInfo();
                 EnableButton();
-                GetFilePath(ddlContainerLookup.SelectedValue);                   
+                GetFilePath(ddlContainerLookup.SelectedValue);
             }
             else
             {
@@ -401,12 +401,13 @@ public partial class InventoryManagement_FrmStockIn_New : System.Web.UI.Page
             if (ValidationCheckInfo())
             {
                 ObjBOL.Operation = 9;
-                ObjBOL.ID = Int32.Parse(ddlContainerLookup.SelectedValue);                
+                ObjBOL.ID = Int32.Parse(ddlContainerLookup.SelectedValue);
                 ObjBOL.EmployeeID = Utility.GetCurrentUser();
                 string returnStatus = ObjBLL.Return_String(ObjBOL);
                 if (returnStatus.Trim() != "")
                 {
-                    Utility.ShowMessage_Success(Page, returnStatus);                   
+                    Utility.ShowMessage_Success(Page, returnStatus);
+                    Utility.MaintainLogsSpecial("Frmstockin_new", "Stock-In", ObjBOL.ID.ToString());
                     Reset();
                 }
             }
@@ -415,7 +416,7 @@ public partial class InventoryManagement_FrmStockIn_New : System.Web.UI.Page
         {
             Utility.AddEditException(ex);
         }
-    }    
+    }
 
     private void GetContainerInfo()
     {
@@ -454,7 +455,7 @@ public partial class InventoryManagement_FrmStockIn_New : System.Web.UI.Page
                 ObjBOL.ID = Int32.Parse(ddlContainerLookup.SelectedValue);
                 ds = ObjBLL.Return_DataSet(ObjBOL);
                 if (ds.Tables[0].Rows.Count > 0)
-                {                    
+                {
                     GvShipmentTracker.DataSource = ds.Tables[0];
                     GvShipmentTracker.DataBind();
                     //Button btnAdd = (Button)GvShipmentTracker.FooterRow.FindControl("btnAdd");
@@ -487,7 +488,7 @@ public partial class InventoryManagement_FrmStockIn_New : System.Web.UI.Page
         {
             ShowEnabledStockInButton();
             btnPackingDetails.Enabled = true;
-            btnExportNegativeStock.Enabled = true;                  
+            btnExportNegativeStock.Enabled = true;
         }
         catch (Exception ex)
         {
@@ -601,7 +602,7 @@ public partial class InventoryManagement_FrmStockIn_New : System.Web.UI.Page
         rprt.Close();
         rprt.Dispose();
         return reportStream;
-    }  
+    }
 
     #endregion
 
@@ -616,7 +617,7 @@ public partial class InventoryManagement_FrmStockIn_New : System.Web.UI.Page
             lnkDowloadPackingList.Visible = false;
             lnkDowloadPackingList.Text = String.Empty;
             ViewState["IsPageLoaded"] = false;
-            ResetDetail();            
+            ResetDetail();
         }
         catch (Exception ex)
         {
@@ -671,7 +672,7 @@ public partial class InventoryManagement_FrmStockIn_New : System.Web.UI.Page
             ds = ObjBLL.Return_DataSet(ObjBOL);
             if (ds.Tables[0].Rows.Count > 0)
             {
-                if(ds.Tables[0].Rows[0]["PackingList"].ToString() != "")
+                if (ds.Tables[0].Rows[0]["PackingList"].ToString() != "")
                 {
                     divpackinglistlink.Visible = true;
                     lnkDowloadPackingList.Visible = true;
@@ -775,7 +776,7 @@ public partial class InventoryManagement_FrmStockIn_New : System.Web.UI.Page
     {
         try
         {
-            BindExportToExcelGrid();            
+            BindExportToExcelGrid();
         }
         catch (Exception ex)
         {

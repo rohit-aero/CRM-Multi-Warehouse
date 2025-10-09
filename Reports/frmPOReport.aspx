@@ -24,7 +24,7 @@
                     <div class="col-6 col-sm-4 col-md-3 col-lg-2">
                         <div class="form-group">
                             <label>By Destination</label>
-                            <asp:DropDownList CssClass="form-control form-control-sm" ID="ddlDest" runat="server" DataTextField="Name" DataValueField="WareHouseID"></asp:DropDownList>
+                            <asp:DropDownList CssClass="form-control form-control-sm" ID="ddlDest" runat="server" DataTextField="Name" DataValueField="WareHouseID" OnSelectedIndexChanged="ddlDest_SelectedIndexChanged" AutoPostBack="true"></asp:DropDownList>
                         </div>
                     </div>
                     <div class="col-6 col-sm-4 col-md-3 col-lg-2">
@@ -73,7 +73,7 @@
                     <div class="row pt-3">
                         <div class="col-12">
                             <div class="table-responsive">
-                                <asp:GridView ID="gvMainPOReport" CssClass="table mainGridTable table-sm mb-0" runat="server" AutoGenerateColumns="False" EnableModelValidation="True" EmptyDataText="No Records Found">
+                                <asp:GridView ID="gvMainPOReport" Style="font-size: small" Width="100%" CssClass="table mainGridTable table-sm mb-0" runat="server" AutoGenerateColumns="False" EnableModelValidation="True" EmptyDataText="No Records Found">
                                     <Columns>
                                         <asp:TemplateField HeaderText="Source">
                                             <ItemTemplate>

@@ -64,13 +64,13 @@
                     </div>
                     <div class="col-sm-6 col-md-3 col-lg-2">
                         <div class="form-group">
-                            <label class="text-danger"> Source WareHouse*</label>
+                            <label class="text-danger">Source Warehouse*</label>
                             <asp:DropDownList CssClass="form-control" ID="ddlVendor" runat="server" DataTextField="Source" DataValueField="id" AutoPostBack="True" OnSelectedIndexChanged="ddlVendor_SelectedIndexChanged"></asp:DropDownList>
                         </div>
                     </div>
                     <div class="col-sm-6 col-md-3 col-lg-2">
                         <div class="form-group">
-                            <label class="text-danger">Destination WareHouse*</label>
+                            <label class="text-danger">Destination Warehouse*</label>
                             <asp:DropDownList CssClass="form-control" ID="ddlDestWareHouse" runat="server" DataTextField="Name" DataValueField="WareHouseID" AutoPostBack="True" OnSelectedIndexChanged="ddlDestWareHouse_SelectedIndexChanged"></asp:DropDownList>
                         </div>
                     </div>
@@ -212,7 +212,6 @@
                                     </td>
                                     <td>
                                         <asp:DropDownList CssClass="form-control form-control-sm" ID="ddlStatus" runat="server">
-                                            <asp:ListItem Value="0">Select</asp:ListItem>
                                             <asp:ListItem Value="1" Selected="True">Open</asp:ListItem>
                                             <asp:ListItem Value="2">Close</asp:ListItem>
                                         </asp:DropDownList>
@@ -249,7 +248,7 @@
                                                 </asp:TemplateField>
                                                 <asp:TemplateField HeaderText="UM" HeaderStyle-Width="10%">
                                                     <ItemTemplate>
-                                                          <asp:Label ID="lblUM" runat="server" Text='<%# Eval("UM") %>'></asp:Label>
+                                                        <asp:Label ID="lblUM" runat="server" Text='<%# Eval("UM") %>'></asp:Label>
                                                     </ItemTemplate>
                                                 </asp:TemplateField>
                                                 <asp:TemplateField HeaderStyle-Width="80%" HeaderText="Purchase Order Details">
@@ -316,7 +315,6 @@
                                                                         <ItemTemplate>
                                                                             <asp:Label ID="lblStatus" runat="server" Text='<%# Eval("Status") %>' Visible="false" />
                                                                             <asp:DropDownList ID="ddlstatus" CssClass="form-control form-control-sm" runat="server">
-                                                                                <asp:ListItem Value="0">Select</asp:ListItem>
                                                                                 <asp:ListItem Value="1">Open</asp:ListItem>
                                                                                 <asp:ListItem Value="2">Close</asp:ListItem>
                                                                             </asp:DropDownList>

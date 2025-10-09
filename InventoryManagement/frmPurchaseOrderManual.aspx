@@ -509,7 +509,7 @@
 
             <asp:LinkButton ID="LinkButton2" runat="server"></asp:LinkButton>
 
-                        <asp:ModalPopupExtender ID="ModalPopupExtender3" runat="server" TargetControlID="LinkButton3"
+            <asp:ModalPopupExtender ID="ModalPopupExtender3" runat="server" TargetControlID="LinkButton3"
                 PopupControlID="Panel3" BackgroundCssClass="modalBackground" CancelControlID="btnClose">
             </asp:ModalPopupExtender>
             <asp:Panel ID="Panel3" runat="server" CssClass="ReportsModalPopup" Style="display: none;" Width="80%" Height="60%">
@@ -559,8 +559,6 @@
                 </div>
 
             </asp:Panel>
-
-
             <asp:LinkButton ID="LinkButton3" runat="server"></asp:LinkButton>
 
 

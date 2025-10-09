@@ -262,8 +262,8 @@ public partial class Reports_frmContainerStatus : System.Web.UI.Page
             }
             if (txtSentDateFrom.Text != "" && txtSentDateTo.Text != "")
             {
-                qstr += "  AND ( Inv_Container.SentDate BETWEEN  '" + txtSentDateFrom.Text + "'  AND  '" + txtSentDateTo.Text + "'  OR Inv_Container.SentDate IS NULL ) ";
-            }
+                qstr += "  AND ( Inv_Container.SentDate BETWEEN  '" + txtSentDateFrom.Text + "'  AND  '" + txtSentDateTo.Text + "'  OR Inv_Container.SentDate IS NULL) ";
+            }            
             if (ddlContainerCheckStatus.SelectedIndex > 0)
             {
                 if (ddlContainerCheckStatus.SelectedValue == "1")

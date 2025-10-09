@@ -5,6 +5,127 @@ using System.Data;
 /// </summary>
 namespace BOLAERO
 {
+    public class BOLInstallers
+    {
+        Int32 _Operation;
+        public Int32 Operation
+        {
+            get { return _Operation; }
+            set { _Operation = value; }
+        }
+
+        Int32 _ID;
+        public Int32 ID
+        {
+            get { return _ID; }
+            set { _ID = value; }
+        }
+
+        string _CompanyName;
+        public string CompanyName
+        {
+            get { return _CompanyName; }
+            set { _CompanyName = value; }
+        }
+
+        string _Address;
+        public string Address
+        {
+            get { return _Address; }
+            set { _Address = value; }
+        }
+
+        Int32 _CountryID;
+        public Int32 CountryID
+        {
+            get { return _CountryID; }
+            set { _CountryID = value; }
+        }
+
+        Int32 _StateID;
+        public Int32 StateID
+        {
+            get { return _StateID; }
+            set { _StateID = value; }
+        }
+
+        string _City;
+        public string City
+        {
+            get { return _City; }
+            set { _City = value; }
+        }
+
+        string _ZipCode;
+        public string ZipCode
+        {
+            get { return _ZipCode; }
+            set { _ZipCode = value; }
+        }
+
+        string _BankDetails;
+        public string BankDetails
+        {
+            get { return _BankDetails; }
+            set { _BankDetails = value; }
+        }
+
+        Int32 _StatusID;
+        public Int32 StatusID
+        {
+            get { return _StatusID; }
+            set { _StatusID = value; }
+        }
+
+        string _Title;
+        public string Title
+        {
+            get { return _Title; }
+            set { _Title = value; }
+        }
+
+        string _FirstName;
+        public string FirstName
+        {
+            get { return _FirstName; }
+            set { _FirstName = value; }
+        }
+
+        string _LastName;
+        public string LastName
+        {
+            get { return _LastName; }
+            set { _LastName = value; }
+        }
+
+        string _Extension;
+        public string Extension
+        {
+            get { return _Extension; }
+            set { _Extension = value; }
+        }
+
+        string _Phone;
+        public string Phone
+        {
+            get { return _Phone; }
+            set { _Phone = value; }
+        }
+
+        string _Cell;
+        public string Cell
+        {
+            get { return _Cell; }
+            set { _Cell = value; }
+        }
+
+        string _Email;
+        public string Email
+        {
+            get { return _Email; }
+            set { _Email = value; }
+        }
+    }
     public class BOLProjectsFabricationAndNestingTasks
     {
         Int32 _Operation;
@@ -1381,7 +1502,6 @@ namespace BOLAERO
             get { return _ProductLine; }
             set { _ProductLine = value; }
         }
-
         Int32 _ReportTypeID;
         public Int32 ReportTypeID
         {
@@ -4555,13 +4675,6 @@ namespace BOLAERO
 
     public class BOLManageProjects
     {
-        int _WarehouseId;
-        public int WarehouseId
-        {
-            get { return _WarehouseId; }
-            set { _WarehouseId = value; }
-        }
-
         DateTime? _AssignedDate;
         public DateTime? AssignedDate
         {
@@ -4575,7 +4688,6 @@ namespace BOLAERO
             get { return _ExpectedSubmissionDate_FabCanada; }
             set { _ExpectedSubmissionDate_FabCanada = value; }
         }
-
         String _ProjectQuality;
         public String ProjectQuality
         {
@@ -4623,6 +4735,12 @@ namespace BOLAERO
         {
             get { return _ThirdPartyInstaller; }
             set { _ThirdPartyInstaller = value; }
+        }
+        int _WarehouseId;
+        public int WarehouseId
+        {
+            get { return _WarehouseId; }
+            set { _WarehouseId = value; }
         }
 
         DateTime? _ExpectedSalesDate;
@@ -9615,7 +9733,6 @@ namespace BOLAERO
             get { return _Batch; }
             set { _Batch = value; }
         }
-
         Int32 _CompanyID;
         public Int32 CompanyID
         {
@@ -9671,126 +9788,108 @@ namespace BOLAERO
             get { return _Partid; }
             set { _Partid = value; }
         }
-
         String _PartNumber;
         public String PartNumber
         {
             get { return _PartNumber; }
             set { _PartNumber = value; }
         }
-
         String _CustomerPartNumber;
         public String CustomerPartNumber
         {
             get { return _CustomerPartNumber; }
             set { _CustomerPartNumber = value; }
         }
-
         String _PartInfo;
         public String PartInfo
         {
             get { return _PartInfo; }
             set { _PartInfo = value; }
         }
-
         String _PartDes;
         public String PartDes
         {
             get { return _PartDes; }
             set { _PartDes = value; }
         }
-
         Int32 _ProductLineId;
         public Int32 ProductLineId
         {
             get { return _ProductLineId; }
             set { _ProductLineId = value; }
         }
-
         Int32 _ProductLineSubId;
         public Int32 ProductLineSubId
         {
             get { return _ProductLineSubId; }
             set { _ProductLineSubId = value; }
         }
-
         Int32 _ProductId;
         public Int32 ProductId
         {
             get { return _ProductId; }
             set { _ProductId = value; }
         }
-
         Int32 _SourceId;
         public Int32 SourceId
         {
             get { return _SourceId; }
             set { _SourceId = value; }
         }
-
         Int32 _LoginUserId;
         public Int32 LoginUserId
         {
             get { return _LoginUserId; }
             set { _LoginUserId = value; }
         }
-
         Int32 _DepartmentId;
         public Int32 DepartmentId
         {
             get { return _DepartmentId; }
             set { _DepartmentId = value; }
         }
-
         Int32 _Typeid;
         public Int32 Typeid
         {
             get { return _Typeid; }
             set { _Typeid = value; }
         }
-
         Int32 _stockinhand;
         public Int32 stockinhand
         {
             get { return _stockinhand; }
             set { _stockinhand = value; }
         }
-
         string _RevisionNo;
         public string RevisionNo
         {
             get { return _RevisionNo; }
             set { _RevisionNo = value; }
         }
-
         Int32 _min;
         public Int32 min
         {
             get { return _min; }
             set { _min = value; }
         }
-
         Int32 _max;
         public Int32 max
         {
             get { return _max; }
             set { _max = value; }
         }
-
         Int32 _reorderpoint;
         public Int32 reorderpoint
         {
             get { return _reorderpoint; }
             set { _reorderpoint = value; }
         }
-
         Int32 _reorderqty;
         public Int32 reorderqty
         {
             get { return _reorderqty; }
             set { _reorderqty = value; }
         }
-
         Int32 _leadtime;
         public Int32 leadtime
         {
@@ -9798,27 +9897,26 @@ namespace BOLAERO
             set { _leadtime = value; }
         }
 
+
+
         Int32 _PartStatus;
         public Int32 PartStatus
         {
             get { return _PartStatus; }
             set { _PartStatus = value; }
         }
-
         Int32 _UMId;
         public Int32 UMId
         {
             get { return _UMId; }
             set { _UMId = value; }
         }
-
         String _PathImage;
         public String PathImage
         {
             get { return _PathImage; }
             set { _PathImage = value; }
         }
-
         String _PathShopDrawing;
         public String PathShopDrawing
         {
@@ -9831,28 +9929,24 @@ namespace BOLAERO
             get { return _ShopDrawingName; }
             set { _ShopDrawingName = value; }
         }
-
         Boolean _StockItem;
         public Boolean StockItem
         {
             get { return _StockItem; }
             set { _StockItem = value; }
         }
-
         Boolean _ForecastItem;
         public Boolean ForecastItem
         {
             get { return _ForecastItem; }
             set { _ForecastItem = value; }
         }
-
         Boolean _LineStopper;
         public Boolean LineStopper
         {
             get { return _LineStopper; }
             set { _LineStopper = value; }
         }
-
         Int32 _ProductCode;
         public Int32 ProductCode
         {
@@ -13833,6 +13927,13 @@ namespace BOLAERO
 
     public class BOLPreventativeMaintenanceCallLogs
     {
+        Int32 _StatusId;
+        public Int32 StatusId
+        {
+            get { return _StatusId; }
+            set { _StatusId = value; }
+        }
+
         Int32 _Operation;
         public Int32 Operation
         {
@@ -13902,8 +14003,8 @@ namespace BOLAERO
             set { _Notes = value; }
         }
 
-        bool _PMResponse;
-        public bool PMResponse
+        Int32 _PMResponse;
+        public Int32 PMResponse
         {
             get { return _PMResponse; }
             set { _PMResponse = value; }
@@ -14422,7 +14523,6 @@ namespace BOLAERO
             set { _UserInputOTP = value; }
         }
     }
-
     public class BOLManageITWProjects
     {
         String _RefId;
@@ -14430,13 +14530,6 @@ namespace BOLAERO
         {
             get { return _RefId; }
             set { _RefId = value; }
-        }
-
-        Int32 _WarehouseId;
-        public Int32 WarehouseId
-        {
-            get { return _WarehouseId; }
-            set { _WarehouseId = value; }
         }
 
         Int32 _Company;
@@ -14502,6 +14595,20 @@ namespace BOLAERO
             set { _HobartDrawingNumber = value; }
         }
 
+        String _Orientation;
+        public String Orientation
+        {
+            get { return _Orientation; }
+            set { _Orientation = value; }
+        }
+
+        Int32 _OptionID;
+        public Int32 OptionID
+        {
+            get { return _OptionID; }
+            set { _OptionID = value; }
+        }
+
         DateTime? _POReceivedDate;
         public DateTime? POReceivedDate
         {
@@ -14537,13 +14644,6 @@ namespace BOLAERO
             set { _Release = value; }
         }
 
-        bool _SendToProduction;
-        public bool SendToProduction
-        {
-            get { return _SendToProduction; }
-            set { _SendToProduction = value; }
-        }
-
         DateTime? _DrawingReleaseDate;
         public DateTime? DrawingReleaseDate
         {
@@ -14557,7 +14657,6 @@ namespace BOLAERO
             get { return _LoginUserID; }
             set { _LoginUserID = value; }
         }
-
         String _Comments;
         public String Comments
         {
@@ -14592,34 +14691,6 @@ namespace BOLAERO
             get { return _ShipQty; }
             set { _ShipQty = value; }
         }
-
-        DateTime? _NestingStartDate;
-        public DateTime? NestingStartDate
-        {
-            get { return _NestingStartDate; }
-            set { _NestingStartDate = value; }
-        }
-
-        DateTime? _NestingEndDate;
-        public DateTime? NestingEndDate
-        {
-            get { return _NestingEndDate; }
-            set { _NestingEndDate = value; }
-        }
-
-        DateTime? _SentDate;
-        public DateTime? SentDate
-        {
-            get { return _SentDate; }
-            set { _SentDate = value; }
-        }
-
-        Int32 _NestingStatusId;
-        public Int32 NestingStatusId
-        {
-            get { return _NestingStatusId; }
-            set { _NestingStatusId = value; }
-        }
     }
 
     public class BOLManageITWProjectParts
@@ -14644,14 +14715,12 @@ namespace BOLAERO
             get { return _ShipQty; }
             set { _ShipQty = value; }
         }
-
         String _Comments;
         public String Comments
         {
             get { return _Comments; }
             set { _Comments = value; }
         }
-
         Int32 _Id;
         public Int32 Id
         {

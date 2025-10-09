@@ -168,6 +168,7 @@ public partial class Reports_FrmDashboardReport : System.Web.UI.Page
             }
             else
             {
+                ViewState["dirState"] = null;
                 gvInventoryReportExcel.DataSource = "";
                 gvInventoryReportExcel.DataBind();
             }
@@ -219,24 +220,34 @@ public partial class Reports_FrmDashboardReport : System.Web.UI.Page
     {
         try
         {
-            DataTable dt = (DataTable)ViewState["dirState"];
-            string FileName = "";
-            if (ddlReportType.SelectedValue == "1")
+            if(ViewState["dirState"] != null)
             {
-                FileName = "In-Transit";
-                dt.Columns.RemoveAt(0);
-            }
-            else if (ddlReportType.SelectedValue == "2")
+                DataTable dt = (DataTable)ViewState["dirState"];
+                if (dt.Rows.Count > 0)
+                {
+                    string FileName = "";
+                    if (ddlReportType.SelectedValue == "1")
+                    {
+                        FileName = "In-Transit";
+                        dt.Columns.RemoveAt(0);
+                    }
+                    else if (ddlReportType.SelectedValue == "2")
+                    {
+                        FileName = "Arrived";
+                        dt.Columns.RemoveAt(0);
+                    }
+                    else if (ddlReportType.SelectedValue == "3")
+                    {
+                        FileName = "Inventory";
+                        dt.Columns.RemoveAt(1);
+                    }
+                    Utility.ExportToExcelDT(dt, FileName);
+                }
+            }            
+            else
             {
-                FileName = "Arrived";
-                dt.Columns.RemoveAt(0);
+                Utility.ShowMessage_Error(Page, "No Records Found !");
             }
-            else if (ddlReportType.SelectedValue == "3")
-            {
-                FileName = "Inventory";
-                dt.Columns.RemoveAt(1);
-            }
-            Utility.ExportToExcelDT(dt, FileName);
         }
         catch (Exception ex)
         {
@@ -326,6 +337,7 @@ public partial class Reports_FrmDashboardReport : System.Web.UI.Page
             else
             {
                 ResetGrid();
+                ViewState["dirState"] = null;
             }
         }
         catch (Exception ex)
@@ -362,6 +374,7 @@ public partial class Reports_FrmDashboardReport : System.Web.UI.Page
             else
             {
                 ResetGrid();
+                ViewState["dirState"] = null;
             }
         }
         catch (Exception ex)
@@ -456,12 +469,13 @@ public partial class Reports_FrmDashboardReport : System.Web.UI.Page
     {
         try
         {
+            CheckReportTypeExcel();
             if (ddlReportType.SelectedValue == "3")
-            {
+            {                
                 ExportDataTableToPdf_Inventory();
             }
             else
-            {
+            {                
                 ExportDataTableToPdf();
             }
         }
@@ -515,14 +529,14 @@ public partial class Reports_FrmDashboardReport : System.Web.UI.Page
         {
             Utility.AddEditException(ex);
         }
-    }
+    }   
 
     protected void ddlReportType_SelectedIndexChanged(object sender, EventArgs e)
     {
         try
         {
             if (ddlReportType.SelectedIndex > 0)
-            {
+            {                
                 BindVendorOnInventory(ddlReportType.SelectedValue);
             }
             EnabledButton();
@@ -645,44 +659,51 @@ public partial class Reports_FrmDashboardReport : System.Web.UI.Page
     {
         try
         {
+            if(ViewState["dirState"] != null)
+            {
+                int count = gvShowStockData.Rows.Count;
+                //GridView gv = new GridView();           
+                gvShowStockData.AllowPaging = false;
+                gvShowStockData.AllowSorting = false;
 
-            //GridView gv = new GridView();           
-            gvShowStockData.AllowPaging = false;
-            gvShowStockData.AllowSorting = false;
-
-            Response.ContentType = "application/pdf";
-            CheckReportType();
-            string FileName = "";
-            if (ddlReportType.SelectedValue == "1")
-            {
-                FileName = "In-Transit " + DateTime.Now.ToString("MM/dd/yyyy") + ".pdf";
-                //gv = gvShowStockData;
+                Response.ContentType = "application/pdf";
+                CheckReportType();
+                string FileName = "";
+                if (ddlReportType.SelectedValue == "1")
+                {
+                    FileName = "In-Transit " + DateTime.Now.ToString("MM/dd/yyyy") + ".pdf";
+                    //gv = gvShowStockData;
+                }
+                else if (ddlReportType.SelectedValue == "2")
+                {
+                    FileName = "Arrived " + DateTime.Now.ToString("MM/dd/yyyy") + ".pdf";
+                    //gv = gvShowStockData;
+                }
+                Response.AddHeader("content-disposition", "attachment;filename=" + FileName);
+                Response.Cache.SetCacheability(HttpCacheability.NoCache);
+                foreach (DataControlFieldHeaderCell headerCell in gvShowStockData.HeaderRow.Cells)
+                {
+                    headerCell.ForeColor = System.Drawing.Color.Black; // Set header text color to black
+                    headerCell.Font.Bold = true;
+                }
+                StringWriter sw = new StringWriter();
+                HtmlTextWriter hw = new HtmlTextWriter(sw);
+                gvShowStockData.RenderControl(hw);
+                StringReader sr = new StringReader(sw.ToString());
+                Document pdfDocument = new Document(PageSize.A3, 10f, 10f, 10f, 10f);
+                HTMLWorker htmlparser = new HTMLWorker(pdfDocument);
+                pdfDocument.SetPageSize(PageSize.A3.Rotate());
+                PdfWriter.GetInstance(pdfDocument, Response.OutputStream);
+                pdfDocument.Open();
+                htmlparser.Parse(sr);
+                pdfDocument.Close();
+                Response.Write(pdfDocument);
+                Response.End();
             }
-            else if (ddlReportType.SelectedValue == "2")
+            else
             {
-                FileName = "Arrived " + DateTime.Now.ToString("MM/dd/yyyy") + ".pdf";
-                //gv = gvShowStockData;
+                Utility.ShowMessage_Error(Page, "No Records Found !");
             }
-            Response.AddHeader("content-disposition", "attachment;filename=" + FileName);
-            Response.Cache.SetCacheability(HttpCacheability.NoCache);
-            foreach (DataControlFieldHeaderCell headerCell in gvShowStockData.HeaderRow.Cells)
-            {
-                headerCell.ForeColor = System.Drawing.Color.Black; // Set header text color to black
-                headerCell.Font.Bold = true;
-            }
-            StringWriter sw = new StringWriter();
-            HtmlTextWriter hw = new HtmlTextWriter(sw);
-            gvShowStockData.RenderControl(hw);
-            StringReader sr = new StringReader(sw.ToString());
-            Document pdfDocument = new Document(PageSize.A3, 10f, 10f, 10f, 10f);
-            HTMLWorker htmlparser = new HTMLWorker(pdfDocument);
-            pdfDocument.SetPageSize(PageSize.A3.Rotate());
-            PdfWriter.GetInstance(pdfDocument, Response.OutputStream);
-            pdfDocument.Open();
-            htmlparser.Parse(sr);
-            pdfDocument.Close();
-            Response.Write(pdfDocument);
-            Response.End();
         }
         catch (Exception ex)
         {
@@ -694,94 +715,101 @@ public partial class Reports_FrmDashboardReport : System.Web.UI.Page
     {
         try
         {
-
-            string FileName = "";
-
-            gvInventoryReport.AllowPaging = false;
-            gvInventoryReport.AllowSorting = false;
-
-            Response.ContentType = "application/pdf";
-
-            CheckReportType();
-            if (ddlReportType.SelectedValue == "3")
+            if (ViewState["dirState"] != null)
             {
-                FileName = "Inventory " + DateTime.Now.ToString("MM/dd/yyyy") + ".pdf";
-            }
+                string FileName = "";
 
-            foreach (GridViewRow row in gvInventoryReport.Rows)
+                gvInventoryReport.AllowPaging = false;
+                gvInventoryReport.AllowSorting = false;
+
+                Response.ContentType = "application/pdf";
+
+                CheckReportType();
+                if (ddlReportType.SelectedValue == "3")
+                {
+                    FileName = "Inventory " + DateTime.Now.ToString("MM/dd/yyyy") + ".pdf";
+                }
+
+                foreach (GridViewRow row in gvInventoryReport.Rows)
+                {
+                    LinkButton lnkInTransit = (LinkButton)row.FindControl("lnkInTransit");
+                    Label lblInTransit = (Label)row.FindControl("lblInTransit");
+                    LinkButton lnkInProduction = (LinkButton)row.FindControl("lnkInProduction");
+                    Label lblInProduction = (Label)row.FindControl("lblInProduction");
+                    LinkButton lnkInForcast = (LinkButton)row.FindControl("lnkInForcast");
+                    Label lblInStock = (Label)row.FindControl("lblInStock");
+                    LinkButton lnkInStock = (LinkButton)row.FindControl("lnkStockInHand");
+                    Label lblInForcast = (Label)row.FindControl("lblInForcast");
+                    if (lnkInTransit != null)
+                    {
+                        if (lnkInTransit.Text != "0")
+                        {
+                            lnkInTransit.Attributes.Remove("href");
+                            lnkInTransit.Enabled = false;                           
+                        }
+
+                    }
+
+                    if (lnkInProduction != null)
+                    {
+                        if (lnkInProduction.Text != "0")
+                        {
+                            lnkInProduction.Attributes.Remove("href");
+                            lnkInProduction.Enabled = false;
+                        }
+                    }
+
+                    if (lnkInForcast != null)
+                    {
+                        if (lnkInForcast.Text != "0")
+                        {
+                            lnkInForcast.Attributes.Remove("href");
+                            lnkInForcast.Enabled = false;
+                        }
+                    }
+                    if (lnkInStock != null)
+                    {
+                        if (lnkInStock.Text != "0")
+                        {
+                            lnkInStock.Attributes.Remove("href");
+                            lnkInStock.Enabled = false;
+                        }
+                    }
+                    lblInTransit.Visible = true;
+                    lblInProduction.Visible = true;
+                    lblInForcast.Visible = true;
+                    lnkInTransit.Visible = false;
+                    lnkInProduction.Visible = false;
+                    lnkInForcast.Visible = false;
+                    lblInStock.Visible = true;
+                    lnkInStock.Visible = false;
+                }
+
+                Response.AddHeader("content-disposition", "attachment;filename=" + FileName);
+                Response.Cache.SetCacheability(HttpCacheability.NoCache);
+                foreach (DataControlFieldHeaderCell headerCell in gvInventoryReport.HeaderRow.Cells)
+                {
+                    headerCell.ForeColor = System.Drawing.Color.Black; // Set header text color to black
+                    headerCell.Font.Bold = true;
+                }
+                StringWriter sw = new StringWriter();
+                HtmlTextWriter hw = new HtmlTextWriter(sw);
+                gvInventoryReport.RenderControl(hw);
+                StringReader sr = new StringReader(sw.ToString());
+                Document pdfDocument = new Document(PageSize.A3, 10f, 10f, 10f, 10f);
+                HTMLWorker htmlparser = new HTMLWorker(pdfDocument);
+                pdfDocument.SetPageSize(PageSize.A3.Rotate());
+                PdfWriter.GetInstance(pdfDocument, Response.OutputStream);
+                pdfDocument.Open();
+                htmlparser.Parse(sr);
+                pdfDocument.Close();
+                Response.Write(pdfDocument);
+                Response.End();
+            }
+            else
             {
-                LinkButton lnkInTransit = (LinkButton)row.FindControl("lnkInTransit");
-                Label lblInTransit = (Label)row.FindControl("lblInTransit");
-                LinkButton lnkInProduction = (LinkButton)row.FindControl("lnkInProduction");
-                Label lblInProduction = (Label)row.FindControl("lblInProduction");
-                LinkButton lnkInForcast = (LinkButton)row.FindControl("lnkInForcast");
-                Label lblInStock = (Label)row.FindControl("lblInStock");
-                LinkButton lnkInStock = (LinkButton)row.FindControl("lnkStockInHand");
-                Label lblInForcast = (Label)row.FindControl("lblInForcast");
-                if (lnkInTransit != null)
-                {
-                    if (lnkInTransit.Text != "0")
-                    {
-                        lnkInTransit.Attributes.Remove("href");
-                        lnkInTransit.Enabled = false;
-                    }
-                }
-
-                if (lnkInProduction != null)
-                {
-                    if (lnkInProduction.Text != "0")
-                    {
-                        lnkInProduction.Attributes.Remove("href");
-                        lnkInProduction.Enabled = false;
-                    }
-                }
-
-                if (lnkInForcast != null)
-                {
-                    if (lnkInForcast.Text != "0")
-                    {
-                        lnkInForcast.Attributes.Remove("href");
-                        lnkInForcast.Enabled = false;
-                    }
-                }
-                if(lnkInStock !=  null)
-                {
-                    if (lnkInStock.Text != "0")
-                    {
-                        lnkInStock.Attributes.Remove("href");
-                        lnkInStock.Enabled = false;
-                    }
-                }
-                lblInTransit.Visible = true;
-                lblInProduction.Visible = true;
-                lblInForcast.Visible = true;
-                lnkInTransit.Visible = false;
-                lnkInProduction.Visible = false;
-                lnkInForcast.Visible = false;
-                lblInStock.Visible = true;
-                lnkInStock.Visible = false;
+                Utility.ShowMessage_Error(Page, "No Records Found !");
             }
-
-            Response.AddHeader("content-disposition", "attachment;filename=" + FileName);
-            Response.Cache.SetCacheability(HttpCacheability.NoCache);
-            foreach (DataControlFieldHeaderCell headerCell in gvInventoryReport.HeaderRow.Cells)
-            {
-                headerCell.ForeColor = System.Drawing.Color.Black; // Set header text color to black
-                headerCell.Font.Bold = true;
-            }
-            StringWriter sw = new StringWriter();
-            HtmlTextWriter hw = new HtmlTextWriter(sw);
-            gvInventoryReport.RenderControl(hw);
-            StringReader sr = new StringReader(sw.ToString());
-            Document pdfDocument = new Document(PageSize.A3, 10f, 10f, 10f, 10f);
-            HTMLWorker htmlparser = new HTMLWorker(pdfDocument);
-            pdfDocument.SetPageSize(PageSize.A3.Rotate());
-            PdfWriter.GetInstance(pdfDocument, Response.OutputStream);
-            pdfDocument.Open();
-            htmlparser.Parse(sr);
-            pdfDocument.Close();
-            Response.Write(pdfDocument);
-            Response.End();
         }
         catch (Exception ex)
         {
@@ -835,6 +863,7 @@ public partial class Reports_FrmDashboardReport : System.Web.UI.Page
                     if (lnkInTransit.Enabled != false)
                     {
                         lnkInTransit.Enabled = false;
+                        lnkInTransit.Text = String.Empty;
                     }
                 }
             }
@@ -847,6 +876,7 @@ public partial class Reports_FrmDashboardReport : System.Web.UI.Page
                     if (lnkInProduction.Enabled != false)
                     {
                         lnkInProduction.Enabled = false;
+                        lnkInProduction.Text = String.Empty;
                     }
                 }
             }
@@ -859,6 +889,7 @@ public partial class Reports_FrmDashboardReport : System.Web.UI.Page
                     if (lnkInStock.Enabled != false)
                     {
                         lnkInStock.Enabled = false;
+                        lnkInStock.Text = String.Empty;
                     }
                 }
             }

@@ -7,6 +7,24 @@ using BOLAERO;
 /// </summary>
 namespace BLLAERO
 {
+    public class BLLInstallers
+    {
+        private DALInstallers ObjDAL = new DALInstallers();
+        public DataSet Return_DataSet(BOLInstallers ObjBOL)
+        {
+            DataSet ds = new DataSet();
+            ds = ObjDAL.Return_DataSet(ObjBOL);
+            return ds;
+        }
+
+        public String Return_String(BOLInstallers ObjBOL)
+        {
+            String Status = "";
+            Status = ObjDAL.Return_String(ObjBOL);
+            return Status;
+        }
+    }
+
     public class BLLProjectsFabricationAndNestingTasks
     {
         private DALProjectsFabricationAndNestingTasks ObjDAL = new DALProjectsFabricationAndNestingTasks();
@@ -2791,6 +2809,12 @@ namespace BLLAERO
         {
             DataSet ds = new DataSet();
             ds = ObjDAL.GetInShopData(ObjBOL);
+            return ds;
+        }
+        public DataSet GetInOrderData(BOLRequisition ObjBOL)
+        {
+            DataSet ds = new DataSet();
+            ds = ObjDAL.GetInOrderData(ObjBOL);
             return ds;
         }
         public DataSet GetInStockData(BOLRequisition ObjBOL)

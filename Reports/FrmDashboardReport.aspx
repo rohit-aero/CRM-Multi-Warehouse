@@ -37,8 +37,7 @@
 
                     <div class="col-1">
                         <label>Vendor</label>
-                        <asp:DropDownList ID="ddlVendor" runat="server" DataValueField="SourceID" DataTextField="Source"
-                            CssClass="form-control form-control-sm chosenFullWidth">
+                        <asp:DropDownList ID="ddlVendor" runat="server" DataValueField="SourceID" DataTextField="Source" CssClass="form-control form-control-sm chosenFullWidth">
                         </asp:DropDownList>
                     </div>
                     <div class="col-10 row" id="divPartNo" runat="server" visible="false">

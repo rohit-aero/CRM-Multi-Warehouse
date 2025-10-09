@@ -27,7 +27,7 @@ public partial class InventoryManagement_FrmShipments : System.Web.UI.Page
     string Notes = "";
     string shippmentMethod = "";
     string shippmentStatus = "";
-    
+
     string Do_Not_Reply = "[Please do not reply to this message. Replies to this message are routed to an unmonitored mailbox]";
 
     protected void Page_Load(object sender, EventArgs e)
@@ -42,7 +42,7 @@ public partial class InventoryManagement_FrmShipments : System.Web.UI.Page
                     BindControls(false);
                     CheckReceivedDatePermission();
                 }
-            }            
+            }
         }
         catch (Exception ex)
         {
@@ -82,7 +82,7 @@ public partial class InventoryManagement_FrmShipments : System.Web.UI.Page
         {
             string msg = "";
             ObjBOL.Operation = 14;
-            ObjBOL.EmployeeID= Utility.GetCurrentSession().EmployeeID;
+            ObjBOL.EmployeeID = Utility.GetCurrentSession().EmployeeID;
             msg = ObjBLL.Return_String(ObjBOL);
             if (msg == "1")
             {
@@ -188,33 +188,33 @@ public partial class InventoryManagement_FrmShipments : System.Web.UI.Page
             changeLabelText(ddlAddStatus.SelectedValue);
             if (ddlContainerLookup.SelectedIndex == 0)
             {
-                Utility.ShowMessage_Error(Page, "Please Select Invoice No./Container No. !");                              
+                Utility.ShowMessage_Error(Page, "Please Select Invoice No./Container No. !");
                 ddlContainerLookup.Focus();
                 return false;
             }
-            if(ddlAddStatus.SelectedIndex == 0)
+            if (ddlAddStatus.SelectedIndex == 0)
             {
-                Utility.ShowMessage_Error(Page, "Please Select Status. !");             
+                Utility.ShowMessage_Error(Page, "Please Select Status. !");
                 ddlAddStatus.Focus();
                 return false;
             }
             if (txtAddRevisedETA.Text == "")
-            {        
-                if(ddlAddStatus.SelectedValue == "1")
+            {
+                if (ddlAddStatus.SelectedValue == "1")
                 {
                     Utility.ShowMessage_Error(Page, "Please Enter Revised ETA at Port. !");
                 }
-                else if(ddlAddStatus.SelectedValue == "2")
+                else if (ddlAddStatus.SelectedValue == "2")
                 {
                     Utility.ShowMessage_Error(Page, "Please Enter Revised ETA on the Rail. !");
                 }
-                else if(ddlAddStatus.SelectedValue == "3")
+                else if (ddlAddStatus.SelectedValue == "3")
                 {
                     Utility.ShowMessage_Error(Page, "Please Enter Revised ETA at Plant. !");
                 }
                 txtAddRevisedETA.Focus();
                 return false;
-            }            
+            }
         }
         catch (Exception ex)
         {
@@ -257,12 +257,12 @@ public partial class InventoryManagement_FrmShipments : System.Web.UI.Page
         btnAdd_Click_Event();
     }
 
-     //Event Handler for Button
-     protected void btnPackingDetails_Click(object sender, EventArgs e)
-     {
-         btnPackingDetails_Click_Event();
-     }
-    
+    //Event Handler for Button
+    protected void btnPackingDetails_Click(object sender, EventArgs e)
+    {
+        btnPackingDetails_Click_Event();
+    }
+
 
     //Event Handler for Button
     protected void btnSendEmail_Click(object sender, EventArgs e)
@@ -302,28 +302,28 @@ public partial class InventoryManagement_FrmShipments : System.Web.UI.Page
             if (Utility.InventoryEmailSwitch())
             {
                 string Subject = "";
-                string containerText = "";     
+                string containerText = "";
                 if (ddlVendorLookup.SelectedIndex > 0)
                 {
                     vendorName = ddlVendorLookup.SelectedItem.Text;
                 }
                 if (ddlContainerLookup.SelectedIndex > 0)
-                {                    
-                    string[] splitItem = ddlContainerLookup.SelectedItem.Text.Split('/');                    
+                {
+                    string[] splitItem = ddlContainerLookup.SelectedItem.Text.Split('/');
                     if (splitItem.Length > 1)
                     {
-                        invoiceNo = splitItem[0];                        
+                        invoiceNo = splitItem[0];
                         containerNo = splitItem[1];
                     }
-                    if(containerNo != "")
+                    if (containerNo != "")
                     {
                         containerText = invoiceNo + "/" + containerNo;
                     }
                     else
                     {
-                        containerText = ddlContainerLookup.SelectedItem.Text.Replace("/","");
+                        containerText = ddlContainerLookup.SelectedItem.Text.Replace("/", "");
                     }
-                }                             
+                }
                 string AcctualArrivalDate = "";
                 DateTime ArrivalDate;
                 if (DateTime.TryParse(txtReceiveDate.Text, out ArrivalDate))
@@ -343,24 +343,24 @@ public partial class InventoryManagement_FrmShipments : System.Web.UI.Page
                 else
                 {
                     Message += " <p style = 'margin-top:5px'> <b>Invoice No: " + containerText + "</b> has been Arrived.";
-                }    
+                }
 
                 Message += " </p></td ></tr><tr><td colspan='2'><div style = 'width:80px;margin:0 auto'> ";
                 Message += " </div> ";
                 Message += " <h1 style ='font-size:1.65rem;margin:.3rem 0 0;color:#000;text-align:center'>Container Details</h1></td></tr> ";
                 Message += " <tr><td style='width:1%;white-space:nowrap'> Source </td><td style='font-weight:600;width:99%'>" + vendorName + " </td></tr>";
-                if(HfDestinationID.Value != "-1")
+                if (HfDestinationID.Value != "-1")
                 {
                     Message += " <tr style='background:#efefef'><td style='width:1%;white-space:nowrap'> Destination </td><td style='font-weight:600;width:99%'> " + HfDestinationID.Value + "</td></tr>";
                 }
 
                 if (containerNo != "")
                 {
-                    Message += " <tr><td style='width:1%;white-space:nowrap'> Invoice/Container No: </td><td style='font-weight:600;width:99%'>" + containerText + " </td></tr>";                    
+                    Message += " <tr><td style='width:1%;white-space:nowrap'> Invoice/Container No: </td><td style='font-weight:600;width:99%'>" + containerText + " </td></tr>";
                 }
                 else
                 {
-                    Message += " <tr><td style='width:1%;white-space:nowrap'> Invoice No: </td><td style='font-weight:600;width:99%'>" + containerText + " </td></tr>";     
+                    Message += " <tr><td style='width:1%;white-space:nowrap'> Invoice No: </td><td style='font-weight:600;width:99%'>" + containerText + " </td></tr>";
                 }
                 Message += " <tr style='background:#efefef'><td style='width:1%;white-space:nowrap'>Actual Arrival Date </td><td style='font-weight:600;width:99%'> " + AcctualArrivalDate + "</td></tr>";
 
@@ -370,21 +370,21 @@ public partial class InventoryManagement_FrmShipments : System.Web.UI.Page
 
                 //Message += " <tr><td style='width:1%;white-space:nowrap'> Shipping Coordinator Notes </td><td style='font-weight:600;width:99%' > " + Notes + "</td></tr> ";
                 Message += " <tr><td style='width:1%;white-space:nowrap'> Shipment Status </td><td style='font-weight:600;width:99%'>" + "Arrived" + " </td></tr>";
-                
+
                 //Message += " <tr><td style='width:1%;white-space:nowrap'>  Info Updated DateTime </td><td style='font-weight:600;width:99%'> " + DateTime.Now.ToString("MMMM dd, yyyy hh:mm tt") + "</td></tr> ";
                 //Message += " <tr style='background:#efefef'><td style='width:1%;white-space:nowrap'>  </td><td style='font-weight:600;width:99%'> " + + "</td></tr>";
 
 
                 Message += " <tr><td colspan = '2'>If you have any questions or concerns regarding the above information, please contact Liezl at liezl@aero-werks.com.<br /><br/ > ";
                 Message += " Thanks, <br/ > <strong> " + Utility.EmailDisplayName() + " </strong> <br /> ";
-                Message += " </td></tr><tr><td colspan='2' style='color:Red'>"+ Do_Not_Reply +"</td></tr></table></td></tr></table></body></html> ";
+                Message += " </td></tr><tr><td colspan='2' style='color:Red'>" + Do_Not_Reply + "</td></tr></table></td></tr></table></body></html> ";
                 List<MailAddress> sendToList = new List<MailAddress>();
                 List<MailAddress> ccList = new List<MailAddress>();
                 HashSet<MailAddress> sendToListAsList = new HashSet<MailAddress>();
                 HashSet<MailAddress> ccListAsList = new HashSet<MailAddress>();
-                sendToListAsList = Utility.GetMailAddresses(Utility.EmailType.Inventory, "SendToList", Utility.emailDictionaryInventory, "Purchasing", 1,"A","");
+                sendToListAsList = Utility.GetMailAddresses(Utility.EmailType.Inventory, "SendToList", Utility.emailDictionaryInventory, "Purchasing", 1, "A", "");
                 sendToList = sendToListAsList.ToList();
-                ccListAsList = Utility.GetMailAddresses(Utility.EmailType.Inventory, "ccList", Utility.emailDictionaryInventory, "", 2,"A","");
+                ccListAsList = Utility.GetMailAddresses(Utility.EmailType.Inventory, "ccList", Utility.emailDictionaryInventory, "", 2, "A", "");
                 ccList = ccListAsList.ToList();
                 if (containerNo != "")
                 {
@@ -394,9 +394,9 @@ public partial class InventoryManagement_FrmShipments : System.Web.UI.Page
                 {
                     Subject = "Invoice No: " + containerText + " Arrived";
                 }
-                Send_Email(Message,Subject, sendToList, ccList);
+                Send_Email(Message, Subject, sendToList, ccList);
                 sendToListAsList.Clear();
-                ccListAsList.Clear();                
+                ccListAsList.Clear();
             }
             else
             {
@@ -417,7 +417,7 @@ public partial class InventoryManagement_FrmShipments : System.Web.UI.Page
             GvShipmentTracker.EditIndex = e.NewEditIndex;
             GetContainerHistory();
             Int32 ID = Convert.ToInt32(GvShipmentTracker.DataKeys[e.NewEditIndex].Value);
-            HfEditRowID.Value =Convert.ToString(ID);
+            HfEditRowID.Value = Convert.ToString(ID);
             Label lblEditStatus = GvShipmentTracker.Rows[e.NewEditIndex].FindControl("lblEditProjectStatus") as Label;
             Label lblEditRevisedETA = GvShipmentTracker.Rows[e.NewEditIndex].FindControl("txtRevisedETA") as Label;
             Label lblEditComments = GvShipmentTracker.Rows[e.NewEditIndex].FindControl("txtComments") as Label;
@@ -434,7 +434,7 @@ public partial class InventoryManagement_FrmShipments : System.Web.UI.Page
                     changeLabelText("");
                 }
             }
-            if(lblEditRevisedETA.Text != "")
+            if (lblEditRevisedETA.Text != "")
             {
                 txtAddRevisedETA.Text = lblEditRevisedETA.Text;
             }
@@ -442,7 +442,7 @@ public partial class InventoryManagement_FrmShipments : System.Web.UI.Page
             {
                 txtAddRevisedETA.Text = String.Empty;
             }
-            if(lblEditComments.Text != "")
+            if (lblEditComments.Text != "")
             {
                 txtAddComments.Text = lblEditComments.Text;
             }
@@ -463,15 +463,15 @@ public partial class InventoryManagement_FrmShipments : System.Web.UI.Page
     {
         try
         {
-            if(statusid == "1")
+            if (statusid == "1")
             {
                 lblAddRevisedETA.InnerText = "Revised ETA at Port*";
             }
-            else if(statusid == "2")
+            else if (statusid == "2")
             {
                 lblAddRevisedETA.InnerText = "Revised ETA on the Rail*";
             }
-            else if(statusid == "3")
+            else if (statusid == "3")
             {
                 lblAddRevisedETA.InnerText = "Revised ETA at Plant*";
             }
@@ -576,7 +576,7 @@ public partial class InventoryManagement_FrmShipments : System.Web.UI.Page
     }
 
 
-    private void SendEmail_Prepare(string invoice,string containerNo,string vendor,string receiveDateString,string revicedETA,string comments,string ContainerStatus)
+    private void SendEmail_Prepare(string invoice, string containerNo, string vendor, string receiveDateString, string revicedETA, string comments, string ContainerStatus)
     {
         try
         {
@@ -603,12 +603,12 @@ public partial class InventoryManagement_FrmShipments : System.Web.UI.Page
                 Message += " <tr><td style='width:1%;white-space:nowrap'> ETA  </td><td style='font-weight:600;width:99%' > " + revicedETA + "</td></tr> ";
                 Message += " <tr style='background:#efefef'><td style='width:1%;white-space:nowrap'> Comments </td><td style='font-weight:600;width:99%'> " + comments + "</td></tr>";
 
-                
-                Message += " <tr><td style='width:1%;white-space:nowrap'>  Container Status </td><td style='font-weight:600;width:99%' > " + ContainerStatus + "</td></tr> ";        
+
+                Message += " <tr><td style='width:1%;white-space:nowrap'>  Container Status </td><td style='font-weight:600;width:99%' > " + ContainerStatus + "</td></tr> ";
 
                 Message += " <tr><td colspan = '2'>If you have any questions or concerns regarding the above information, please contact Liezl at liezl@aero-werks.com.<br /><br/ > ";
                 Message += " Thanks, <br/ > <strong> " + Utility.EmailDisplayName() + " </strong> <br />";
-                Message += " </td></tr><tr><td colspan='2' style='color:Red'>"+ Do_Not_Reply +"</td></tr></table></td></tr></table></body></html> ";                       
+                Message += " </td></tr><tr><td colspan='2' style='color:Red'>" + Do_Not_Reply + "</td></tr></table></td></tr></table></body></html> ";
                 if (containerNo == "")
                 {
                     EmailSubject = "Invoice No " + invoice + " ETA " + revicedETA + ": " + ContainerStatus;
@@ -621,16 +621,16 @@ public partial class InventoryManagement_FrmShipments : System.Web.UI.Page
                 List<MailAddress> ccList = new List<MailAddress>();
                 HashSet<MailAddress> sendToListAsList = new HashSet<MailAddress>();
                 HashSet<MailAddress> ccListAsList = new HashSet<MailAddress>();
-                sendToListAsList = Utility.GetMailAddresses(Utility.EmailType.Inventory, "SendToList", Utility.emailDictionaryInventory, "Purchasing", 1,"E","");
+                sendToListAsList = Utility.GetMailAddresses(Utility.EmailType.Inventory, "SendToList", Utility.emailDictionaryInventory, "Purchasing", 1, "E", "");
                 sendToList = sendToListAsList.ToList();
-                ccListAsList = Utility.GetMailAddresses(Utility.EmailType.Inventory, "ccList", Utility.emailDictionaryInventory, "", 2,"E","");
+                ccListAsList = Utility.GetMailAddresses(Utility.EmailType.Inventory, "ccList", Utility.emailDictionaryInventory, "", 2, "E", "");
                 ccList = ccListAsList.ToList();
                 Send_Email(Message, EmailSubject, sendToList, ccList);
                 sendToListAsList.Clear();
                 ccListAsList.Clear();
             }
             else
-            {                
+            {
                 ClientScript.RegisterStartupScript(this.GetType(), "showemailnotificationDisabled", "showemailnotificationDisabled();", true);
             }
         }
@@ -689,7 +689,7 @@ public partial class InventoryManagement_FrmShipments : System.Web.UI.Page
             }
             else
             {
-                Reset();                
+                Reset();
             }
         }
         catch (Exception ex)
@@ -704,7 +704,7 @@ public partial class InventoryManagement_FrmShipments : System.Web.UI.Page
         {
             ResetETAEntries();
             if (ddlContainerLookup.SelectedIndex > 0)
-            {               
+            {
                 btnPackingDetails.Enabled = true;
                 CheckReceivedDatePermission();
                 ObjBOL.Operation = 3;
@@ -715,13 +715,13 @@ public partial class InventoryManagement_FrmShipments : System.Web.UI.Page
                     ddlVendorLookup.SelectedValue = returnValue;
                 }
                 GetContainerInfo();
-                GetDestinationID();               
+                GetDestinationID();
                 GetFilePath(ddlContainerLookup.SelectedValue);
                 GetContainerHistory();
             }
             else
             {
-                ResetDetail();                
+                ResetDetail();
             }
         }
         catch (Exception ex)
@@ -786,28 +786,28 @@ public partial class InventoryManagement_FrmShipments : System.Web.UI.Page
                 //{
                 //    TrackStatusData(ContainerID, RevisedETA);
                 //}
-                string Comments = txtAddComments.Text; 
-                if(btnAdd.Text == "Add")
+                string Comments = txtAddComments.Text;
+                if (btnAdd.Text == "Add")
                 {
-                    ObjBOL.Operation = 6;                    
+                    ObjBOL.Operation = 6;
                 }
                 else
                 {
                     ObjBOL.Operation = 7;
-                    ObjBOL.ContainerDetailID =Convert.ToInt32(HfEditRowID.Value);
-                }                
+                    ObjBOL.ContainerDetailID = Convert.ToInt32(HfEditRowID.Value);
+                }
                 ObjBOL.ID = Int32.Parse(ddlContainerLookup.SelectedValue);
                 ObjBOL.RevisedETA = Utility.ConvertDate(RevisedETA);
                 ObjBOL.Comments = Comments;
-                if(ContainerID != "")
+                if (ContainerID != "")
                 {
-                    ObjBOL.ContainerID =Convert.ToInt32(ContainerID);
+                    ObjBOL.ContainerID = Convert.ToInt32(ContainerID);
                 }
                 if (ddlAddStatus.SelectedIndex > 0)
                 {
                     ObjBOL.Status = Convert.ToInt32(ddlAddStatus.SelectedValue);
                 }
-                string returnStatus = ObjBLL.Return_String(ObjBOL);                
+                string returnStatus = ObjBLL.Return_String(ObjBOL);
                 //if (ddlAddStatus.SelectedValue == "3")
                 //{
                 //    DateTime revisedDate = DateTime.ParseExact(RevisedETA, "MM/dd/yyyy", null);
@@ -821,12 +821,12 @@ public partial class InventoryManagement_FrmShipments : System.Web.UI.Page
                 UpdateETADate = RevisedETA;
                 if (returnStatus.Trim() != "")
                 {
-                   
+
                     if (ddlContainerLookup.SelectedIndex > 0)
                     {
                         SendEmail_Prepare(invoice, containerNo, vendor, receiveDateString, UpdateETADate, Comments, ddlAddStatus.SelectedItem.Text);
                     }
-                    if(returnStatus.Trim() != "Record updated successfully!!")
+                    if (returnStatus.Trim() != "Record updated successfully!!")
                     {
                         Utility.MaintainLogsSpecial("FrmShipments.aspx", "Save-detail", ddlContainerLookup.SelectedValue);
                         if (Utility.InventoryEmailSwitch())
@@ -851,13 +851,13 @@ public partial class InventoryManagement_FrmShipments : System.Web.UI.Page
                         }
 
                     }
-                    GetContainerHistory();                    
+                    GetContainerHistory();
                     HfReceivedETA.Value = RevisedETA;
                     HfComments.Value = Comments;
                     ResetETAEntries();
                 }
             }
-            
+
         }
         catch (Exception ex)
         {
@@ -926,7 +926,7 @@ public partial class InventoryManagement_FrmShipments : System.Web.UI.Page
                 else
                 {
                     HfDestinationID.Value = "-1";
-                }               
+                }
             }
         }
         catch (Exception ex)
@@ -947,14 +947,14 @@ public partial class InventoryManagement_FrmShipments : System.Web.UI.Page
                 ObjBOL.ID = Int32.Parse(ddlContainerLookup.SelectedValue);
                 ds = ObjBLL.Return_DataSet(ObjBOL);
                 if (ds.Tables[0].Rows.Count > 0)
-                {                    
+                {
                     GvShipmentTracker.DataSource = ds.Tables[0];
-                    GvShipmentTracker.DataBind();                  
+                    GvShipmentTracker.DataBind();
                 }
                 else
                 {
                     GvShipmentTracker.DataSource = "";
-                    GvShipmentTracker.DataBind();                                    
+                    GvShipmentTracker.DataBind();
                 }
             }
         }
@@ -969,7 +969,7 @@ public partial class InventoryManagement_FrmShipments : System.Web.UI.Page
         try
         {
             //ShowEnabledStockInButton();
-            btnPackingDetails.Enabled = true;                        
+            btnPackingDetails.Enabled = true;
         }
         catch (Exception ex)
         {
@@ -991,7 +991,7 @@ public partial class InventoryManagement_FrmShipments : System.Web.UI.Page
         {
             Utility.AddEditException(ex);
         }
-    }  
+    }
 
     #endregion
 
@@ -1082,7 +1082,7 @@ public partial class InventoryManagement_FrmShipments : System.Web.UI.Page
         rprt.Close();
         rprt.Dispose();
         return reportStream;
-    }  
+    }
 
     #endregion
 
@@ -1099,7 +1099,7 @@ public partial class InventoryManagement_FrmShipments : System.Web.UI.Page
             lnkDowloadPackingList.Text = String.Empty;
             ViewState["IsPageLoaded"] = false;
             ResetDetail();
-            ResetETAEntries();       
+            ResetETAEntries();
         }
         catch (Exception ex)
         {
@@ -1151,7 +1151,7 @@ public partial class InventoryManagement_FrmShipments : System.Web.UI.Page
         {
             if (ddlContainerLookup.SelectedIndex > 0)
             {
-                btnUploadPackingList_Click_Event(ddlContainerLookup.SelectedValue);                                 
+                btnUploadPackingList_Click_Event(ddlContainerLookup.SelectedValue);
             }
             else
             {
@@ -1170,7 +1170,7 @@ public partial class InventoryManagement_FrmShipments : System.Web.UI.Page
         try
         {
             if (!string.IsNullOrEmpty(ContainerID))
-            {                
+            {
                 if (ValidationCheckInfo())
                 {
                     string msg = "";
@@ -1183,7 +1183,7 @@ public partial class InventoryManagement_FrmShipments : System.Web.UI.Page
                     if (fpUpload.HasFile)
                     {
                         string fileName = Path.GetFileName(fpUpload.FileName);
-                        string fileExtension = Path.GetExtension(fileName).ToLower();                        
+                        string fileExtension = Path.GetExtension(fileName).ToLower();
                         if (fileExtension == ".pdf" || fileExtension == ".xls" || fileExtension == ".xlsx")
                         {
                             string folderPath = Utility.PackingListPath();
@@ -1203,13 +1203,13 @@ public partial class InventoryManagement_FrmShipments : System.Web.UI.Page
                             {
                                 Utility.ShowMessage_Error(Page, "File size exceeds 6 MB. Please upload a smaller file.");
                                 return;
-                            }                           
+                            }
                         }
                         else
                         {
                             Utility.ShowMessage_Error(Page, "Invalid file type. Please upload a PDF or Excel file.");
                             return;
-                        }                        
+                        }
                     }
                     msg = ObjBLL.UploadPackingList(ObjBOL);
                     Utility.ShowMessage_Success(Page, msg);
@@ -1219,7 +1219,7 @@ public partial class InventoryManagement_FrmShipments : System.Web.UI.Page
                     {
                         EmailNotifications();
                     }
-                    Reset();                    
+                    Reset();
                 }
                 else
                 {
@@ -1230,60 +1230,60 @@ public partial class InventoryManagement_FrmShipments : System.Web.UI.Page
         catch (Exception ex)
         {
             Utility.AddEditException(ex);
-        }        
+        }
     }
 
-            protected void GetFilePath(string ContainerID)
+    protected void GetFilePath(string ContainerID)
+    {
+        try
+        {
+            DataSet ds = new DataSet();
+            ObjBOL.Operation = 10;
+            ObjBOL.ID = Convert.ToInt32(ContainerID);
+            ds = ObjBLL.Return_DataSet(ObjBOL);
+            if (ds.Tables[0].Rows.Count > 0)
             {
-                try
-                {
-                    DataSet ds = new DataSet();
-                    ObjBOL.Operation = 10;
-                    ObjBOL.ID = Convert.ToInt32(ContainerID);
-                    ds = ObjBLL.Return_DataSet(ObjBOL);
-                    if (ds.Tables[0].Rows.Count > 0)
-                    {
-                        lnkDowloadPackingList.Visible = true;
-                        lnkDowloadPackingList.Text = ds.Tables[0].Rows[0]["PackingList"].ToString();
-                        hfPackingListName.Value= ds.Tables[0].Rows[0]["PackingList"].ToString();
-                    }
-                    else
-                    {
-                        lnkDowloadPackingList.Visible = false;
-                        lnkDowloadPackingList.Text = String.Empty;
-                        hfPackingListName.Value = string.Empty;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Utility.AddEditException(ex);
-                }
+                lnkDowloadPackingList.Visible = true;
+                lnkDowloadPackingList.Text = ds.Tables[0].Rows[0]["PackingList"].ToString();
+                hfPackingListName.Value = ds.Tables[0].Rows[0]["PackingList"].ToString();
             }
+            else
+            {
+                lnkDowloadPackingList.Visible = false;
+                lnkDowloadPackingList.Text = String.Empty;
+                hfPackingListName.Value = string.Empty;
+            }
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+    }
 
-            protected void lnkDowloadPackingList_Click(object sender, EventArgs e)
+    protected void lnkDowloadPackingList_Click(object sender, EventArgs e)
+    {
+        try
+        {
+            GetFilePath(ddlContainerLookup.SelectedValue);
+            var fileName = lnkDowloadPackingList.Text;
+            string filePath = Utility.PackingListPath() + fileName;
+            FileInfo file = new FileInfo(filePath);
+            if (file.Exists && Response.IsClientConnected)
             {
-                try
-                {
-                    GetFilePath(ddlContainerLookup.SelectedValue);
-                    var fileName = lnkDowloadPackingList.Text;
-                    string filePath = Utility.PackingListPath() + fileName;
-                    FileInfo file = new FileInfo(filePath);
-                    if (file.Exists && Response.IsClientConnected)
-                    {
-                        Response.Clear();
-                        Response.AddHeader("Content-Disposition", "attachment; filename=" + file.Name);
-                        Response.AddHeader("Content-Length", file.Length.ToString());
-                        Response.ContentType = "application/pdf";
-                        Response.Flush();
-                        Response.TransmitFile(file.FullName);
-                        Response.End();
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Utility.AddEditException(ex);
-                }
+                Response.Clear();
+                Response.AddHeader("Content-Disposition", "attachment; filename=" + file.Name);
+                Response.AddHeader("Content-Length", file.Length.ToString());
+                Response.ContentType = "application/pdf";
+                Response.Flush();
+                Response.TransmitFile(file.FullName);
+                Response.End();
             }
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+    }
 
     protected void GvShipmentTracker_RowDataBound(object sender, GridViewRowEventArgs e)
     {
@@ -1291,9 +1291,9 @@ public partial class InventoryManagement_FrmShipments : System.Web.UI.Page
         {
             if (e.Row.RowType == DataControlRowType.DataRow)
             {
-                LinkButton lnkEdit=(LinkButton)e.Row.FindControl("lnkEdit");                
+                LinkButton lnkEdit = (LinkButton)e.Row.FindControl("lnkEdit");
                 LinkButton lnkDelete = (LinkButton)e.Row.FindControl("lnkDelete");
-                if(lnkEdit != null  && lnkDelete != null)
+                if (lnkEdit != null && lnkDelete != null)
                 {
                     if (HfCheckRecDate.Value == "-1" && HfCheckEmployee.Value == "1")
                     {
@@ -1310,7 +1310,7 @@ public partial class InventoryManagement_FrmShipments : System.Web.UI.Page
                         //lnkDelete.Enabled = false;
                     }
                 }
-                
+
             }
         }
         catch (Exception ex)
@@ -1318,7 +1318,7 @@ public partial class InventoryManagement_FrmShipments : System.Web.UI.Page
             Utility.AddEditException(ex);
         }
     }
-    
+
     private void CheckReceiveDate()
     {
         string msg = "";
@@ -1327,7 +1327,7 @@ public partial class InventoryManagement_FrmShipments : System.Web.UI.Page
             ObjBOL.Operation = 17;
             ObjBOL.ID = Convert.ToInt32(ddlContainerLookup.SelectedValue);
             msg = ObjBLL.Return_String(ObjBOL);
-            if(msg != "")
+            if (msg != "")
             {
                 HfCheckRecDate.Value = msg;
                 dvUpload.Visible = false;
@@ -1354,7 +1354,7 @@ public partial class InventoryManagement_FrmShipments : System.Web.UI.Page
         {
             string Do_Not_Reply = "[Please do not reply to this message. Replies to this message are routed to an unmonitored mailbox]";
             commonclass1 con = new commonclass1();
-            DataSet ds = new DataSet();             
+            DataSet ds = new DataSet();
             if (ContainerID != "" && ETADate != "")
             {
                 con.Return_DS(ds, "EXEC [Get_JobNotificationsEmailPM_RevisedETAChange] '" + ContainerID + "','" + ETADate + "'");

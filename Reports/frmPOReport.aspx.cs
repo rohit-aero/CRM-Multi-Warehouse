@@ -160,7 +160,15 @@ public partial class Reports_frmPOReport : System.Web.UI.Page
     {
         try
         {
-            Response.Redirect("~/InventoryManagement/frmPOPartDetails.aspx");
+            string url = ResolveUrl("~/InventoryManagement/frmPOPartDetails.aspx");
+            string script = "var a = document.createElement('a');" +
+                "a.href = '" + url + "';" +
+                "a.target = '_blank';" +
+                "a.rel = 'noopener';" +
+                "document.body.appendChild(a);" +
+                "a.click();" +
+                "document.body.removeChild(a);";
+            ScriptManager.RegisterStartupScript(this, this.GetType(), "openTab", script, true);
         }
         catch (Exception ex)
         {
@@ -172,7 +180,16 @@ public partial class Reports_frmPOReport : System.Web.UI.Page
     {
         try
         {
-            Response.Redirect("~/Reports/frmPOStatus.aspx");
+
+            string url = ResolveUrl("~/Reports/frmPOStatus.aspx");
+            string script = "var a = document.createElement('a');" +
+                "a.href = '" + url + "';" +
+                "a.target = '_blank';" +
+                "a.rel = 'noopener';" +
+                "document.body.appendChild(a);" +
+                "a.click();" +
+                "document.body.removeChild(a);";
+            ScriptManager.RegisterStartupScript(this, this.GetType(), "openTab", script, true);
         }
         catch (Exception ex)
         {
@@ -664,17 +681,45 @@ public partial class Reports_frmPOReport : System.Web.UI.Page
         return dt;
     }
 
-    protected void ddlVendor_SelectedIndexChanged(object sender, EventArgs e)
+    private void BindPartNoOnSource(string sourceID)
     {
         try
         {
+            DataTable dt = new DataTable();
+            if(sourceID != "")
+            {
+                BindDestWareHouse(sourceID);
+            }            
+            dt = CommonPartNoFunction();
+            if (dt.Rows.Count > 0)
+            {
+                Utility.BindDropDownListAll(ddlLookupPart, dt);
+            }
+            else if (dt.Rows.Count == 0)
+            {
+                Utility.BindDropDownListAll(ddlLookupPart, dt);
+            }
+            
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+    }
 
+    private void FilterPartNoOnDest()
+    {
+        try
+        {
             DataTable dt = new DataTable();
             if (ddlVendor.SelectedIndex > 0)
-            {
-                BindDestWareHouse(ddlVendor.SelectedValue);
+            {                
                 dt = CommonPartNoFunction();
                 if (dt.Rows.Count > 0)
+                {
+                    Utility.BindDropDownListAll(ddlLookupPart, dt);
+                }
+                else if (dt.Rows.Count == 0)
                 {
                     Utility.BindDropDownListAll(ddlLookupPart, dt);
                 }
@@ -686,6 +731,42 @@ public partial class Reports_frmPOReport : System.Web.UI.Page
                     ClearDestWarehouse();
                 }
             }
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+    }
+
+    protected void ddlVendor_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        try
+        {
+            if (ddlVendor.SelectedIndex>0)
+            {
+                BindPartNoOnSource(ddlVendor.SelectedValue);
+            }
+            else
+            {
+                if (ddlDest.Items.Count > 0)
+                {
+                    ClearDestWarehouse();
+                    BindPartNoOnSource("");
+                }
+            }
+            
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+    }
+
+    protected void ddlDest_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        try
+        {
+            FilterPartNoOnDest();
         }
         catch (Exception ex)
         {
@@ -718,14 +799,8 @@ public partial class Reports_frmPOReport : System.Web.UI.Page
         try
         {
             DataTable dt = new DataTable();
-            if (ddlStatus.SelectedIndex > 0)
-            {
-                dt = CommonPartNoFunction();
-                if (dt.Rows.Count > 0)
-                {
-                    Utility.BindDropDownListAll(ddlLookupPart, dt);
-                }
-            }
+            dt = CommonPartNoFunction();
+            Utility.BindDropDownListAll(ddlLookupPart, dt);
         }
         catch (Exception ex)
         {
