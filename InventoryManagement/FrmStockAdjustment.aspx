@@ -15,18 +15,18 @@
                                 <asp:DropDownList ID="ddlProductCode" CssClass="form-control form-control-sm" runat="server" DataTextField="text" DataValueField="id" AutoPostBack="True" 
                                     OnSelectedIndexChanged="ddlProductCode_SelectedIndexChanged"></asp:DropDownList>
                             </div>
-                            <label class="col-xl-2 mb-0">By Part Number</label>
+                            <label class="col-xl-2 mb-0 text-danger">By Part Number*</label>
                             <div class="col-xl-10 mb-2">
                                 <asp:DropDownList ID="ddlPartNumber" CssClass="form-control form-control-sm" runat="server" DataTextField="text" DataValueField="id" AutoPostBack="True" 
                                     OnSelectedIndexChanged="ddlPartNumber_SelectedIndexChanged"></asp:DropDownList>
                             </div>
 
-                            <label class="col-xl-2 mb-0">Warehouse</label>
+                            <label class="col-xl-2 mb-0 text-danger">Warehouse*</label>
                             <div class="col-xl-10 mb-2">
                                 <asp:DropDownList ID="ddlWarehouse" CssClass="form-control form-control-sm" runat="server" DataTextField="text" DataValueField="id"></asp:DropDownList>
                             </div>
 
-                            <label class="col-xl-2 mb-0">Adjustment Type</label>
+                            <label class="col-xl-2 mb-0 text-danger">Adjustment Type*</label>
                             <div class="col-xl-10 mb-2">
                                 <asp:DropDownList CssClass="form-control form-control-sm" ID="ddlType" runat="server">
                                     <asp:ListItem></asp:ListItem>
@@ -34,16 +34,16 @@
                                     <asp:ListItem Value="2">Stock Out</asp:ListItem>
                                 </asp:DropDownList>
                             </div>
-                            <label class="col-xl-2 mb-0">Adjustment Reason</label>
+                            <label class="col-xl-2 mb-0 text-danger">Adjustment Reason*</label>
                             <div class="col-xl-10 mb-2">
                                 <asp:DropDownList CssClass="form-control form-control-sm" ID="ddlReason" DataTextField="reason" DataValueField="id" runat="server">
                                 </asp:DropDownList>
                             </div>
-                            <label class="col-xl-2 mb-0">Quantity</label>
+                            <label class="col-xl-2 mb-0 text-danger">Quantity*</label>
                             <div class="col-xl-10 mb-2">
                                 <asp:TextBox ID="txtQty" CssClass="form-control form-control-sm" runat="server" autocomplete="off" onkeypress="return onlyNumbers(event);" MaxLength="7"></asp:TextBox>
                             </div>
-                            <label class="col-xl-2 mb-0">Summary</label>
+                            <label class="col-xl-2 mb-0 text-danger">Summary*</label>
                             <div class="col-xl-10 mb-2">
                                 <asp:TextBox ID="txtSummary" CssClass="form-control form-control-sm" TextMode="MultiLine" runat="server" MaxLength="500"></asp:TextBox>
                             </div>

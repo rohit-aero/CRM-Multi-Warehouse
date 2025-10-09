@@ -144,13 +144,7 @@ public partial class INVManagement_FrmStockAdjustment : System.Web.UI.Page
                 ddlPartNumber.Focus();
                 return false;
             }
-            if (ddlType.SelectedIndex == 0)
-            {
-                //ScriptManager.RegisterClientScriptBlock(this, this.GetType(), "window", "alert('Please Select Adjustment Type.');", true);
-                Utility.ShowMessage_Error(Page, "Please Select Adjustment Type.");
-                ddlType.Focus();
-                return false;
-            }
+
             if (ddlWarehouse.SelectedIndex == 0)
             {
                 //ScriptManager.RegisterClientScriptBlock(this, this.GetType(), "window", "alert('Please Select Part No.');", true);
@@ -158,6 +152,15 @@ public partial class INVManagement_FrmStockAdjustment : System.Web.UI.Page
                 ddlWarehouse.Focus();
                 return false;
             }
+
+            if (ddlType.SelectedIndex == 0)
+            {
+                //ScriptManager.RegisterClientScriptBlock(this, this.GetType(), "window", "alert('Please Select Adjustment Type.');", true);
+                Utility.ShowMessage_Error(Page, "Please Select Adjustment Type.");
+                ddlType.Focus();
+                return false;
+            }
+            
             if (ddlReason.SelectedIndex == 0)
             {
                 //ScriptManager.RegisterClientScriptBlock(this, this.GetType(), "window", "alert('Please Select Adjustment Reason.');", true);
@@ -165,6 +168,7 @@ public partial class INVManagement_FrmStockAdjustment : System.Web.UI.Page
                 ddlReason.Focus();
                 return false;
             }
+
             if (txtQty.Text == "")
             {
                 //ScriptManager.RegisterClientScriptBlock(this, this.GetType(), "window", "alert('Please Enter Quantity.');", true);
@@ -172,6 +176,7 @@ public partial class INVManagement_FrmStockAdjustment : System.Web.UI.Page
                 txtQty.Focus();
                 return false;
             }
+
             if (txtSummary.Text == "")
             {
                 //ScriptManager.RegisterClientScriptBlock(this, this.GetType(), "window", "alert('Please Enter Summary.');", true);
@@ -179,7 +184,6 @@ public partial class INVManagement_FrmStockAdjustment : System.Web.UI.Page
                 txtSummary.Focus();
                 return false;
             }
-
         }
         catch (Exception ex)
         {
