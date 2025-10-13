@@ -60,6 +60,15 @@ public partial class TurboWash_FrmITWProjectsReport_V1 : System.Web.UI.Page
                 query += ", 0 ";
             }
 
+            if (ddlReleaseStatus.SelectedIndex > 0)
+            {
+                query += ", " + ddlReleaseStatus.SelectedValue;
+            }
+            else
+            {
+                query += ", 0 ";
+            }
+
             if (txtPODateFrom.Text != "" && txtPODateTo.Text != "")
             {
                 query += ", '" + txtPODateFrom.Text + "' ";
@@ -157,6 +166,7 @@ public partial class TurboWash_FrmITWProjectsReport_V1 : System.Web.UI.Page
         try
         {
             SetDates();
+            ddlReleaseStatus.SelectedIndex = 0;
             ddlPOType.SelectedIndex = 0;
         }
         catch (Exception ex)

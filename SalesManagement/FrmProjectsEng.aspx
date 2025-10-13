@@ -333,14 +333,15 @@
                                         <ItemTemplate>
                                             <asp:Label ID="lblReleasedToFabDate" runat="server" Text='<%#Eval("sReleasedToFabDate") %>'></asp:Label>
                                         </ItemTemplate>
+
                                         <EditItemTemplate>
                                             <asp:TextBox ID="txtEditReleaseToFabDate" CssClass="form-control form-control-sm" OnBlur="validateDate(this)"
                                                 runat="server" Text='<%#Eval("sReleasedToFabDate") %>' Width="100%"></asp:TextBox>
                                             <asp:CalendarExtender ID="caltxtEditReleaseToFabDate" runat="server" Format="MM/dd/yyyy"
                                                 PopupButtonID="txtEditReleaseToFabDate" TargetControlID="txtEditReleaseToFabDate">
                                             </asp:CalendarExtender>
-
                                         </EditItemTemplate>
+
                                         <FooterTemplate>
                                             <asp:TextBox ID="FtxtReleaseToFabDate" CssClass="form-control form-control-sm" OnBlur="validateDate(this)" runat="server" Width="100%"></asp:TextBox>
                                             <asp:CalendarExtender ID="calFtxtReleaseToFabDate" runat="server" Format="MM/dd/yyyy"

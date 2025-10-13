@@ -22,7 +22,18 @@
                             <asp:DropDownList CssClass="form-control form-control-sm" ID="ddlPOType" runat="server" DataTextField="text" DataValueField="id">
                             </asp:DropDownList>
                         </div>
-                    </div>                  
+                    </div>
+
+                    <div class="col-sm-2">
+                        <div class="form-group">
+                            <label>Release Status</label>
+                            <asp:DropDownList CssClass="form-control form-control-sm" ID="ddlReleaseStatus" runat="server">
+                                <asp:ListItem Value="0">All</asp:ListItem>
+                                <asp:ListItem Value="1">Released</asp:ListItem>
+                                <asp:ListItem Value="2">Not Released</asp:ListItem>
+                            </asp:DropDownList>
+                        </div>
+                    </div>
 
                     <div class="col-2">
                         <div class="form-group">
@@ -39,7 +50,7 @@
                             <asp:TextBox CssClass="form-control form-control-sm" ID="txtPODateTo" runat="server" AutoComplete="off" OnBlur="validateDate(this)"></asp:TextBox>
                             <asp:CalendarExtender ID="txtPODateTo_Extender" runat="server" Format="MM/dd/yyyy" PopupButtonID="txtPODateTo" TargetControlID="txtPODateTo"></asp:CalendarExtender>
                         </div>
-                    </div>                    
+                    </div>
 
                     <div class="col-sm-3 pl-0">
                         <div class="form-group">
@@ -71,7 +82,8 @@
         });
 
         function DDL() {
-            $('#<%=ddlPOType.ClientID%>').chosen();            
+            $('#<%=ddlPOType.ClientID%>').chosen();
+            $('#<%=ddlReleaseStatus.ClientID%>').chosen();
         }
     </script>
 </asp:Content>

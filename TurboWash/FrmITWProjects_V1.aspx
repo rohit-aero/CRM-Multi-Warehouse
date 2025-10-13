@@ -62,6 +62,7 @@
                                         <asp:Button ID="btnNew" runat="server" CssClass="btn btn-primary btn-sm mb-3" OnClick="btnNew_Click" Text="New Order" />
                                         <asp:Button ID="btnSave" runat="server" CssClass="btn btn-success btn-sm mb-3" Text="Save" OnClick="btnSave_Click" />
                                         <asp:Button ID="btnPreviewReport" runat="server" CssClass="btn btn-secondary btn-sm mb-3" CausesValidation="false" OnClick="btnPreviewReport_Click" OnClientClick="window.document.forms[0].target='_blank';" Text="Preview Report" />
+                                        <asp:Button ID="btnFilter" runat="server" CssClass="btn btn-secondary btn-sm mb-3" Enabled="true" OnClick="btnFilter_Click" Text="Filter Data" />
                                         <asp:Button ID="btnCancel" runat="server" CssClass="btn btn-danger btn-sm mb-3" Text="Cancel" OnClick="btnCancel_Click" OnClientClick="RemoveQueryString()" />
                                     </div>
                                 </div>

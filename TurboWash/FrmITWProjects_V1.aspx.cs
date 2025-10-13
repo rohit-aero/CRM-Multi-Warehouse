@@ -1621,4 +1621,16 @@ public partial class TurboWash_FrmITWProjects_V1 : System.Web.UI.Page
         HfProjectPartId.Value = "-1";
         btnCancelShipmentDetail_Click();
     }
+
+    protected void btnFilter_Click(object sender, EventArgs e)
+    {
+        try
+        {
+            Response.Redirect("~/TurboWash/FrmITWProjectsReport_V1.aspx", false);
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+    }
 }
