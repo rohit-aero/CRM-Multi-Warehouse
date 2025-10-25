@@ -8417,7 +8417,7 @@ namespace DALAERO
             param[0].Direction = ParameterDirection.Output;
             param[1] = new SqlParameter("@Operation", ObjBOL.Operation);
             param[2] = new SqlParameter("@PartId", ObjBOL.PartId);
-            DataSet ds = SqlHelper1.ExecuteDataset(con, CommandType.StoredProcedure, "Get_PO_PartDetails", param);
+            DataSet ds = SqlHelper1.ExecuteDataset(con, CommandType.StoredProcedure, "[IV].[Get_PO_PartDetails]", param);
             return ds;
         }
     }
