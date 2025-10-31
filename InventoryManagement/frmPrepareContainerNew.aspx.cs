@@ -737,7 +737,7 @@ public partial class InventoryManagement_frmPrepareContainerNew : System.Web.UI.
                     count = ds.Tables[0].Rows.Count;
                     if(count == 1)
                     {
-                        if(ddlContainerNo.SelectedIndex == 0)
+                        if(ddlContainerNo.SelectedIndex == 0 || ddlContainerNo.SelectedIndex == -1)
                         {
                             ddlVendorLookup.SelectedValue = ds.Tables[0].Rows[0]["id"].ToString();
                             VendorLookupEvent("");
