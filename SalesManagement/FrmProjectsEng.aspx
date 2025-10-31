@@ -499,7 +499,7 @@
 
                             <div class="col-6 col-sm-4 col-md-3 col-lg-2">
                                 <div class="form-group chosenFullWidth">
-                                    <label>Warehouse</label>
+                                    <label class="text-danger">Warehouse*</label>
                                     <asp:DropDownList CssClass="form-control form-control-sm" ID="ddlWarehouse" runat="server" DataTextField="text" DataValueField="id">
                                     </asp:DropDownList>
                                 </div>

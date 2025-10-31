@@ -226,6 +226,14 @@ public partial class SalesManagement_FrmProjectsEng : System.Web.UI.Page
                 return false;
             }
 
+            if (ddlWarehouse.SelectedIndex == 0)
+            {
+                Utility.ShowMessage_Error(Page, "Please select warehouse !");
+                string strMethodNameNew = "SetCSSFab();";
+                ScriptManager.RegisterStartupScript(Page, Page.GetType(), Guid.NewGuid().ToString(), strMethodNameNew, true);
+                return false;
+            }
+
             if (ddlProductionStatus.SelectedValue == "P")
             {
                 if (txtProductionRemarks.Text.Trim() == "")
