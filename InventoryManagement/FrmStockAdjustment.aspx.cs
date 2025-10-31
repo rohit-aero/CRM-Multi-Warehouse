@@ -19,6 +19,7 @@ public partial class INVManagement_FrmStockAdjustment : System.Web.UI.Page
             if (!IsPostBack)
             {
                 Bind_Control();
+                BindWareHouse();
             }
         }
         catch (Exception ex)
@@ -38,22 +39,45 @@ public partial class INVManagement_FrmStockAdjustment : System.Web.UI.Page
             {
                 Utility.BindDropDownList(ddlPartNumber, ds.Tables[2]);
             }
-
             if (ds.Tables[3].Rows.Count > 0)
             {
                 Utility.BindDropDownList(ddlReason, ds.Tables[3]);
-            }
-
-            if (ds.Tables[4].Rows.Count > 0)
-            {
-                Utility.BindDropDownList(ddlWarehouse, ds.Tables[4]);
-            }
+            }            
 
             if (ds.Tables[5].Rows.Count > 0)
             {
                 Utility.BindDropDownList(ddlProductCode, ds.Tables[5]);
             }
             //ddlReason
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+    }
+
+    private void BindWareHouse()
+    {
+        try
+        {           
+            DataSet ds = new DataSet();
+            int EmployeeID = Utility.GetCurrentSession().EmployeeID;
+            if(EmployeeID != 0)
+            {
+                ObjBOL.operation = 8;
+                ObjBOL.userid = EmployeeID;
+                ds = ObjBLL.GetJobs(ObjBOL);
+                if (ds.Tables[0].Rows.Count > 0)
+                {
+                    string checkEmpWarehouse = ds.Tables[0].Rows[0]["WareHouse"].ToString();
+                    Utility.BindDropDownList(ddlWarehouse, ds.Tables[1]);
+                    if (checkEmpWarehouse != "0")
+                    {
+                        ddlWarehouse.SelectedValue = checkEmpWarehouse;
+                    }
+                   
+                }
+            }
         }
         catch (Exception ex)
         {

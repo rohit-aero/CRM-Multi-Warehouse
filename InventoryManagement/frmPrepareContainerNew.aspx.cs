@@ -723,16 +723,34 @@ public partial class InventoryManagement_frmPrepareContainerNew : System.Web.UI.
     {
         try
         {
+            int count = 0;
             DataSet ds = new DataSet();
             ObjBOL.Operation = 19;
             ObjBOL.EmployeeID = Utility.GetCurrentSession().EmployeeID;
-            ds = ObjBLL.GetBindControl(ObjBOL);
+            ds = ObjBLL.GetBindControl(ObjBOL);           
             if (ds.Tables.Count > 0)
             {
                 if (ds.Tables[0].Rows.Count > 0)
                 {
                     Utility.BindDropDownList(ddlVendorLookup, ds.Tables[0]);
                     Utility.BindDropDownList(ddlVendor, ds.Tables[0]);
+                    count = ds.Tables[0].Rows.Count;
+                    if(count == 1)
+                    {
+                        if(ddlContainerNo.SelectedIndex == 0)
+                        {
+                            ddlVendorLookup.SelectedValue = ds.Tables[0].Rows[0]["id"].ToString();
+                            VendorLookupEvent("");
+                            ddlVendor.SelectedValue = ds.Tables[0].Rows[0]["id"].ToString();
+                            BindDestWareHouse(ddlVendorLookup.SelectedValue);
+                            DisabledSourceandDestinationVendor();
+                        }
+                        
+                    }
+                    else
+                    {
+                        EnabledSourceandDestinationVendor();
+                    }
                     CheckStatus();
                 }
                 else
@@ -744,6 +762,33 @@ public partial class InventoryManagement_frmPrepareContainerNew : System.Web.UI.
             {
                 CheckStatus();
             }
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+    }
+
+
+    private void EnabledSourceandDestinationVendor()
+    {
+        try
+        {
+            ddlVendorLookup.Enabled = true;
+            ddlVendor.Enabled = true;
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+    }
+
+    private void DisabledSourceandDestinationVendor()
+    {
+        try
+        {
+            ddlVendorLookup.Enabled = false;
+            ddlVendor.Enabled = false;
         }
         catch (Exception ex)
         {
@@ -1346,76 +1391,85 @@ public partial class InventoryManagement_frmPrepareContainerNew : System.Web.UI.
                     GetSaveDocPath();
                 }
             }
-            SaveGridData();
-            DataTable selected = (DataTable)ViewState["ContainerSummary"];
-            DataView dv = new DataView(selected);
-            DataTable summarytemp = dv.ToTable("selected", false, "Poid", "PoDetailId", "Partid", "OrderQty", "ShipQty", "Pendingqty", "Remarks", "PackingNo", "Status", "SkidNo");
-            ObjBOL.ContainerDetails = summarytemp;
-            int Employeeid = Utility.GetCurrentSession().EmployeeID;
-            ObjBOL.LoginUserId = Employeeid;
-            ObjBOL.SourceID = Int32.Parse(ddlVendor.SelectedValue);
-            if (btnSave.Text == "Save")
+            if(SaveGridData() == true)
             {
-                ObjBOL.Operation = 3;
-                msg = ObjBLL.SaveContainerInfo(ObjBOL);
-                if (msg == "ER01")
+                DataTable selected = (DataTable)ViewState["ContainerSummary"];
+                DataView dv = new DataView(selected);
+                DataTable summarytemp = dv.ToTable("selected", false, "Poid", "PoDetailId", "Partid", "OrderQty", "ShipQty", "Pendingqty", "Remarks", "PackingNo", "Status", "SkidNo");
+                ObjBOL.ContainerDetails = summarytemp;
+                int Employeeid = Utility.GetCurrentSession().EmployeeID;
+                ObjBOL.LoginUserId = Employeeid;
+                ObjBOL.SourceID = Int32.Parse(ddlVendor.SelectedValue);
+                if (btnSave.Text == "Save")
                 {
-                    //ScriptManager.RegisterClientScriptBlock(this, this.GetType(), "window", "alert('Invoice No already exists!!');", true);
-                    Utility.ShowMessage_Error(Page, "Invoice No already exists!!");
-                    return;
-                }
-                else if (msg == "ER02")
-                {
-                    //ScriptManager.RegisterClientScriptBlock(this, this.GetType(), "window", "alert('Container No already exists!!');", true);
-                    Utility.ShowMessage_Error(Page, "Container No already exists!!");
-                    return;
-                }
-                if (msg != "")
-                {
-                    hfContainerid.Value = msg;
-                    Bind_Controls(msg, ddlVendor.SelectedValue);
-                    UpdateReqStatus();
-                    AutoFillData();
-                    Bind_GridChangeContainer();
-                    //Utility.ShowMessage(this, "Records Added Successfully !!!");
-                    Utility.ShowMessage_Success(Page, "Container Added Successfully !!!");
+                    ObjBOL.Operation = 3;
+                    msg = ObjBLL.SaveContainerInfo(ObjBOL);
+                    if (msg == "ER01")
+                    {
+                        //ScriptManager.RegisterClientScriptBlock(this, this.GetType(), "window", "alert('Invoice No already exists!!');", true);
+                        Utility.ShowMessage_Error(Page, "Invoice No already exists!!");
+                        return;
+                    }
+                    else if (msg == "ER02")
+                    {
+                        //ScriptManager.RegisterClientScriptBlock(this, this.GetType(), "window", "alert('Container No already exists!!');", true);
+                        Utility.ShowMessage_Error(Page, "Container No already exists!!");
+                        return;
+                    }
+                    if (msg != "")
+                    {
+                        hfContainerid.Value = msg;
+                        Bind_Controls(msg, ddlVendor.SelectedValue);
+                        UpdateReqStatus();
+                        AutoFillData();
+                        Bind_GridChangeContainer();
+                        //Utility.ShowMessage(this, "Records Added Successfully !!!");
+                        Utility.ShowMessage_Success(Page, "Container Added Successfully !!!");
 
+                    }
+                    btnSave.Text = "Update";
                 }
-                btnSave.Text = "Update";
-            }
-            else
-            {
-                btnSave.Text = "Update";
-                ObjBOL.Containerid = Int32.Parse(ddlContainerNo.SelectedValue);
-                ObjBOL.Operation = 9;
-                msg = ObjBLL.SaveContainerInfo(ObjBOL);
-                if (msg == "ER01")
+                else
                 {
-                    Utility.ShowMessage_Error(Page, "Invoice No already exists!!");
-                    return;
+                    btnSave.Text = "Update";
+                    ObjBOL.Containerid = Int32.Parse(ddlContainerNo.SelectedValue);
+                    ObjBOL.Operation = 9;
+                    msg = ObjBLL.SaveContainerInfo(ObjBOL);
+                    if (msg == "ER01")
+                    {
+                        Utility.ShowMessage_Error(Page, "Invoice No already exists!!");
+                        return;
+                    }
+                    else if (msg == "ER02")
+                    {
+                        Utility.ShowMessage_Error(Page, "Container No already exists!!");
+                        return;
+                    }
+                    if (msg != "")
+                    {
+                        hfContainerid.Value = msg;
+                        Bind_Controls(msg, ddlVendor.SelectedValue);
+                        UpdateReqStatus();
+                        AutoFillData();
+                        Bind_GridChangeContainer();
+                    }
+                    //Utility.ShowMessage(this, "Records Updated Successfully !!!");
+                    Utility.ShowMessage_Success(Page, "Container Updated Successfully !!!");
                 }
-                else if (msg == "ER02")
+                if (MatchArrivalDateFromDB == true)
                 {
-                    Utility.ShowMessage_Error(Page, "Container No already exists!!");
-                    return;
+                    SaveArrivalDateLogs();
                 }
-                if (msg != "")
-                {
-                    hfContainerid.Value = msg;
-                    Bind_Controls(msg, ddlVendor.SelectedValue);
-                    UpdateReqStatus();
-                    AutoFillData();
-                    Bind_GridChangeContainer();
-                }
-                //Utility.ShowMessage(this, "Records Updated Successfully !!!");
-                Utility.ShowMessage_Success(Page, "Container Updated Successfully !!!");
+                btnAddProjects.Enabled = true;
+                containerProjects.Visible = true;
+                AutoBindContainer(EmployeeID);
+                btnSubmit.Enabled = true;
+                btnNotify.Enabled = true;
+                btnPackingDetails.Enabled = true;
+                btnPackingDetailsExcel.Enabled = true;
+                BindJobGrid();
             }
-            if (MatchArrivalDateFromDB == true)
-            {
-                SaveArrivalDateLogs();
-            }
-            btnAddProjects.Enabled = true;
-            containerProjects.Visible = true;
+            
         }
         catch (Exception ex)
         {
@@ -1423,7 +1477,7 @@ public partial class InventoryManagement_frmPrepareContainerNew : System.Web.UI.
         }
     }
 
-    private void SaveGridData()
+    private Boolean SaveGridData()
     {
         try
         {
@@ -1514,6 +1568,12 @@ public partial class InventoryManagement_frmPrepareContainerNew : System.Web.UI.
                             {
                                 dr[12] = Convert.ToInt32(ddlStatus.SelectedValue);
                             }
+                            if(ShippedQuantity == 0 && ddlStatus.SelectedValue == "2" && ItemRemarks.Text == "")
+                            {
+                                Utility.ShowMessage_Error(Page, "Please Add Remarks !");
+                                ItemRemarks.Focus();
+                                return false;
+                            }
                             //if(ddlShipmentBy.SelectedIndex>0)
                             //{
                             //    dr[11] =Convert.ToInt32(ddlShipmentBy.SelectedValue);
@@ -1526,6 +1586,7 @@ public partial class InventoryManagement_frmPrepareContainerNew : System.Web.UI.
                             {
                                 dr[13] = SkidNo.Text;
                             }
+
                             dt.Rows.Add(dr);
                             dt.AcceptChanges();
                         }
@@ -1540,6 +1601,7 @@ public partial class InventoryManagement_frmPrepareContainerNew : System.Web.UI.
         {
             Utility.AddEditException(ex);
         }
+        return true;
     }
 
     protected void btnSave_Click(object sender, EventArgs e)
@@ -1548,12 +1610,7 @@ public partial class InventoryManagement_frmPrepareContainerNew : System.Web.UI.
         {
             if (ValidationCheck() == true)
             {
-                SaveContainerInfo();
-                btnSubmit.Enabled = true;
-                btnNotify.Enabled = true;
-                btnPackingDetails.Enabled = true;
-                btnPackingDetailsExcel.Enabled = true;
-                BindJobGrid();
+                SaveContainerInfo();                
             }
         }
         catch (Exception ex)
@@ -2459,6 +2516,8 @@ public partial class InventoryManagement_frmPrepareContainerNew : System.Web.UI.
             {
                 ddlDestWareHouse.Items.Clear();
             }
+            ddlVendorLookup.Enabled = true;
+            ddlVendor.Enabled = true;
             GridReset();
         }
         catch (Exception ex)
