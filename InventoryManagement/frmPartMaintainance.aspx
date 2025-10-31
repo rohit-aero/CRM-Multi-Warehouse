@@ -50,7 +50,8 @@
                                         <asp:Button ID="btnSave" runat="server" CssClass="btn btn-success btn-sm control-access-enabled" Text="Save" OnClientClick="return confirm('Are you sure.?');" OnClick="btnSave_Click" />
                                         <asp:Button ID="btnReport" runat="server" CssClass="btn btn-primary btn-sm control-access-enabled" Text="Preview Report" OnClick="btnReport_Click" />
                                         <asp:Button ID="btnITWReport" runat="server" CssClass="btn btn-secondary btn-sm control-access-enabled" Text="ITW Report" OnClick="btnITWReport_Click" />
-                                        <asp:Button ID="btnCancel" runat="server" CssClass="btn btn-danger btn-sm control-access-enabled" Text="Cancel" OnClick="btnCancel_Click" />
+                                        <asp:Button ID="btnDashboardRedirect" runat="server" CssClass="btn btn-secondary btn-sm" Enabled="true" OnClick="btnDashboardRedirect_Click" Text="Dashboard" />
+                                        <asp:Button ID="btnCancel" runat="server" CssClass="btn btn-danger btn-sm control-access-enabled mt-1" Text="Cancel" OnClick="btnCancel_Click" />
                                     </div>
                                 </div>
                             </div>
@@ -183,7 +184,7 @@
                             <asp:DropDownList CssClass="form-control form-control-sm control-access" ID="ddlSource" runat="server" DataTextField="Source" DataValueField="id"></asp:DropDownList>
                         </div>
                     </div>
-                    <div class="col-sm-6 col-md-3 col-lg-2">
+                    <div class="col-sm-6 col-md-3 col-lg-1">
                         <div class="form-group">
                             <label>Stock In Hand</label>
                             <asp:TextBox CssClass="form-control form-control-sm text-right" ID="txtStockInHand" runat="server" Enabled="false" autocomplete="off" onkeypress="return onlyDotsAndNumbers(this,event);"></asp:TextBox>
@@ -356,8 +357,8 @@
                 </asp:Panel>
             </div>
 
-            <div class="col-12 border-top mt-3"></div>
-            <div class="col-3">
+            <%--<div class="col-12 border-top mt-3"></div>--%>
+            <div class="col-3" style="display:none;">
                 <div class="row pt-3">
                     <div class="col-sm-12">
                         <h5 class="text-uppercase">

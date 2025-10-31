@@ -426,6 +426,15 @@ public partial class INVManagement_frmPartMaintainance : System.Web.UI.Page
                         txtStockInHand.Text = dr["stockinhand"].ToString();
                     }
 
+                    if (dr["StockInHandToolTip"].ToString() != "")
+                    {
+                        txtStockInHand.ToolTip = dr["StockInHandToolTip"].ToString();
+                    }
+                    else
+                    {
+                        txtStockInHand.ToolTip = string.Empty;
+                    }
+
                     string str = dr["revisionno"].ToString();
                     if (ddlRevisionNo.Items.FindByValue(str) != null)
                     {
@@ -636,6 +645,7 @@ public partial class INVManagement_frmPartMaintainance : System.Web.UI.Page
             gvWarehouseStock.DataSource = string.Empty;
             gvWarehouseStock.DataBind();
             lblStockInHandGrid.Visible = false;
+            txtStockInHand.ToolTip = string.Empty;
 
             Disable_ITWSpecificFields();
         }
@@ -1631,6 +1641,19 @@ public partial class INVManagement_frmPartMaintainance : System.Web.UI.Page
                 ddlLineStopperPriority.Enabled = false;
                 ddlLineStopperPriority.SelectedIndex = 0;
             }
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+    }
+
+    protected void btnDashboardRedirect_Click(object sender, EventArgs e)
+    {
+        try
+        {           
+            Response.Redirect("~/Reports/FrmDashboardReport.aspx", false);
+
         }
         catch (Exception ex)
         {
