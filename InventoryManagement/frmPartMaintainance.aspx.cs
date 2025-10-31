@@ -546,11 +546,13 @@ public partial class INVManagement_frmPartMaintainance : System.Web.UI.Page
                 {
                     gvWarehouseStock.DataSource = ds.Tables[1];
                     gvWarehouseStock.DataBind();
+                    lblStockInHandGrid.Visible = true;
                 }
                 else
                 {
                     gvWarehouseStock.DataSource = string.Empty;
                     gvWarehouseStock.DataBind();
+                    lblStockInHandGrid.Visible = false;
                 }
             }
             rdbLineStopper_SelectedIndexChanged();
@@ -633,6 +635,7 @@ public partial class INVManagement_frmPartMaintainance : System.Web.UI.Page
 
             gvWarehouseStock.DataSource = string.Empty;
             gvWarehouseStock.DataBind();
+            lblStockInHandGrid.Visible = false;
 
             Disable_ITWSpecificFields();
         }

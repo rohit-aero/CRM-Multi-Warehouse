@@ -360,7 +360,9 @@
             <div class="col-3">
                 <div class="row pt-3">
                     <div class="col-sm-12">
-                        <%--<h5 class="text-uppercase">Warehouse Stock</h5>--%>
+                        <h5 class="text-uppercase">
+                            <asp:Label ID="lblStockInHandGrid" runat="server" Text="Stock In Hand" Visible ="false"></asp:Label>
+                        </h5>
                         <div class="table-responsive">
                             <asp:GridView CssClass="table mainGridTable table-sm mb-0" ForeColor="White" ID="gvWarehouseStock" runat="server" AutoGenerateColumns="false"
                                 EnableModelValidation="True" ShowFooter="false">
