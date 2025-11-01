@@ -194,7 +194,7 @@ public partial class Reports_frmForecastingNew : System.Web.UI.Page
                 Qstr += " tblProjects.ShipDate BETWEEN  '" + strDateFrom + "' AND '" + strDateTo + "'  ";
                 if (ddlShop.SelectedIndex > 0)
                 {
-                    Qstr += " AND  tblProjects.MfgFacilityID=" + ddlShop.SelectedValue + " ";
+                    Qstr += " AND  tblProjects.WarehouseId=" + ddlShop.SelectedValue + " ";
                 }
                 if (ddlProduct.SelectedIndex > 0)
                 {
@@ -208,7 +208,7 @@ public partial class Reports_frmForecastingNew : System.Web.UI.Page
                 Qstr += " MIN(UPPER(CONVERT(VARCHAR, tblProjects.ShipDate,101) + '', '' +  Inv_ProjectParts.projectid + '', ''  ";
                 Qstr += " + ISNULL(tblCustomers.CompanyName,'''') ";
                 Qstr += " )) AS [Project_Name],   ";
-                Qstr += " MIN(Inv_ProjectParts.qty) as Qty  from Inv_Parts   ";
+                Qstr += " MIN(Inv_ProjectParts.qty) as Qty from Inv_Parts   ";
                 Qstr += "  INNER JOIN Inv_Product ON Inv_Product.id=Inv_Parts.ProductId  ";
                 Qstr += " LEFT JOIN Inv_ProjectParts ON Inv_ProjectParts.partid=Inv_Parts.id   ";
                 Qstr += "  LEFT JOIN tblProjects ON Inv_ProjectParts.projectid=tblProjects.JobID  ";
@@ -216,10 +216,10 @@ public partial class Reports_frmForecastingNew : System.Web.UI.Page
                 Qstr += "  LEFT JOIN tblStates ON tblStates.StateID=tblCustomers.StateID  ";
                 Qstr += "  WHERE Inv_ProjectParts.qty IS NOT NULL  AND tblProjects.ProjectStatus NOT IN (2,3)  AND Inv_Parts.StockItem=1 ";
                 Qstr += " AND  tblProjects.ShipDate BETWEEN ''" + strDateFrom + "'' AND ''" + strDateTo + "'' ";
-                //if (ddlShop.SelectedIndex > 0)
-                //{                   
-                //     Qstr += " AND  tblProjects.MfgFacilityID=" + ddlShop.SelectedValue + " ";                  
-                //}
+                if (ddlShop.SelectedIndex > 0)
+                {
+                    Qstr += " AND  tblProjects.WarehouseId=" + ddlShop.SelectedValue + " ";
+                }
                 if (ddlProduct.SelectedIndex > 0)
                 {
                     Qstr += " AND  Inv_Parts.ProductId=" + ddlProduct.SelectedValue + " ";

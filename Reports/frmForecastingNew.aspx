@@ -43,9 +43,9 @@
                             </div>
                             <div class="col-sm-2">
                                 <div class="row chosenFullWidth">
-                                    <label class="col-12">Manufacturing Facility</label>
+                                    <label class="col-12">Warehouse</label>
                                     <div class="col">
-                                        <asp:DropDownList CssClass="form-control form-control-sm" ID="ddlShop" runat="server" DataTextField="FacilityName" DataValueField="id"></asp:DropDownList>
+                                        <asp:DropDownList CssClass="form-control form-control-sm" ID="ddlShop" runat="server" DataTextField="text" DataValueField="id"></asp:DropDownList>
                                     </div>
                                 </div>
                             </div>
@@ -73,26 +73,26 @@
                     </div>
                 </div>
             </div>
-            <div class="col-12" id="divAerowerksForecastingReport" runat="server" style="display:none">
+            <div class="col-12" id="divAerowerksForecastingReport" runat="server" style="display: none">
                 <div class="row pt-3">
                     <div class="col-12">
                         <h5><strong>Help Section: </strong></h5>
                     </div>
                     <div class="col-12 pt-2" runat="server" id="divGrossPurchase_HelpSection">
-                    <div class="d-flex align-items-center mb-2">
-                        <h5>
-                            <strong>Aerowerks Forecasting Report</strong>
-                        </h5>
+                        <div class="d-flex align-items-center mb-2">
+                            <h5>
+                                <strong>Aerowerks Forecasting Report</strong>
+                            </h5>
+                        </div>
+                        <div class="col-12">
+                            <ul>
+                                <li>Date is based on <strong>Ship Date</strong>.</li>
+                                <li>Project Parts Qty<strong> Greater Than Zero</strong>.</li>
+                                <li>Project Status<strong> Not Cancelled/On-Hold</strong>.</li>
+                                <li>Stock Item<strong> Yes</strong>.</li>
+                            </ul>
+                        </div>
                     </div>
-                    <div class="col-12">
-                        <ul>
-                            <li>Date is based on <strong> Ship Date</strong>.</li> 
-                            <li>Project Parts Qty<strong> Greater Than Zero</strong>.</li>  
-                            <li>Project Status<strong> Not Cancelled/On-Hold</strong>.</li>  
-                            <li>Stock Item<strong> Yes</strong>.</li>                                           
-                        </ul>
-                    </div>
-                </div>
                 </div>
             </div>
             <div class="col-12 mt-3">
@@ -102,7 +102,7 @@
                     </asp:GridView>
                 </div>
             </div>
-             <div class="col-12 mt-3">
+            <div class="col-12 mt-3">
                 <div class="table-responsive eoeTable" style="height: 750px" id="gvExportToExcel" runat="server" visible="false">
                     <asp:GridView ID="gvSearchExportToExcel" runat="server" CellPadding="3" EmptyDataText="No Items Found" Width="100%" CssClass="table mainGridTable table-sm verticalHeading mx-auto text-center"
                         EnableModelValidation="True" ShowFooter="false" OnDataBound="gvSearchExportToExcel_DataBound" OnRowDataBound="gvSearchExportToExcel_RowDataBound">

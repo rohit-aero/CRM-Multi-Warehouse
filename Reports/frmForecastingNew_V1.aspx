@@ -43,9 +43,9 @@
                             </div>
                             <div class="col-sm-2">
                                 <div class="row chosenFullWidth">
-                                    <label class="col-12">Manufacturing Facility</label>
+                                    <label class="col-12">Warehouse</label>
                                     <div class="col">
-                                        <asp:DropDownList CssClass="form-control form-control-sm" ID="ddlShop" runat="server" DataTextField="FacilityName" DataValueField="id"></asp:DropDownList>
+                                        <asp:DropDownList CssClass="form-control form-control-sm" ID="ddlShop" runat="server" DataTextField="text" DataValueField="id"></asp:DropDownList>
                                     </div>
                                 </div>
                             </div>

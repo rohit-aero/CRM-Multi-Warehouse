@@ -201,7 +201,7 @@ public partial class Reports_frmForecastingNew_V1 : System.Web.UI.Page
                 Qstr += " tblProjects.ShipDate BETWEEN  '" + strDateFrom + "' AND '" + strDateTo + "'  ";
                 if (ddlShop.SelectedIndex > 0)
                 {
-                    Qstr += " AND  tblProjects.MfgFacilityID=" + ddlShop.SelectedValue + " ";
+                    Qstr += " AND  tblProjects.WarehouseId=" + ddlShop.SelectedValue + " ";
                 }
                 if (ddlProduct.SelectedIndex > 0)
                 {
@@ -225,10 +225,10 @@ public partial class Reports_frmForecastingNew_V1 : System.Web.UI.Page
                 Qstr += "  LEFT JOIN tblStates ON tblStates.StateID=tblCustomers.StateID  ";
                 Qstr += "  WHERE Inv_AWProduct_Projects.qty IS NOT NULL  AND tblProjects.ProjectStatus NOT IN (2,3) ";
                 Qstr += " AND  tblProjects.ShipDate BETWEEN ''" + strDateFrom + "'' AND ''" + strDateTo + "'' ";
-                //if (ddlShop.SelectedIndex > 0)
-                //{                   
-                //     Qstr += " AND  tblProjects.MfgFacilityID=" + ddlShop.SelectedValue + " ";                  
-                //}
+                if (ddlShop.SelectedIndex > 0)
+                {
+                    Qstr += " AND  tblProjects.WarehouseId=" + ddlShop.SelectedValue + " ";
+                }
                 if (ddlProduct.SelectedIndex > 0)
                 {
                     Qstr += " AND  Inv_AWProduct.ID=" + ddlProduct.SelectedValue + " ";

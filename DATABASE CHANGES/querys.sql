@@ -1,0 +1,22 @@
+--ALTER TABLE tblProjects ADD WareHouseId INT NULL;
+--ALTER TABLE Inv_StockTransactions ADD WarehouseId INT NULL;
+--ALTER TABLE TW_Projects ADD WarehouseId INT NULL;
+
+----UPDATE tblProjects SET WareHouseId = MfgFacilityID
+----WHERE JobID = JobID
+
+--CREATE TABLE [dbo].[Inv_Parts_StockInHand](
+--	[Id] [int] IDENTITY(1,1) NOT NULL,
+--	[PartId] [int] NULL,
+--	[WarehouseId] [int] NULL,
+--	[StockInHand] [int] NULL,
+--	[InsertedDate] [datetime] NULL,
+--	[UpdatedDate] [datetime] NULL,
+--	[InsertedByUser] [int] NULL,
+--	[UpdatedByUser] [int] NULL,
+-- CONSTRAINT [PK_Inv_Parts_StockInHand] PRIMARY KEY CLUSTERED 
+--(
+--	[Id] ASC
+--)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+--) ON [PRIMARY]
+--GO

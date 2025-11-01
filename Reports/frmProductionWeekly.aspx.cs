@@ -59,7 +59,7 @@ public partial class Reports_frmProductionWeekly : System.Web.UI.Page
         try
         {
             DataTable dt = new DataTable();
-            clscon.Return_DT(dt, "SELECT ID,FacilityName FROM tblMfgFacility ORDER BY FacilityName ");
+            clscon.Return_DT(dt, "SELECT ID, WarehouseName AS [text] FROM Inv_Warehouse ORDER BY WarehouseName ");
             Utility.BindDropDownListAll(ddlShop, dt);
         }
         catch (Exception ex)

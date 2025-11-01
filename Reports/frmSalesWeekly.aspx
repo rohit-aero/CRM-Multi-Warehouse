@@ -27,8 +27,8 @@
                     </div>
                     <div class="col-sm-auto">
                         <div class="row chosenFullWidth">
-                            <label>Manufacturing Facility</label>
-                            <asp:DropDownList CssClass="form-control form-control-sm" ID="ddlShop" runat="server" DataTextField="FacilityName" DataValueField="id"></asp:DropDownList>
+                            <label>Warehouse</label>
+                            <asp:DropDownList CssClass="form-control form-control-sm" ID="ddlShop" runat="server" DataTextField="text" DataValueField="id"></asp:DropDownList>
                         </div>
                     </div>
                     <div class="col-12 col-sm-6 col-md-2 col-lg-2">

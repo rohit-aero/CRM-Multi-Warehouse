@@ -111,7 +111,7 @@ public partial class Reports_frmSalesWeekly : System.Web.UI.Page
     private void BindControls()
     {
         DataTable dt = new DataTable();
-        clscon.Return_DT(dt, "SELECT ID,FacilityName FROM tblMfgFacility ORDER BY FacilityName ");
+        clscon.Return_DT(dt, "SELECT ID, WarehouseName AS [text] FROM Inv_Warehouse ORDER BY WarehouseName ");
         Utility.BindDropDownListAll(ddlShop, dt);
     }
 
@@ -157,7 +157,8 @@ public partial class Reports_frmSalesWeekly : System.Web.UI.Page
             }
             else
             {
-                clscon.Return_DT(dt, "EXEC [dbo].[Get_SalesWeekly] '" + strDateFrom + "','" + strDateTo + "'," + ddlShop.SelectedValue + " ");
+                string query = "EXEC [dbo].[Get_SalesWeekly] '" + strDateFrom + "','" + strDateTo + "'," + ddlShop.SelectedValue + " ";
+                clscon.Return_DT(dt, query);
             }
         }
         catch (Exception ex)
