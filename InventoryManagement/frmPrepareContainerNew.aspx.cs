@@ -750,6 +750,8 @@ public partial class InventoryManagement_frmPrepareContainerNew : System.Web.UI.
                     else
                     {
                         EnabledSourceandDestinationVendor();
+                        ddlVendor.SelectedIndex = 0;
+                        ddlVendorLookup.SelectedIndex = 0;
                     }
                     CheckStatus();
                 }
@@ -1462,7 +1464,16 @@ public partial class InventoryManagement_frmPrepareContainerNew : System.Web.UI.
                 }
                 btnAddProjects.Enabled = true;
                 containerProjects.Visible = true;
-                DisabledSourceandDestinationVendor();
+                CheckStatus();
+                if(ViewState["ContainerStatus"].ToString() == "True" && ddlVendor.Items.Count>2)
+                {
+                    EnabledSourceandDestinationVendor();
+
+                }
+                else
+                {
+                    DisabledSourceandDestinationVendor();
+                }                
                 btnSubmit.Enabled = true;
                 btnNotify.Enabled = true;
                 btnPackingDetails.Enabled = true;
@@ -2486,6 +2497,7 @@ public partial class InventoryManagement_frmPrepareContainerNew : System.Web.UI.
         try
         {
             ResetForm();
+            AutoBindContainer(Utility.GetCurrentSession().EmployeeID);
         }
         catch (Exception ex)
         {
