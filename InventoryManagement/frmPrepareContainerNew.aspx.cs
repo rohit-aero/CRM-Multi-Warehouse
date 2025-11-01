@@ -2230,6 +2230,7 @@ public partial class InventoryManagement_frmPrepareContainerNew : System.Web.UI.
                         msg = ObjBLL.UpdateContainerStatus(ObjBOL);
                         SendEmail_Prepare("1");
                         ResetForm();
+                        AutoBindContainer(EmployeeID);
                         Utility.ShowMessage_Success(Page, "Container Submitted Successfully!!");
                         if (Utility.InventoryEmailSwitch() == true)
                         {
@@ -2270,6 +2271,7 @@ public partial class InventoryManagement_frmPrepareContainerNew : System.Web.UI.
                     {
                         SendEmail_Prepare("2");
                         ResetForm();
+                        AutoBindContainer(Utility.GetCurrentSession().EmployeeID);
                     }
                     else
                     {
@@ -2435,11 +2437,7 @@ public partial class InventoryManagement_frmPrepareContainerNew : System.Web.UI.
     {
         try
         {
-            btnSave.Text = "Save";
-            if (ddlVendor.Items.Count > 0)
-            {
-                ddlVendor.SelectedIndex = 0;
-            }
+            btnSave.Text = "Save";            
             txtTentativeSentDate.Text = String.Empty;
             if (ddlApprovedBy.Items.Count > 0)
             {
@@ -2514,11 +2512,7 @@ public partial class InventoryManagement_frmPrepareContainerNew : System.Web.UI.
             if (ddlContainerNo.Items.Count > 0)
             {
                 ddlContainerNo.Items.Clear();
-            }
-            if (ddlVendorLookup.Items.Count > 0)
-            {
-                ddlVendorLookup.SelectedIndex = 0;
-            }
+            }            
             btnSubmit.Enabled = false;
             btnNotify.Enabled = false;
             btnAddProjects.Enabled = false;
@@ -2527,9 +2521,7 @@ public partial class InventoryManagement_frmPrepareContainerNew : System.Web.UI.
             if (ddlDestWareHouse.Items.Count > 0)
             {
                 ddlDestWareHouse.Items.Clear();
-            }
-            ddlVendorLookup.Enabled = true;
-            ddlVendor.Enabled = true;
+            }           
             GridReset();
         }
         catch (Exception ex)
