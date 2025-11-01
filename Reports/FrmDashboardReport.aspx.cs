@@ -421,12 +421,13 @@ public partial class Reports_FrmDashboardReport : System.Web.UI.Page
 
             if (ddlProductCode.SelectedIndex > 0)
             {
-                Qstr += " AND Inv_Product.ProductLineSubID = '" + ddlProductCode.SelectedValue + "' ";
+                Qstr += " AND Inv_ProductCode.id = '" + ddlProductCode.SelectedValue + "' ";
+                
             }
 
             if (ddlProductLine.SelectedIndex > 0)
             {
-                Qstr += " AND Inv_Product.id = '" + ddlProductLine.SelectedValue + "' ";
+                Qstr += " AND Inv_Product.ProductLineSubID = '" + ddlProductLine.SelectedValue + "' ";
             }
 
             if (ddlPartNo.SelectedIndex > 0)
@@ -830,16 +831,24 @@ public partial class Reports_FrmDashboardReport : System.Web.UI.Page
         {
             DataSet ds = new DataSet();
             ObjBOL.Operation = 5;
-            ObjBOL.ProductLine = Int32.Parse(ddlProductLine.SelectedValue);
-            ds = ObjBLL.Return_DataSet(ObjBOL);
-
+            if (ddlProductCode.SelectedIndex > 0)
+            {
+                ObjBOL.ProductCode = Int32.Parse(ddlProductCode.SelectedValue);
+            }
+            if (ddlProductLine.Items.Count > 0)
+            {
+                ObjBOL.ProductLine = Int32.Parse(ddlProductLine.SelectedValue);
+            }            
+            ds = ObjBLL.Return_DataSet(ObjBOL);           
             if (ds.Tables[0].Rows.Count > 0)
             {
+                int count = ds.Tables[0].Rows.Count;
                 Utility.BindDropDownListAll(ddlPartNo, ds.Tables[0]);
             }
             else
             {
                 ddlPartNo.Items.Clear();
+                Utility.BindDropDownListAll(ddlPartNo, ds.Tables[0]);
             }
         }
         catch (Exception ex)

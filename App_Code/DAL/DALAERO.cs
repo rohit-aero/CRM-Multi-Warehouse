@@ -813,11 +813,12 @@ namespace DALAERO
     {
         public DataSet Return_DataSet(BOLReportDashboard ObjBOL)
         {
-            SqlParameter[] param = new SqlParameter[4];
+            SqlParameter[] param = new SqlParameter[5];
             param[0] = new SqlParameter("@Operation", ObjBOL.Operation);
             param[1] = new SqlParameter("@searchvar", ObjBOL.searchvar);
             param[2] = new SqlParameter("@ProductLine", ObjBOL.ProductLine);
             param[3] = new SqlParameter("@ReportTypeID", ObjBOL.ReportTypeID);
+            param[4] = new SqlParameter("@ProductCode", ObjBOL.ProductCode);
             DataSet ds = SqlHelper1.ExecuteDataset(con, CommandType.StoredProcedure, "[IV].[Inv_RT_ReportDashboard]", param);
             return ds;
         }
