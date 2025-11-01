@@ -75,7 +75,14 @@ public partial class INVManagement_FrmStockAdjustment : System.Web.UI.Page
                     {
                         ddlWarehouse.SelectedValue = checkEmpWarehouse;
                     }
-                   
+                   else
+                    {
+                        if (ddlWarehouse.Items.Count > 0)
+                        {
+                            ddlWarehouse.SelectedIndex = 0;
+                        }
+                       
+                    }
                 }
             }
         }
@@ -150,6 +157,7 @@ public partial class INVManagement_FrmStockAdjustment : System.Web.UI.Page
         try
         {
             ClearAll();
+            BindWareHouse();
         }
         catch (Exception ex)
         {

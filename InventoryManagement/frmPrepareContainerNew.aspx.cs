@@ -737,15 +737,15 @@ public partial class InventoryManagement_frmPrepareContainerNew : System.Web.UI.
                     count = ds.Tables[0].Rows.Count;
                     if(count == 1)
                     {
-                        if(ddlContainerNo.SelectedIndex == 0 || ddlContainerNo.SelectedIndex == -1)
+                        ddlVendorLookup.SelectedValue = ds.Tables[0].Rows[0]["id"].ToString();
+                        VendorLookupEvent("");
+                        ddlVendor.SelectedValue = ds.Tables[0].Rows[0]["id"].ToString();
+                        if (ddlDestWareHouse.Items.Count == 0)
                         {
-                            ddlVendorLookup.SelectedValue = ds.Tables[0].Rows[0]["id"].ToString();
-                            VendorLookupEvent("");
-                            ddlVendor.SelectedValue = ds.Tables[0].Rows[0]["id"].ToString();
                             BindDestWareHouse(ddlVendorLookup.SelectedValue);
-                            DisabledSourceandDestinationVendor();
                         }
-                        
+                        DisabledSourceandDestinationVendor();
+
                     }
                     else
                     {
@@ -1462,7 +1462,7 @@ public partial class InventoryManagement_frmPrepareContainerNew : System.Web.UI.
                 }
                 btnAddProjects.Enabled = true;
                 containerProjects.Visible = true;
-                AutoBindContainer(EmployeeID);
+                DisabledSourceandDestinationVendor();
                 btnSubmit.Enabled = true;
                 btnNotify.Enabled = true;
                 btnPackingDetails.Enabled = true;
