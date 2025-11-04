@@ -823,6 +823,7 @@ public partial class Reports_FrmDashboardReport : System.Web.UI.Page
     protected void ddlProductLine_SelectedIndexChanged(object sender, EventArgs e)
     {
         ddlProductLine_SelectedIndexChanged();
+        ResetGrid();
     }
 
     private void ddlProductLine_SelectedIndexChanged()
@@ -849,7 +850,7 @@ public partial class Reports_FrmDashboardReport : System.Web.UI.Page
             {
                 ddlPartNo.Items.Clear();
                 Utility.BindDropDownListAll(ddlPartNo, ds.Tables[0]);
-            }
+            }            
         }
         catch (Exception ex)
         {
@@ -1072,9 +1073,22 @@ public partial class Reports_FrmDashboardReport : System.Web.UI.Page
             }
             else
             {
-                ddlProductLine.Items.Clear();
+                ddlProductLine.Items.Clear();                
             }
             ddlProductLine_SelectedIndexChanged();
+            ResetGrid();
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+    }
+
+    protected void ddlPartNo_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        try
+        {
+            ResetGrid();
         }
         catch (Exception ex)
         {

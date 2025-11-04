@@ -725,11 +725,7 @@ public partial class _Default : System.Web.UI.Page
                 Send_EmailFollowUp(Message, Subject, sendToList, ccList);
                 sendToListAsList.Clear();
                 ccListAsList.Clear();
-            }
-            else
-            {
-                Utility.ShowMessage_Error(Page, "Email disabled !");
-            }
+            }            
         }
         catch (Exception ex)
         {

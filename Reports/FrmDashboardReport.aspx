@@ -70,7 +70,7 @@
                         <div class="col-6">
                             <label>Part No</label>
                             <asp:DropDownList ID="ddlPartNo" runat="server" DataValueField="id" DataTextField="text"
-                                CssClass="form-control form-control-sm chosenFullWidth">
+                                CssClass="form-control form-control-sm chosenFullWidth" AutoPostBack="true" OnSelectedIndexChanged="ddlPartNo_SelectedIndexChanged">
                             </asp:DropDownList>
                         </div>
                     </div>
