@@ -1121,8 +1121,9 @@ public partial class INVManagement_frmRequisitionNew : System.Web.UI.Page
             rprt.Load(Server.MapPath("~/Reports/rptGenerateRequisition.rpt"));
             if (dt.Rows.Count > 0)
             {
+                string reqNo = ddlReq.SelectedItem.Text;
                 rprt.SetDataSource(dt);
-                rprt.ExportToHttpResponse(CrystalDecisions.Shared.ExportFormatType.PortableDocFormat, Response, false, "");
+                rprt.ExportToHttpResponse(CrystalDecisions.Shared.ExportFormatType.PortableDocFormat, Response, false, reqNo);
             }
             else
             {
