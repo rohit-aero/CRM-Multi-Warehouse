@@ -34,14 +34,14 @@ public partial class Reports_frmPOReport : System.Web.UI.Page
             if (ds.Tables[0].Rows.Count > 0)
             {
                 Utility.BindDropDownListAll(ddlVendor, ds.Tables[0]);
+                Utility.BindDropDownListAll(ddlDest, ds.Tables[0]);
                 ddlVendor.SelectedIndex = 0;
             }
             if (ds.Tables[1].Rows.Count > 0)
             {
                 Utility.BindDropDownListAll(ddlLookupPart, ds.Tables[1]);
                 ddlLookupPart.SelectedIndex = 0;
-            }
-            BindDestWareHouse("");
+            }            
         }
         catch (Exception ex)
         {
@@ -49,55 +49,62 @@ public partial class Reports_frmPOReport : System.Web.UI.Page
         }
     }
 
-    private void BindDestWareHouse(string selectedSourceID)
+    private void BindDestWareHouse(string SourceID,string DestinationID)
     {
         try
         {
-            if (selectedSourceID != "")
+            if (SourceID != "" || DestinationID != "")
             {
                 DataSet ds = new DataSet();
                 ObjBOL.Operation = 4;
-                if (selectedSourceID != "")
+                if (SourceID != "")
                 {
-                    ObjBOL.SourceID = Convert.ToInt32(selectedSourceID);
+                    ObjBOL.SourceID = Convert.ToInt32(SourceID);
+                }
+                else
+                {
+                    ObjBOL.SourceID = Convert.ToInt32(DestinationID);
                 }
                 ds = ObjBLL.GetSearchPODataReport(ObjBOL);
                 if (ds.Tables[0].Rows.Count > 0)
                 {
-                    Utility.BindDropDownListAll(ddlDest, ds.Tables[0]);
+                    if (SourceID != "")
+                    {
+                        Utility.BindDropDownListAll(ddlDest, ds.Tables[0]);
+                        if (ddlDest.Items.Count > 0)
+                        {
+                            ddlDest.SelectedIndex = 0;
+                        }
+                    }
+                    else if (DestinationID != "")
+                    {
+                        Utility.BindDropDownListAll(ddlVendor, ds.Tables[0]);
+                        if (ddlVendor.Items.Count > 0)
+                        {
+                            ddlVendor.SelectedIndex = 0;
+                        }
+                    }
                 }
                 else
                 {
+                    if (ddlVendor.Items.Count > 0)
+                    {
+                        ddlVendor.SelectedIndex = 0;
+                    }
                     if (ddlDest.Items.Count > 0)
                     {
-                        ClearDestWarehouse();
+                        ddlDest.SelectedIndex = 0;
                     }
 
                 }
-            }
-            else
-            {
-                ClearDestWarehouse();
-            }
+            }            
         }
         catch (Exception ex)
         {
             Utility.AddEditException(ex);
         }
     }
-
-    private void ClearDestWarehouse()
-    {
-        try
-        {
-            ddlDest.Items.Clear();
-            ddlDest.Items.Insert(0, new System.Web.UI.WebControls.ListItem("All", "0"));
-        }
-        catch (Exception ex)
-        {
-            Utility.AddEditException(ex);
-        }
-    }
+   
 
     private void BindPartNo()
     {
@@ -565,13 +572,10 @@ public partial class Reports_frmPOReport : System.Web.UI.Page
             ddlStatus.SelectedIndex = 0;
             ddlPOCheckStatus.SelectedIndex = 0;
             ddlLookupPart.SelectedIndex = 0;
-            btnExporttoExcel.Enabled = false;
-            if (ddlDest.Items.Count > 0)
-            {
-                ClearDestWarehouse();
-            }
+            btnExporttoExcel.Enabled = false;           
             ResetGrid();
             Bind_Controls();
+            ddlDest.SelectedIndex = 0;
         }
         catch (Exception ex)
         {
@@ -619,8 +623,7 @@ public partial class Reports_frmPOReport : System.Web.UI.Page
                 Qstr += " AND Inv_Parts.id='" + Partid + "' ";
             }
             Qstr += " Group by Inv_Parts.id,Concat(Inv_Parts.PartNumber + ' ',  ";
-            Qstr += " Inv_Parts.PartDes),Inv_PurchaseOrder_Manual.IsSubmitted,Inv_PurchaseOrder_Manual.SourceId, ";
-            Qstr += " Inv_PurchaseOrderDetail_Manual.StatusID ";
+            Qstr += " Inv_Parts.PartDes) ";            
             Qstr += " Order by Concat(Inv_Parts.PartNumber + ' ', Inv_Parts.PartDes) asc";
             FQstr = Qstr;
             ObjBOL.Operation = 3;
@@ -688,7 +691,7 @@ public partial class Reports_frmPOReport : System.Web.UI.Page
             DataTable dt = new DataTable();
             if(sourceID != "")
             {
-                BindDestWareHouse(sourceID);
+                BindDestWareHouse(sourceID,"");
             }            
             dt = CommonPartNoFunction();
             if (dt.Rows.Count > 0)
@@ -698,6 +701,10 @@ public partial class Reports_frmPOReport : System.Web.UI.Page
             else if (dt.Rows.Count == 0)
             {
                 Utility.BindDropDownListAll(ddlLookupPart, dt);
+            }
+            if (ddlLookupPart.Items.Count > 0)
+            {
+                ddlLookupPart.SelectedIndex = 0;
             }
             
         }
@@ -712,7 +719,7 @@ public partial class Reports_frmPOReport : System.Web.UI.Page
         try
         {
             DataTable dt = new DataTable();
-            if (ddlVendor.SelectedIndex > 0)
+            if (ddlVendor.SelectedIndex > 0 || ddlDest.SelectedIndex>0)
             {                
                 dt = CommonPartNoFunction();
                 if (dt.Rows.Count > 0)
@@ -723,14 +730,7 @@ public partial class Reports_frmPOReport : System.Web.UI.Page
                 {
                     Utility.BindDropDownListAll(ddlLookupPart, dt);
                 }
-            }
-            else
-            {
-                if (ddlDest.Items.Count > 0)
-                {
-                    ClearDestWarehouse();
-                }
-            }
+            }            
         }
         catch (Exception ex)
         {
@@ -742,19 +742,16 @@ public partial class Reports_frmPOReport : System.Web.UI.Page
     {
         try
         {
+            ResetGrid();
             if (ddlVendor.SelectedIndex>0)
             {
                 BindPartNoOnSource(ddlVendor.SelectedValue);
             }
             else
             {
-                if (ddlDest.Items.Count > 0)
-                {
-                    ClearDestWarehouse();
-                    BindPartNoOnSource("");
-                }
+                Bind_Controls();                
             }
-            
+            BindPartNoOnSource("");
         }
         catch (Exception ex)
         {
@@ -766,6 +763,18 @@ public partial class Reports_frmPOReport : System.Web.UI.Page
     {
         try
         {
+            ResetGrid();
+            if (ddlVendor.SelectedIndex == 0)
+            {
+                if (ddlDest.SelectedIndex > 0)
+                {
+                    BindDestWareHouse("", ddlDest.SelectedValue);
+                }
+                else
+                {
+                    Bind_Controls();
+                }
+            }            
             FilterPartNoOnDest();
         }
         catch (Exception ex)
@@ -778,6 +787,7 @@ public partial class Reports_frmPOReport : System.Web.UI.Page
     {
         try
         {
+            ResetGrid();
             DataTable dt = new DataTable();
             if (ddlPOCheckStatus.SelectedIndex > 0)
             {
@@ -798,6 +808,7 @@ public partial class Reports_frmPOReport : System.Web.UI.Page
     {
         try
         {
+            ResetGrid();
             DataTable dt = new DataTable();
             dt = CommonPartNoFunction();
             Utility.BindDropDownListAll(ddlLookupPart, dt);
@@ -852,6 +863,18 @@ public partial class Reports_frmPOReport : System.Web.UI.Page
         try
         {
             BindGrid();
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+    }
+
+    protected void ddlLookupPart_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        try
+        {
+            ResetGrid();
         }
         catch (Exception ex)
         {

@@ -14,8 +14,7 @@ public partial class Reports_frmContainerStatus : System.Web.UI.Page
     {
         if (!IsPostBack)
         {
-            Bind_Controls();
-            BindDestWareHouse("");
+            Bind_Controls();            
         }
     }
 
@@ -43,7 +42,15 @@ public partial class Reports_frmContainerStatus : System.Web.UI.Page
             if (ds.Tables[0].Rows.Count > 0)
             {
                 Utility.BindDropDownListAll(ddlVendor, ds.Tables[0]);
-                ddlVendor.SelectedIndex = 0;
+                Utility.BindDropDownListAll(ddlDestination, ds.Tables[0]);
+                if (ddlVendor.Items.Count > 0)
+                {
+                    ddlVendor.SelectedIndex = 0;
+                }
+                if (ddlDestination.Items.Count > 0)
+                {
+                    ddlDestination.SelectedIndex = 0;
+                }
             }
             if (ds.Tables[1].Rows.Count > 0)
             {
@@ -59,59 +66,53 @@ public partial class Reports_frmContainerStatus : System.Web.UI.Page
         }
     }
 
-    private void BindDestWareHouse(string selectedSourceID)
+    private void BindDestWareHouse(string SourceID, string DestinationID)
     {
         try
         {
-            if (selectedSourceID != "")
+            if (SourceID != "" || DestinationID != "")
             {
                 DataSet ds = new DataSet();
                 ObjBOL.Operation = 3;
-                if (selectedSourceID != "")
+                if (SourceID != "")
                 {
-                    ObjBOL.SourceID = Convert.ToInt32(selectedSourceID);
+                    ObjBOL.SourceID = Convert.ToInt32(SourceID);
+                }
+                else
+                {
+                    ObjBOL.SourceID = Convert.ToInt32(DestinationID);
                 }
                 ds = ObjBLL.GetSearchContainerData(ObjBOL);
                 if (ds.Tables[0].Rows.Count > 0)
                 {
-                    Utility.BindDropDownListAll(ddlDestination, ds.Tables[0]);
-                    if (ddlDestination.Items.Count > 0)
+                    if (SourceID != "")
                     {
-                        ddlDestination.SelectedIndex = 0;
+                        Utility.BindDropDownListAll(ddlDestination, ds.Tables[0]);
+                    }
+                    else if (DestinationID != "")
+                    {
+                        Utility.BindDropDownListAll(ddlVendor, ds.Tables[0]);
                     }
                 }
                 else
                 {
+                    if (ddlVendor.Items.Count > 0)
+                    {
+                        ddlVendor.SelectedIndex = 0;
+                    }
                     if (ddlDestination.Items.Count > 0)
                     {
-                        ClearDestination();
+                        ddlDestination.SelectedIndex = 0;
                     }
 
                 }
             }
-            else
-            {
-                ClearDestination();
-            }
         }
         catch (Exception ex)
         {
             Utility.AddEditException(ex);
         }
-    }
-
-    private void ClearDestination()
-    {
-        try
-        {
-            ddlDestination.Items.Clear();
-            ddlDestination.Items.Insert(0, new System.Web.UI.WebControls.ListItem("All", "0"));
-        }
-        catch (Exception ex)
-        {
-            Utility.AddEditException(ex);
-        }
-    }
+    }    
 
     protected void btnSearch_Click(object sender, EventArgs e)
     {
@@ -225,11 +226,14 @@ public partial class Reports_frmContainerStatus : System.Web.UI.Page
         {
             txtSentDateFrom.Text = String.Empty;
             txtSentDateTo.Text = String.Empty;
-            ddlVendor.SelectedIndex = 0;
+            if (ddlVendor.Items.Count > 0)
+            {
+                ddlVendor.SelectedIndex = 0;
+            }
             if (ddlDestination.Items.Count > 0)
             {
-                ClearDestination();
-            }
+                ddlDestination.SelectedIndex = 0;
+            }            
             ddlContainerCheckStatus.SelectedIndex = 0;
             ddlShipmentBy.SelectedIndex = 0;
             Bind_Controls();
@@ -285,6 +289,10 @@ public partial class Reports_frmContainerStatus : System.Web.UI.Page
             if (dt.Rows.Count > 0)
             {
                 Utility.BindDropDownList(ddlContainerNo, dt);
+                if (ddlContainerNo.Items.Count > 0)
+                {
+                    ddlContainerNo.SelectedIndex = 0;
+                }
             }
             else
             {
@@ -303,12 +311,12 @@ public partial class Reports_frmContainerStatus : System.Web.UI.Page
         {
             if (ddlVendor.SelectedIndex > 0)
             {
-                BindDestWareHouse(ddlVendor.SelectedValue);
+                BindDestWareHouse(ddlVendor.SelectedValue,"");
             }
             else
             {
-                ClearDestination();
-            }
+                Bind_Controls();                
+            }       
             BindContainer();
         }
         catch (Exception ex)
@@ -321,6 +329,17 @@ public partial class Reports_frmContainerStatus : System.Web.UI.Page
     {
         try
         {
+            if(ddlVendor.SelectedIndex == 0)
+            {
+                if (ddlDestination.SelectedIndex > 0)
+                {
+                    BindDestWareHouse("", ddlDestination.SelectedValue);
+                }
+                else
+                {
+                    Bind_Controls();
+                }                
+            }
             BindContainer();
         }
         catch (Exception ex)

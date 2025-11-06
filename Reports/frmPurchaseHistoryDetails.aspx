@@ -32,7 +32,7 @@
                     <div class="col-6 col-sm-4 col-md-3 col-lg-2">
                         <div class="form-group">
                             <label>By Destination</label>
-                            <asp:DropDownList CssClass="form-control form-control-sm" ID="ddlDestination" runat="server" DataTextField="Name" DataValueField="WareHouseID">
+                            <asp:DropDownList CssClass="form-control form-control-sm" ID="ddlDestination" runat="server" DataTextField="Source" DataValueField="SourceID" AutoPostBack="true" OnSelectedIndexChanged="ddlDestination_SelectedIndexChanged">
                             </asp:DropDownList>
                         </div>
                     </div>

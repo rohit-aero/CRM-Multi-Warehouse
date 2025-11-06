@@ -24,7 +24,7 @@
                     <div class="col-6 col-sm-4 col-md-3 col-lg-2">
                         <div class="form-group">
                             <label>By Destination</label>
-                            <asp:DropDownList CssClass="form-control form-control-sm" ID="ddlDest" runat="server" DataTextField="Name" DataValueField="WareHouseID" OnSelectedIndexChanged="ddlDest_SelectedIndexChanged" AutoPostBack="true"></asp:DropDownList>
+                            <asp:DropDownList CssClass="form-control form-control-sm" ID="ddlDest" runat="server" DataTextField="Source" DataValueField="SourceId" OnSelectedIndexChanged="ddlDest_SelectedIndexChanged" AutoPostBack="true"></asp:DropDownList>
                         </div>
                     </div>
                     <div class="col-6 col-sm-4 col-md-3 col-lg-2">
@@ -51,7 +51,7 @@
                     <div class="col-9 col-sm-8 col-md-6 col-lg-4">
                         <div class="form-group">
                             <label>Part No./Description </label>
-                            <asp:DropDownList CssClass="form-control form-control-sm" ID="ddlLookupPart" runat="server" DataValueField="PartID" DataTextField="PartDes">
+                            <asp:DropDownList CssClass="form-control form-control-sm" ID="ddlLookupPart" runat="server" DataValueField="PartID" DataTextField="PartDes" AutoPostBack="true" OnSelectedIndexChanged="ddlLookupPart_SelectedIndexChanged">
                             </asp:DropDownList>
                         </div>
                     </div>

@@ -18,8 +18,7 @@ public partial class Reports_frmPurchaseHistoryDetails : System.Web.UI.Page
     {
         if (!IsPostBack)
         {
-            Bind_Controls();
-            BindDestWareHouse("");
+            Bind_Controls();            
         }
     }
 
@@ -34,73 +33,80 @@ public partial class Reports_frmPurchaseHistoryDetails : System.Web.UI.Page
                 if (ds.Tables[0].Rows.Count > 0)
                 {
                     Utility.BindDropDownListAll(ddlPartNo, ds.Tables[0]);
+                    if (ddlPartNo.Items.Count > 0)
+                    {
+                        ddlPartNo.SelectedIndex = 0;
+                    }
                 }
                 if (ds.Tables[1].Rows.Count > 0)
                 {
                     Utility.BindDropDownListAll(ddlVendor, ds.Tables[1]);
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            Utility.AddEditException(ex);
-        }
-    }
-
-
-    private void BindDestWareHouse(string selectedSourceID)
-    {
-        try
-        {
-            if (selectedSourceID != "")
-            {
-                DataSet ds = new DataSet();
-                ObjBOL1.Operation = 3;
-                if (selectedSourceID != "")
-                {
-                    ObjBOL1.SourceID = Convert.ToInt32(selectedSourceID);
-                }
-                ds = ObjBLL1.GetSearchContainerData(ObjBOL1);
-                if (ds.Tables[0].Rows.Count > 0)
-                {
-                    Utility.BindDropDownListAll(ddlDestination, ds.Tables[0]);
+                    Utility.BindDropDownListAll(ddlDestination, ds.Tables[1]);
+                    if (ddlVendor.Items.Count > 0)
+                    {
+                        ddlVendor.SelectedIndex = 0;
+                    }
                     if (ddlDestination.Items.Count > 0)
                     {
                         ddlDestination.SelectedIndex = 0;
                     }
                 }
+            }
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+    }
+
+
+    private void BindDestWareHouse(string SourceID, string DestinationID)
+    {
+        try
+        {
+            if (SourceID != "" || DestinationID != "")
+            {
+                DataSet ds = new DataSet();
+                ObjBOL1.Operation = 3;
+                if (SourceID != "")
+                {
+                    ObjBOL1.SourceID = Convert.ToInt32(SourceID);
+                }
                 else
                 {
+                    ObjBOL1.SourceID = Convert.ToInt32(DestinationID);
+                }
+                ds = ObjBLL1.GetSearchContainerData(ObjBOL1);
+                if (ds.Tables[0].Rows.Count > 0)
+                {
+                    if (SourceID != "")
+                    {
+                        Utility.BindDropDownListAll(ddlDestination, ds.Tables[0]);
+                    }
+                    else if (DestinationID != "")
+                    {
+                        Utility.BindDropDownListAll(ddlVendor, ds.Tables[0]);
+                    }
+                }
+                else
+                {
+                    if (ddlVendor.Items.Count > 0)
+                    {
+                        ddlVendor.SelectedIndex = 0;
+                    }
                     if (ddlDestination.Items.Count > 0)
                     {
-                        ClearWareHouse();
+                        ddlDestination.SelectedIndex = 0;
                     }
 
                 }
             }
-            else
-            {
-                ClearWareHouse();
-            }
         }
         catch (Exception ex)
         {
             Utility.AddEditException(ex);
         }
-    }
-
-    private void ClearWareHouse()
-    {
-        try
-        {
-            ddlDestination.Items.Clear();
-            ddlDestination.Items.Insert(0, new System.Web.UI.WebControls.ListItem("All", "0"));
-        }
-        catch (Exception ex)
-        {
-            Utility.AddEditException(ex);
-        }
-    }
+    }  
 
     protected void ddlVendor_SelectedIndexChanged(object sender, EventArgs e)
     {
@@ -108,12 +114,34 @@ public partial class Reports_frmPurchaseHistoryDetails : System.Web.UI.Page
         {
             if (ddlVendor.SelectedIndex > 0)
             {
-                BindDestWareHouse(ddlVendor.SelectedValue);
+                BindDestWareHouse(ddlVendor.SelectedValue, "");
             }
             else
             {
-                ClearWareHouse();
-            }
+                Bind_Controls();
+            }            
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+    }
+
+    protected void ddlDestination_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        try
+        {
+            if(ddlVendor.SelectedIndex == 0)
+            {
+                if (ddlDestination.SelectedIndex > 0)
+                {
+                    BindDestWareHouse("", ddlDestination.SelectedValue);
+                }
+                else
+                {
+                    Bind_Controls();
+                }
+            }            
         }
         catch (Exception ex)
         {
@@ -333,14 +361,14 @@ public partial class Reports_frmPurchaseHistoryDetails : System.Web.UI.Page
             ddlStatus.SelectedIndex = 0;
             txtFromDate.Text = String.Empty;
             txtToDate.Text = String.Empty;
-            if (ddlDestination.Items.Count > 0)
-            {
-                ClearWareHouse();
-            }
+            ddlDestination.SelectedIndex = 0;
+            Bind_Controls();
         }
         catch (Exception ex)
         {
             Utility.AddEditException(ex);
         }
     }
+
+    
 }

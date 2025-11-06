@@ -1828,7 +1828,7 @@ public partial class INVManagement_frmRequisitionNew : System.Web.UI.Page
         DataTable dt = new DataTable();
         try
         {
-            clscon.Return_DT(dt, "EXEC [dbo].[INV_GenerateRequisition] '" + ddlReq.SelectedValue + "'");
+            clscon.Return_DT(dt, "EXEC [IV].[INV_GenerateRequisition] '" + ddlReq.SelectedValue + "'");
         }
         catch (Exception ex)
         {
