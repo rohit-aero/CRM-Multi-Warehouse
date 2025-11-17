@@ -24,7 +24,7 @@
                                 <label class="mb-0">Lookup Requisition</label>
                             </div>
                             <div class="col-sm-6 col-md mb-3 chosenFullWidth">
-                                <asp:DropDownList CssClass="form-control form-control-sm" ID="ddlPreparedByList" runat="server" DataTextField="FirstName" DataValueField="EmployeeID" AutoPostBack="True" OnSelectedIndexChanged="ddlPreparedByList_SelectedIndexChanged">
+                                <asp:DropDownList CssClass="form-control form-control-sm" ID="ddlPreparedByList" runat="server" DataTextField="FirstName" DataValueField="EmployeeID" AutoPostBack="True" OnSelectedIndexChanged="ddlPreparedByList_SelectedIndexChanged" Enabled="false">
                                 </asp:DropDownList>
                             </div>
                             <div class="col-sm-6 col-md mb-3 chosenFullWidth">
@@ -65,7 +65,7 @@
                     <div class="col-sm-6 col-md-3 col-lg-2">
                         <div class="form-group">
                             <label class="text-danger">Prepared By*</label>
-                            <asp:DropDownList CssClass="form-control form-control-sm" ID="ddlPreparedby" runat="server" DataTextField="FirstName" DataValueField="EmployeeID"></asp:DropDownList>
+                            <asp:DropDownList CssClass="form-control form-control-sm" ID="ddlPreparedby" runat="server" DataTextField="FirstName" DataValueField="EmployeeID" Enabled="false"></asp:DropDownList>
                         </div>
                     </div>
 

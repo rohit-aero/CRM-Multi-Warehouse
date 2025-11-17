@@ -29,7 +29,7 @@ public partial class INVManagement_frmRequisitionNew : System.Web.UI.Page
             if (!IsPostBack)
             {
                 Bind_Controls();
-                BindReqNo();
+                //BindReqNo();
                 BindStatus();               
             }
         }        
@@ -43,6 +43,33 @@ public partial class INVManagement_frmRequisitionNew : System.Web.UI.Page
            // ScriptManager.RegisterStartupScript(Page, Page.GetType(), Guid.NewGuid().ToString(), strMethodName, true);
             ModalPopupExtenderShowParts.Show();
             BindStatus();
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+    }
+
+
+    private void CheckPreparedByList()
+    {
+        try
+        {
+            DataSet ds = new DataSet();
+            ObjBOL.Operation = 25;
+            if (Utility.IsAuthorized())
+            {
+                ObjBOL.LoginUserId = Utility.GetCurrentSession().EmployeeID;
+            }
+            ds = ObjBLL.GetControlsData(ObjBOL);
+            if (ds.Tables[0].Rows.Count > 0)
+            {
+                ViewState["EmpID"] = ds.Tables[0].Rows[0]["EmployeeID"].ToString();
+            }
+            else
+            {
+                ViewState["EmpID"] = null;
+            }
         }
         catch (Exception ex)
         {
@@ -448,33 +475,79 @@ public partial class INVManagement_frmRequisitionNew : System.Web.UI.Page
     {
         try
         {
+            string EmployeeID = "";
+            string dtEmpPreparedBy = "";
+            CheckPreparedByList();
+            if (ViewState["EmpID"] != null)
+            {
+                dtEmpPreparedBy = ViewState["EmpID"].ToString();
+            }           
             DataSet ds = new DataSet();
+            if (Utility.IsAuthorized())
+            { 
+                EmployeeID = Utility.GetCurrentSession().EmployeeID.ToString();
+            }            
             ObjBOL.Operation = 1;
             ds = ObjBLL.GetControlsData(ObjBOL);
-
             if (ds.Tables[0].Rows.Count > 0)
             {
                 Utility.BindDropDownList(ddlPreparedByList, ds.Tables[0]);
                 Utility.BindDropDownList(ddlPreparedby, ds.Tables[0]);
+                if (EmployeeID != "" && EmployeeID == dtEmpPreparedBy)
+                {
+                    ddlPreparedByList.Enabled = false;
+                    ddlPreparedby.Enabled = false;
+                    ddlPreparedby.SelectedValue = EmployeeID;
+                    ddlPreparedByList.SelectedValue = EmployeeID;
+                    BindRequisitions();
+                }
+                else
+                {
+                    if (ddlPreparedby.Items.Count > 0)
+                    {
+                        ddlPreparedby.SelectedIndex = 0;
+                        ddlPreparedby.Enabled = true;
+                        ddlPreparedByList.Enabled = true;
+                        BindReqNo();
+                    }                    
+                }                
             }
             if (ds.Tables[1].Rows.Count > 0)
             {
                 Utility.BindDropDownList(ddlApprovedby, ds.Tables[1]);
+                if (ddlApprovedby.Items.Count > 0)
+                {
+                    ddlApprovedby.SelectedIndex = 0;
+                }
             }
             if (ds.Tables[2].Rows.Count > 0)
             {
                 Utility.BindDropDownList(ddlfooterpartno, ds.Tables[2]);
                 Utility.BindDropDownList(ddlfooterpartinfo, ds.Tables[2]);
+                if (ddlfooterpartno.Items.Count > 0)
+                {
+                    ddlfooterpartno.SelectedIndex = 0;
+                }
+                if (ddlfooterpartinfo.Items.Count > 0)
+                {
+                    ddlfooterpartinfo.SelectedIndex = 0;
+                }
             }
             if (ds.Tables[3].Rows.Count > 0)
             {
                 Utility.BindDropDownList(ddlOrderType, ds.Tables[3]);
-                ddlOrderType.SelectedValue = "1";
+                if (ddlOrderType.Items.Count>0)
+                {
+                    ddlOrderType.SelectedValue = "1";
+                }                
             }
             if (ds.Tables[4].Rows.Count > 0)
             {
                 Utility.BindDropDownList(ddlRequestor, ds.Tables[4]);
-                ddlRequestor.SelectedValue = "110";
+                if (ddlRequestor.Items.Count > 0)
+                {
+                    ddlRequestor.SelectedValue = "110";
+                }                
             }
         }
         catch (Exception ex)
@@ -726,8 +799,7 @@ public partial class INVManagement_frmRequisitionNew : System.Web.UI.Page
             ResetDetails();
             ResetGrid();
             BindReqNo();
-            ResetReqStatus();
-            ddlPreparedByList.SelectedIndex = 0;
+            ResetReqStatus();            
             btnAdd.Text = "Add";
             btnSubmit.Visible = false;
             ButtonEnabled();
@@ -1023,12 +1095,54 @@ public partial class INVManagement_frmRequisitionNew : System.Web.UI.Page
             {
                 ClearDropdown(ddlReq);
                 Utility.BindDropDownList(ddlReq, ds.Tables[0]);
-                ddlReq.SelectedIndex = 0;
+                if (ddlReq.Items.Count > 0)
+                {
+                    ddlReq.SelectedIndex = 0;
+                }                
             }
             else
             {
                 ddlReq.DataSource = "";
                 ddlReq.DataBind();
+            }
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+    }
+
+
+    private void ResetPreparedByControls()
+    {
+        try
+        {
+            CheckPreparedByList();
+            int EmpListPreparedBy = 0;
+            int LoginUserID = 0;
+            if(ViewState["EmpID"] != null)
+            {
+                EmpListPreparedBy =Convert.ToInt32(ViewState["EmpID"].ToString());
+            }
+            if (Utility.IsAuthorized())
+            {
+                LoginUserID = Utility.GetCurrentSession().EmployeeID;
+            }
+            if(LoginUserID > 0)
+            {
+                if(EmpListPreparedBy != LoginUserID)
+                {
+                    ddlPreparedby.SelectedIndex = 0;
+                    ddlPreparedByList.SelectedIndex = 0;
+                    BindReqNo();
+                }
+                else
+                {
+                    if (ddlReq.Items.Count > 0)
+                    {
+                        ddlReq.SelectedIndex = 0;
+                    }
+                }
             }
         }
         catch (Exception ex)
@@ -1044,9 +1158,8 @@ public partial class INVManagement_frmRequisitionNew : System.Web.UI.Page
             ResetDetails();
             Reset();
             ResetGrid();
-            txtReqNo.Text = String.Empty;
-            ddlPreparedByList.SelectedIndex = 0;
-            BindReqNo();
+            ResetPreparedByControls();
+            txtReqNo.Text = String.Empty;       
             ResetReqStatus();
             txtTentativeshipdate.Text = String.Empty;
             btnAdd.Text = "Add";
@@ -1603,7 +1716,7 @@ public partial class INVManagement_frmRequisitionNew : System.Web.UI.Page
         }
     }
 
-    protected void ddlPreparedByList_SelectedIndexChanged(object sender, EventArgs e)
+    private void BindRequisitions()
     {
         try
         {
@@ -1627,6 +1740,18 @@ public partial class INVManagement_frmRequisitionNew : System.Web.UI.Page
             }
             txtReqNo.Text = String.Empty;
             ResetReqStatus();
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+    }
+
+    protected void ddlPreparedByList_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        try
+        {
+            BindRequisitions();
         }
         catch (Exception ex)
         {
@@ -1775,8 +1900,7 @@ public partial class INVManagement_frmRequisitionNew : System.Web.UI.Page
     private void Reset()
     {
         try
-        {
-            ddlPreparedby.SelectedIndex = 0;
+        {            
             ddlApprovedby.SelectedIndex = 0;
             ddlReqStatus.SelectedIndex = 0;
             btnSave.Text = "Save";
