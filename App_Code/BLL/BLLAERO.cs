@@ -7,6 +7,24 @@ using BOLAERO;
 /// </summary>
 namespace BLLAERO
 {
+    public class BLLGaylordProjects
+    {
+        private DALGaylordProjects ObjDAL = new DALGaylordProjects();
+        public DataSet Return_DataSet(BOLGaylordProjects ObjBOL)
+        {
+            DataSet ds = new DataSet();
+            ds = ObjDAL.Return_DataSet(ObjBOL);
+            return ds;
+        }
+
+        public String Return_String(BOLGaylordProjects ObjBOL)
+        {
+            String Status = "";        
+            Status = ObjDAL.Return_String(ObjBOL);
+            return Status;
+        }
+    }
+
     public class BLLInstallers
     {
         private DALInstallers ObjDAL = new DALInstallers();
@@ -28,6 +46,24 @@ namespace BLLAERO
     public class BLLProjectsFabricationAndNestingTasks
     {
         private DALProjectsFabricationAndNestingTasks ObjDAL = new DALProjectsFabricationAndNestingTasks();
+        public DataSet Return_DataSet(BOLProjectsFabricationAndNestingTasks ObjBOL)
+        {
+            DataSet ds = new DataSet();
+            ds = ObjDAL.Return_DataSet(ObjBOL);
+            return ds;
+        }
+
+        public String Return_String(BOLProjectsFabricationAndNestingTasks ObjBOL)
+        {
+            String Status = "";
+            Status = ObjDAL.Return_String(ObjBOL);
+            return Status;
+        }
+    }
+
+    public class BLLProjectsFabricationAndNestingTasks_V1
+    {
+        private DALProjectsFabricationAndNestingTasks_V1 ObjDAL = new DALProjectsFabricationAndNestingTasks_V1();
         public DataSet Return_DataSet(BOLProjectsFabricationAndNestingTasks ObjBOL)
         {
             DataSet ds = new DataSet();
