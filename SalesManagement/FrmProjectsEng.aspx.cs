@@ -1223,7 +1223,7 @@ public partial class SalesManagement_FrmProjectsEng : System.Web.UI.Page
 
             if (ddlProjectQuality.SelectedIndex > 0)
             {
-                ObjBOL.ProjectQuality = ddlProjectQuality.SelectedValue;
+                ObjBOL.ProjectQuality = Int32.Parse(ddlProjectQuality.SelectedValue);
             }
 
             if (ddlCorrectedBy_ProjectFeedback.SelectedIndex > 0)

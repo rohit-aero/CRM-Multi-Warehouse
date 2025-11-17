@@ -886,9 +886,9 @@
                                     <label>Accuracy Level</label>
                                     <asp:DropDownList CssClass="form-control form-control-sm" ID="ddlProjectQuality" runat="server">
                                         <asp:ListItem>Select</asp:ListItem>
-                                        <asp:ListItem Value="L">Low</asp:ListItem>
-                                        <asp:ListItem Value="M">Medium</asp:ListItem>
-                                        <asp:ListItem Value="H">High</asp:ListItem>
+                                        <asp:ListItem Value="1">Needs Improvement</asp:ListItem>
+                                        <asp:ListItem Value="2">Acceptable</asp:ListItem>
+                                        <asp:ListItem Value="3">Good</asp:ListItem>
                                     </asp:DropDownList>
                                 </div>
                             </div>

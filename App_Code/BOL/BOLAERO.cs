@@ -5,6 +5,205 @@ using System.Data;
 /// </summary>
 namespace BOLAERO
 {
+    public class BOLGaylordProjects
+    {
+        Int32 _Operation;
+        public Int32 Operation
+        {
+            get { return _Operation; }
+            set { _Operation = value; }
+        }
+
+        String _PONumber;
+        public String PONumber
+        {
+            get { return _PONumber; }
+            set { _PONumber = value; }
+        }
+
+        String _ProjectName;
+        public String ProjectName
+        {
+            get { return _ProjectName; }
+            set { _ProjectName = value; }
+        }
+
+        DateTime? _DrawingReceivedDate;
+        public DateTime? DrawingReceivedDate
+        {
+            get { return _DrawingReceivedDate; }
+            set { _DrawingReceivedDate = value; }
+        }
+
+        DateTime? _POReceivedDate;
+        public DateTime? POReceivedDate
+        {
+            get { return _POReceivedDate; }
+            set { _POReceivedDate = value; }
+        }
+
+        DateTime? _ReqShipDate;
+        public DateTime? ReqShipDate
+        {
+            get { return _ReqShipDate; }
+            set { _ReqShipDate = value; }
+        }
+
+        DateTime? _ShipDate;
+        public DateTime? ShipDate
+        {
+            get { return _ShipDate; }
+            set { _ShipDate = value; }
+        }
+
+        DateTime? _ReleaseToFab;
+        public DateTime? ReleaseToFab
+        {
+            get { return _ReleaseToFab; }
+            set { _ReleaseToFab = value; }
+        }
+
+        DateTime? _TargetCompletionDate;
+        public DateTime? TargetCompletionDate
+        {
+            get { return _TargetCompletionDate; }
+            set { _TargetCompletionDate = value; }
+        }
+
+        Int32 _POType;
+        public Int32 POType
+        {
+            get { return _POType; }
+            set { _POType = value; }
+        }
+
+        bool _Release;
+        public bool Release
+        {
+            get { return _Release; }
+            set { _Release = value; }
+        }
+
+        bool _SendToProduction;
+        public bool SendToProduction
+        {
+            get { return _SendToProduction; }
+            set { _SendToProduction = value; }
+        }
+
+        Int32 _LoginUserID;
+        public Int32 LoginUserID
+        {
+            get { return _LoginUserID; }
+            set { _LoginUserID = value; }
+        }
+
+        String _Comments;
+        public String Comments
+        {
+            get { return _Comments; }
+            set { _Comments = value; }
+        }
+
+        Int32 _Id;
+        public Int32 Id
+        {
+            get { return _Id; }
+            set { _Id = value; }
+        }
+
+        Int32 _ProjectPartId;
+        public Int32 ProjectPartId
+        {
+            get { return _ProjectPartId; }
+            set { _ProjectPartId = value; }
+        }
+
+        Int32 _WorkOrderId;
+        public Int32 WorkOrderId
+        {
+            get { return _WorkOrderId; }
+            set { _WorkOrderId = value; }
+        }
+
+        String _WorkOrder;
+        public String WorkOrder
+        {
+            get { return _WorkOrder; }
+            set { _WorkOrder = value; }
+        }
+
+        Int32 _PartId;
+        public Int32 PartId
+        {
+            get { return _PartId; }
+            set { _PartId = value; }
+        }
+
+        Int32 _Qty;
+        public Int32 Qty
+        {
+            get { return _Qty; }
+            set { _Qty = value; }
+        }
+
+        Int32 _ShipQty;
+        public Int32 ShipQty
+        {
+            get { return _ShipQty; }
+            set { _ShipQty = value; }
+        }
+
+        String _UPSTracking;
+        public String UPSTracking
+        {
+            get { return _UPSTracking; }
+            set { _UPSTracking = value; }
+        }
+
+        String _ShippingLocation;
+        public String ShippingLocation
+        {
+            get { return _ShippingLocation; }
+            set { _ShippingLocation = value; }
+        }
+
+        Int32 _LayoutBy;
+        public Int32 LayoutBy
+        {
+            get { return _LayoutBy; }
+            set { _LayoutBy = value; }
+        }
+
+        Int32 _ModeOfShipment;
+        public Int32 ModeOfShipment
+        {
+            get { return _ModeOfShipment; }
+            set { _ModeOfShipment = value; }
+        }
+
+        Int32 _ItemType;
+        public Int32 ItemType
+        {
+            get { return _ItemType; }
+            set { _ItemType = value; }
+        }
+
+        String _PartNo;
+        public String PartNo
+        {
+            get { return _PartNo; }
+            set { _PartNo = value; }
+        }
+
+        String _PartDescription;
+        public String PartDescription
+        {
+            get { return _PartDescription; }
+            set { _PartDescription = value; }
+        }
+    }
+
     public class BOLInstallers
     {
         Int32 _Operation;
@@ -4412,6 +4611,13 @@ namespace BOLAERO
             get { return _Operation; }
             set { _Operation = value; }
         }
+
+        Int32 _Status;
+        public Int32 Status
+        {
+            get { return _Status; }
+            set { _Status = value; }
+        }
     }
 
     // BLL For Dealers
@@ -4677,10 +4883,24 @@ namespace BOLAERO
             get { return _Cell; }
             set { _Cell = value; }
         }
+
+        Int32 _Status;
+        public Int32 Status
+        {
+            get { return _Status; }
+            set { _Status = value; }
+        }
     }
 
     public class BOLManageProjects
     {
+        DateTime? _DeliveryDate;
+        public DateTime? DeliveryDate
+        {
+            get { return _DeliveryDate; }
+            set { _DeliveryDate = value; }
+        }
+
         DateTime? _AssignedDate;
         public DateTime? AssignedDate
         {
@@ -4694,8 +4914,9 @@ namespace BOLAERO
             get { return _ExpectedSubmissionDate_FabCanada; }
             set { _ExpectedSubmissionDate_FabCanada = value; }
         }
-        String _ProjectQuality;
-        public String ProjectQuality
+
+        Int32 _ProjectQuality;
+        public Int32 ProjectQuality
         {
             get { return _ProjectQuality; }
             set { _ProjectQuality = value; }
@@ -14009,8 +14230,8 @@ namespace BOLAERO
             set { _Notes = value; }
         }
 
-        bool? _PMResponse;
-        public bool? PMResponse
+        Int32? _PMResponse;
+        public Int32? PMResponse
         {
             get { return _PMResponse; }
             set { _PMResponse = value; }
