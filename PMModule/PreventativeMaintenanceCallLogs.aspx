@@ -84,16 +84,17 @@
                         </div>
                     </div>
 
-                    <div class="col-sm-8">
+                    <div class="col-sm-10">
                         <div class="row">
                             <label class="col-md-12">&nbsp;</label>
-                            <div class="col-md-6">
+                            <div class="col-md-8">
                                 <asp:Button ID="btnShow" runat="server" CssClass="btn btn-secondary btn-sm" CausesValidation="false" Text="Search" OnClick="btnShow_Click" />
                                 <asp:Button ID="btnClear" runat="server" CssClass="btn btn-danger btn-sm" Text="Clear Search" OnClick="btnClear_Click" />
                                 <asp:Button ID="btnExportToExcel" runat="server" CssClass="btn btn-primary btn-sm" CausesValidation="false" Enabled="false" Text="Export to Excel" OnClick="btnExportToExcel_Click" />
                                 <asp:Button CssClass="btn btn-info btn-sm rounded" ID="btnReportRedirect" OnClick="btnReportRedirect_Click" runat="server" Text="Report" />
+                                <asp:Button CssClass="btn btn-primary btn-sm rounded" ID="btnRedirectCallStatusReport" OnClick="btnRedirectCallStatusReport_Click" runat="server" Text="Call Status Report" />
                             </div>
-                            <div class="col-md-6 justify-content-center">
+                            <div class="col-md-4 justify-content-center">
                                 <strong class="text-center">
                                     <asp:Label CssClass="alert alert-success d-block py-1" ID="lblRecordsCount" runat="server" Text="Label" Visible="false"></asp:Label>
                                 </strong>
@@ -361,7 +362,7 @@
                         </div>
 
                         <%-- form to enter call details --%>
-                        <div class="col-12">
+                        <div class="col-12 mt-2">
                             <div class="row">
                                 <div class="col-sm-2">
                                     <div class="form-group">
@@ -401,18 +402,27 @@
                                     </div>
                                 </div>
 
-                                <div class="col-sm-2">
-                                    <div class="form-group srRadiosBtns">
-                                        <label>PM Response</label>
-                                        <asp:RadioButtonList ID="rdbPMResponse" runat="server" RepeatDirection="Horizontal">
-                                            <asp:ListItem Value="1" Selected="True">Yes</asp:ListItem>
-                                            <asp:ListItem Value="0">No</asp:ListItem>
-                                        </asp:RadioButtonList>
+                                 <div class="col-sm-2">
+                                    <div class="form-group chosenFullWidth">
+                                        <label class="text-danger">Status*</label>
+                                        <asp:DropDownList CssClass="form-control form-control-sm" ID="ddlCallHistoryStatus" DataTextField="text" DataValueField="id" runat="server"></asp:DropDownList>
                                     </div>
                                 </div>
 
                                 <div class="col-sm-2">
-                                    <label>&nbsp;</label>
+                                    <div class="form-group chosenFullWidth">
+                                        <label>PM Program Response</label>
+                                        <asp:DropDownList CssClass="form-control form-control-sm" ID="ddlPMResponse" runat="server">
+                                            <asp:ListItem Value="0">Select</asp:ListItem>
+                                             <asp:ListItem Value="1">Interested</asp:ListItem>
+                                             <asp:ListItem Value="2">Declined</asp:ListItem>
+                                             <asp:ListItem Value="3">Undecided</asp:ListItem>
+                                        </asp:DropDownList>
+                                    </div>
+                                </div>
+
+                                <div class="col-sm-2 pl-0">
+                                    <%--<label>&nbsp;</label>--%>
                                     <div class="col-12">
                                         <asp:Button ID="btnSave" runat="server" CssClass="btn btn-info btn-sm" CausesValidation="false" Text="Save" OnClick="btnSave_Click" />
                                         <asp:Button ID="btnCancel" runat="server" CssClass="btn btn-danger btn-sm" CausesValidation="false" Text="Cancel" OnClick="btnCancel_Click" />
@@ -422,7 +432,7 @@
                         </div>
 
                         <%-- Second Grid (for call history) --%>
-                        <div class="col-12">
+                        <div class="col-12 mt-2">
                             <div class="table-responsive">
                                 <asp:GridView CssClass="table mainGridTable table-sm mb-0" ID="gvCallHistory" runat="server" AutoGenerateColumns="False" DataKeyNames="ID"
                                     OnRowDeleting="gvCallHistory_RowDeleting" OnRowEditing="gvCallHistory_RowEditing" EnableModelValidation="true" EmptyDataText="No Call History">
@@ -431,20 +441,14 @@
                                             <ItemTemplate>
                                                 <asp:Label ID="lblDateCalled" runat="server" Text='<%# Eval("DateCalled") %>'>
                                                 </asp:Label>
-                                            </ItemTemplate>
-                                            <EditItemTemplate>
-                                                <asp:TextBox ID="txtDateCalled" runat="server" Text='<%# Eval("DateCalled") %>' AutoComplete="off" Style="width: 100%;"></asp:TextBox>
-                                            </EditItemTemplate>
+                                            </ItemTemplate>                                           
                                         </asp:TemplateField>
 
                                         <asp:TemplateField HeaderText="Contact Name" ItemStyle-Width="170">
                                             <ItemTemplate>
                                                 <asp:Label ID="lblContact" runat="server" Text='<%# Eval("Contact") %>'>
                                                 </asp:Label>
-                                            </ItemTemplate>
-                                            <EditItemTemplate>
-                                                <asp:TextBox ID="txtContact" runat="server" Text='<%# Eval("Contact") %>' AutoComplete="off" Style="width: 100%;"></asp:TextBox>
-                                            </EditItemTemplate>
+                                            </ItemTemplate>                                            
                                         </asp:TemplateField>
 
                                         <asp:TemplateField HeaderText="Call Details" ItemStyle-Width="750">
@@ -452,43 +456,30 @@
                                                 <asp:Label ID="lblCallDetails" runat="server" Text='<%# Eval("CallDetails") %>'>
                                                 </asp:Label>
                                             </ItemTemplate>
-                                            <EditItemTemplate>
-                                                <asp:TextBox ID="txtCallDetails" runat="server" Text='<%# Eval("CallDetails") %>' AutoComplete="off" TextMode="MultiLine" oninput="return limitMultiLineInputLength(this, 5000)" Style="width: 100%;"></asp:TextBox>
-                                            </EditItemTemplate>
                                         </asp:TemplateField>
 
                                         <asp:TemplateField HeaderText="Notes" ItemStyle-Width="250">
                                             <ItemTemplate>
                                                 <asp:Label ID="lblNotes" runat="server" Text='<%# Eval("Notes") %>'>
                                                 </asp:Label>
-                                            </ItemTemplate>
-                                            <EditItemTemplate>
-                                                <asp:TextBox ID="txtNotes" runat="server" Text='<%# Eval("Notes") %>' AutoComplete="off" TextMode="MultiLine" oninput="return limitMultiLineInputLength(this, 5000)" Style="width: 100%;"></asp:TextBox>
-                                            </EditItemTemplate>
+                                            </ItemTemplate>                                           
+                                        </asp:TemplateField>
+
+                                        <asp:TemplateField HeaderText="Status" ItemStyle-Width="250">
+                                            <ItemTemplate>
+                                                <asp:Label ID="lblStatus" runat="server" Text='<%# Eval("Status") %>'>
+                                                </asp:Label>
+                                            </ItemTemplate>                                           
                                         </asp:TemplateField>
 
                                         <asp:TemplateField HeaderText="PM Response" ItemStyle-Width="100">
                                             <ItemTemplate>
                                                 <asp:Label ID="lblPMResponse" runat="server" Text='<%# Eval("PMResponse") %>'>
                                                 </asp:Label>
-                                            </ItemTemplate>
-                                            <EditItemTemplate>
-                                                <asp:RadioButtonList ID="rdbPMResponse" runat="server" RepeatDirection="Horizontal">
-                                                    <asp:ListItem Value="1" Selected="True">Yes</asp:ListItem>
-                                                    <asp:ListItem Value="0">No</asp:ListItem>
-                                                </asp:RadioButtonList>
-                                            </EditItemTemplate>
+                                            </ItemTemplate>                                           
                                         </asp:TemplateField>
 
-                                        <asp:TemplateField HeaderText="Modify" ItemStyle-Width="150">
-                                            <EditItemTemplate>
-                                                <asp:LinkButton CssClass="btn btn-success btn-sm" ID="lnkUpdate" runat="server" CommandName="Update">
-                                                <i class="far fa-save" title="Update"></i>
-                                                </asp:LinkButton>
-                                                <asp:LinkButton CssClass="btn btn-danger btn-sm" ID="lnkCancel" runat="server" CommandName="Cancel">
-                                                <i class="fas fa-redo" title="Redo"></i>
-                                                </asp:LinkButton>
-                                            </EditItemTemplate>
+                                        <asp:TemplateField HeaderText="Modify" ItemStyle-Width="150">                                           
                                             <ItemTemplate>
                                                 <asp:LinkButton CssClass="btn btn-info btn-sm" ID="btnEdit" runat="server" CommandName="Edit">
                                                 <i class="far fa-edit" title="Edit"></i>
@@ -510,6 +501,7 @@
             <asp:HiddenField ID="hfDetailID" runat="server" />
             <asp:HiddenField ID="hfJobIDTitleInModal" runat="server" />
             <asp:HiddenField ID="HfJObID" runat="server" Value="" />
+            <asp:HiddenField ID="HfProjectName" runat="server" Value="-1" />
         </ContentTemplate>
         <Triggers>
             <asp:PostBackTrigger ControlID="btnExportToExcel" />
@@ -530,7 +522,9 @@
         });
 
         function BindDrp() {
-            $('#<%=ddlContactName.ClientID%>').chosen();           
+            $('#<%=ddlContactName.ClientID%>').chosen();
+            $('#<%=ddlCallHistoryStatus.ClientID%>').chosen(); 
+            $('#<%=ddlPMResponse.ClientID%>').chosen();
         }
 
         function ClickEventForPName(e) {

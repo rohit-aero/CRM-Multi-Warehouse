@@ -2,6 +2,7 @@
 using BOLAERO;
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Data;
 using System.Linq;
 using System.Web;
@@ -28,6 +29,7 @@ public partial class PMModule_PreventativeMaintenanceCallLogs : System.Web.UI.Pa
                 {
                     var JNumber = Request.QueryString["JobId"];
                     SyncTextbox("NUM", JNumber);
+                    AutoPopulateGridData();
                     SyncTextbox("NAME", JNumber);
                     HfJObID.Value = JNumber;
                 }
@@ -102,11 +104,15 @@ public partial class PMModule_PreventativeMaintenanceCallLogs : System.Web.UI.Pa
                     if (dt.Rows.Count > 0)
                     {
                         txtSearchPNum.Text = Convert.ToString(dt.Rows[0]["ProjectName"]);
+                        HfJObID.Value = text;
+                        HfProjectName.Value = txtSearchPNum.Text;
                     }
                     else
                     {
                         txtSearchPNum.Text = "";
                         txtSearchPName.Text = "";
+                        HfJObID.Value = "-1";
+                        HfProjectName.Value = "-1";
                         Utility.ShowMessage_Error(Page, "J# not Found");
                     }
                 }
@@ -125,6 +131,49 @@ public partial class PMModule_PreventativeMaintenanceCallLogs : System.Web.UI.Pa
                     }
                 }
             }
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+    }
+
+    private void AutoPopulateGridData()
+    {
+        try
+        {
+            Bind_Grid();
+            ShowJobModal();
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+    }
+
+    private void ShowJobModal()
+    {
+        try
+        {
+            string WarrentyEndDate = "";
+            string var1 = HfProjectName.Value;
+            if (!string.IsNullOrEmpty(var1) && var1.Contains(","))
+            {
+                int lastCommaIndex = var1.LastIndexOf(',');
+                var1 = var1.Substring(0, lastCommaIndex);
+            }
+            string title = (var1 ?? "");
+            if (ViewState["dirState"] != null)
+            {
+                DataTable dt = (DataTable)ViewState["dirState"];
+                if (dt.Rows.Count > 0)
+                {
+                    WarrentyEndDate = dt.Rows[0]["WarrantyEndDate"].ToString();
+                }
+                LoadModal(HfJObID.Value);
+                SetTitle(title, WarrentyEndDate);
+            }
+
         }
         catch (Exception ex)
         {
@@ -186,6 +235,14 @@ public partial class PMModule_PreventativeMaintenanceCallLogs : System.Web.UI.Pa
             {
                 Utility.ShowMessage_Error(Page, "Please Select Contact Name !");
                 ddlContactName.Focus();
+                modalForJob.Show();
+                return false;
+            }
+
+            if (ddlCallHistoryStatus.SelectedIndex == 0)
+            {
+                Utility.ShowMessage_Error(Page, "Please Select Status !");
+                ddlCallHistoryStatus.Focus();
                 modalForJob.Show();
                 return false;
             }
@@ -556,9 +613,14 @@ public partial class PMModule_PreventativeMaintenanceCallLogs : System.Web.UI.Pa
                 {
                     ddlContactName.SelectedValue = ds.Tables[0].Rows[0]["ContactID"].ToString();
                 }
+
+                if (ddlCallHistoryStatus.Items.FindByValue(ds.Tables[0].Rows[0]["StatusId"].ToString()) != null)
+                {
+                    ddlCallHistoryStatus.SelectedValue = ds.Tables[0].Rows[0]["StatusId"].ToString();
+                }
                 txtCallDetails.Text = ds.Tables[0].Rows[0]["CallDetails"].ToString();
                 txtNotes.Text = ds.Tables[0].Rows[0]["Notes"].ToString();
-                rdbPMResponse.SelectedValue = ds.Tables[0].Rows[0]["PMResponse"].ToString();
+                ddlPMResponse.SelectedValue = ds.Tables[0].Rows[0]["PMResponse"].ToString();
                 btnSave.Text = "Update";
             }
         }
@@ -612,6 +674,31 @@ public partial class PMModule_PreventativeMaintenanceCallLogs : System.Web.UI.Pa
             lblRecordsCount.Text = string.Empty;
             lblRecordsCount.Visible = false;
             btnExportToExcel.Enabled = false;
+            ResetQueryString();
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+    }
+
+    private void ResetQueryString()
+    {
+        try
+        {
+            string query = Request.QueryString.ToString();
+            NameValueCollection queryParams = HttpUtility.ParseQueryString(query);
+            queryParams.Remove("jobId");
+
+            string newQuery = queryParams.ToString();
+            string newUrl = "~/PMModule/PreventativeMaintenanceCallLogs.aspx";
+            if (!string.IsNullOrEmpty(newQuery))
+            {
+                newUrl += "?" + newQuery;
+            }
+
+            Response.Redirect(newUrl);
+
         }
         catch (Exception ex)
         {
@@ -656,8 +743,9 @@ public partial class PMModule_PreventativeMaintenanceCallLogs : System.Web.UI.Pa
                 ObjBOL.ContactID = Int32.Parse(ddlContactName.SelectedValue);
                 ObjBOL.Contact = ddlContactName.SelectedItem.Text;
                 ObjBOL.CallDetails = txtCallDetails.Text;
+                ObjBOL.StatusId = Int32.Parse(ddlCallHistoryStatus.SelectedValue);
                 ObjBOL.Notes = txtNotes.Text;
-                ObjBOL.PMResponse = rdbPMResponse.SelectedValue.Equals("1") ? true : false;
+                ObjBOL.PMResponse = Convert.ToInt32(ddlPMResponse.SelectedValue);
                 if (btnSave.Text == "Save")
                 {
                     ObjBOL.Operation = 3;
@@ -718,50 +806,63 @@ public partial class PMModule_PreventativeMaintenanceCallLogs : System.Web.UI.Pa
         return GridViewSortDirection;
     }
 
+    private void Bind_Grid()
+    {
+        try
+        {
+            DataSet ds = new DataSet();
+            ObjBOL.Operation = 1;
+            ObjBOL.WarrantyEndFromDate = Utility.ConvertDate(txtWarrantyEndDateFrom.Text);
+            if (txtWarrantyEndDateTo.Text == "")
+            {
+                txtWarrantyEndDateTo.Text = DateTime.Now.ToShortDateString();
+            }
+            ObjBOL.WarrantyEndToDate = Utility.ConvertDate(txtWarrantyEndDateTo.Text);
+            //if (ddlJobID.SelectedIndex > 0)
+            //{
+            //    ObjBOL.JobID = ddlJobID.SelectedValue;
+            //}
+            if (HfJObID.Value.Length > 0)
+            {
+                ObjBOL.JobID = HfJObID.Value;
+            }
+            //if (ddlCustomer.SelectedIndex > 0)
+            //{
+            //    ObjBOL.ContactID = Int32.Parse(ddlCustomer.SelectedValue);
+            //}
+            ds = ObjBLL.Return_DataSet(ObjBOL);
+            if (ds.Tables[0].Rows.Count > 0)
+            {
+                gvWarrantyEndJobs.DataSource = ds.Tables[0];
+                gvWarrantyEndJobs.DataBind();
+                ViewState["dirState"] = ds.Tables[0];
+                lblRecordsCount.Text = "Total No. of Records:" + ds.Tables[0].Rows.Count.ToString() + ". Click on any row to add/view call logs";
+                lblRecordsCount.Visible = true;
+                btnExportToExcel.Enabled = true;
+            }
+            else
+            {
+                gvWarrantyEndJobs.DataSource = string.Empty;
+                gvWarrantyEndJobs.DataBind();
+                ViewState["dirState"] = null;
+                lblRecordsCount.Text = "No Record Found. Click on any row to add/view call logs";
+                lblRecordsCount.Visible = true;
+                btnExportToExcel.Enabled = false;
+            }
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+    }
+
     private void btnShow_Click_Event()
     {
         try
         {
             if (ValidationCheck())
             {
-                DataSet ds = new DataSet();
-                ObjBOL.Operation = 1;
-                ObjBOL.WarrantyEndFromDate = Utility.ConvertDate(txtWarrantyEndDateFrom.Text);
-                if (txtWarrantyEndDateTo.Text == "")
-                {
-                    txtWarrantyEndDateTo.Text = DateTime.Now.ToShortDateString();
-                }
-                ObjBOL.WarrantyEndToDate = Utility.ConvertDate(txtWarrantyEndDateTo.Text);
-                //if (ddlJobID.SelectedIndex > 0)
-                //{
-                //    ObjBOL.JobID = ddlJobID.SelectedValue;
-                //}
-                if (HfJObID.Value.Length > 0)
-                {
-                    ObjBOL.JobID = HfJObID.Value;
-                }
-                //if (ddlCustomer.SelectedIndex > 0)
-                //{
-                //    ObjBOL.ContactID = Int32.Parse(ddlCustomer.SelectedValue);
-                //}
-                ds = ObjBLL.Return_DataSet(ObjBOL);
-                if (ds.Tables[0].Rows.Count > 0)
-                {
-                    gvWarrantyEndJobs.DataSource = ds.Tables[0];
-                    gvWarrantyEndJobs.DataBind();
-                    ViewState["dirState"] = ds.Tables[0];
-                    lblRecordsCount.Text = "Total No. of Records:" + ds.Tables[0].Rows.Count.ToString() + ". Click on any row to add/view call logs";
-                    lblRecordsCount.Visible = true;
-                    btnExportToExcel.Enabled = true;
-                }
-                else
-                {
-                    gvWarrantyEndJobs.DataSource = string.Empty;
-                    gvWarrantyEndJobs.DataBind();
-                    lblRecordsCount.Text = "No Record Found. Click on any row to add/view call logs";
-                    lblRecordsCount.Visible = true;
-                    btnExportToExcel.Enabled = false;
-                }
+                Bind_Grid();
             }
         }
         catch (Exception ex)
@@ -862,6 +963,17 @@ public partial class PMModule_PreventativeMaintenanceCallLogs : System.Web.UI.Pa
             {
                 ddlContactName.Items.Clear();
             }
+
+            //BIND STATUS DROPDOWN
+            if (ds.Tables[2].Rows.Count > 0)
+            {
+                Utility.BindDropDownList(ddlCallHistoryStatus, ds.Tables[2]);
+                ddlCallHistoryStatus.SelectedIndex = 0;
+            }
+            else
+            {
+                ddlCallHistoryStatus.Items.Clear();
+            }
         }
         catch (Exception ex)
         {
@@ -917,11 +1029,16 @@ public partial class PMModule_PreventativeMaintenanceCallLogs : System.Web.UI.Pa
             txtContact.Text = string.Empty;
             txtCallDetails.Text = string.Empty;
             txtNotes.Text = string.Empty;
-            rdbPMResponse.SelectedValue = "1";
+            ddlPMResponse.SelectedIndex = 0;
             hfDetailID.Value = string.Empty;
             if (ddlContactName.Items.Count > 0)
             {
                 ddlContactName.SelectedIndex = 0;
+            }
+
+            if (ddlCallHistoryStatus.Items.Count > 0)
+            {
+                ddlCallHistoryStatus.SelectedIndex = 0;
             }
             btnSave.Text = "Save";
         }
@@ -948,6 +1065,18 @@ public partial class PMModule_PreventativeMaintenanceCallLogs : System.Web.UI.Pa
             FooterOfficePhone.Text = string.Empty;
             FooterPhone.Text = string.Empty;
             FooterEmail.Text = string.Empty;
+        }
+        catch (Exception ex)
+        {
+            Utility.AddEditException(ex);
+        }
+    }
+
+    protected void btnRedirectCallStatusReport_Click(object sender, EventArgs e)
+    {
+        try
+        {
+            Response.Redirect("~/Reports/PreventativeMaintenance_CallStatusReport.aspx", false);
         }
         catch (Exception ex)
         {
